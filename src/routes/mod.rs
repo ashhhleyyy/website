@@ -1,16 +1,24 @@
 mod assets;
 
-use axum::{handler::Handler, routing::get, Router, extract::Extension};
+use axum::{extract::Extension, handler::Handler, routing::get, Router};
 use time::OffsetDateTime;
 use tower_http::trace::TraceLayer;
 
-use crate::{templates::{AboutTemplate, ErrorTemplate, HtmlTemplate, IndexTemplate, WordsTemplate, MusicTemplate, LinksTemplate}, apis::{CachingFetcher, PronounsPageProfile, NowPlayingInfo}};
+use crate::{
+    apis::{CachingFetcher, NowPlayingInfo, PronounsPageProfile},
+    templates::{
+        AboutTemplate, ErrorTemplate, HtmlTemplate, IndexTemplate, LinksTemplate, MusicTemplate,
+        WordsTemplate,
+    },
+};
 
 use self::assets::{background, get_asset, image_script};
 
 macro_rules! generated {
     () => {
-        OffsetDateTime::now_utc().format(&time::format_description::well_known::Rfc2822).expect("failed to format")
+        OffsetDateTime::now_utc()
+            .format(&time::format_description::well_known::Rfc2822)
+            .expect("failed to format")
     };
 }
 
@@ -35,7 +43,9 @@ simple_template!(index, IndexTemplate);
 simple_template!(about, AboutTemplate);
 simple_template!(links, LinksTemplate);
 
-async fn words(Extension(fetcher): Extension<CachingFetcher<PronounsPageProfile>>) -> HtmlTemplate<WordsTemplate> {
+async fn words(
+    Extension(fetcher): Extension<CachingFetcher<PronounsPageProfile>>,
+) -> HtmlTemplate<WordsTemplate> {
     let profile = fetcher.get().await;
 
     HtmlTemplate(WordsTemplate {
@@ -45,7 +55,9 @@ async fn words(Extension(fetcher): Extension<CachingFetcher<PronounsPageProfile>
     })
 }
 
-async fn music(Extension(fetcher): Extension<CachingFetcher<NowPlayingInfo>>) -> HtmlTemplate<MusicTemplate> {
+async fn music(
+    Extension(fetcher): Extension<CachingFetcher<NowPlayingInfo>>,
+) -> HtmlTemplate<MusicTemplate> {
     let playing = fetcher.get().await;
     HtmlTemplate(MusicTemplate {
         generated: generated!(),

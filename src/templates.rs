@@ -1,7 +1,10 @@
 use askama::Template;
-use axum::{response::{IntoResponse, Html}, http::StatusCode};
+use axum::{
+    http::StatusCode,
+    response::{Html, IntoResponse},
+};
 
-use crate::apis::{PronounsPageCard, NowPlayingInfo};
+use crate::apis::{NowPlayingInfo, PronounsPageCard};
 
 macro_rules! simple_template {
     ($filename:expr, $name:ident) => {
@@ -45,13 +48,20 @@ pub struct ErrorTemplate {
 
 pub struct HtmlTemplate<T>(pub T);
 
-impl<T> IntoResponse for HtmlTemplate<T> where T: Template {
+impl<T> IntoResponse for HtmlTemplate<T>
+where
+    T: Template,
+{
     fn into_response(self) -> axum::response::Response {
         match self.0.render() {
             Ok(html) => Html(html).into_response(),
             Err(e) => {
                 error!("Failed to render template: {}", e);
-                (StatusCode::INTERNAL_SERVER_ERROR, "failed to render template").into_response()
+                (
+                    StatusCode::INTERNAL_SERVER_ERROR,
+                    "failed to render template",
+                )
+                    .into_response()
             }
         }
     }

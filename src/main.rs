@@ -1,12 +1,14 @@
 #[macro_use]
 extern crate tracing;
 
-mod routes;
-mod templates;
 pub mod apis;
 pub mod error;
+mod routes;
+mod templates;
 
-use apis::{CachingFetcher, PronounsPageProfile, PRONOUNS_PAGE_URL, NOWPLAYING_URL, NowPlayingInfo};
+use apis::{
+    CachingFetcher, NowPlayingInfo, PronounsPageProfile, NOWPLAYING_URL, PRONOUNS_PAGE_URL,
+};
 use axum::extract::Extension;
 use tracing_subscriber::{prelude::*, util::SubscriberInitExt};
 
@@ -19,8 +21,10 @@ async fn main() -> error::Result<()> {
         .with(tracing_subscriber::fmt::layer())
         .init();
 
-    let pronouns_page_client = CachingFetcher::<PronounsPageProfile>::new(PRONOUNS_PAGE_URL.to_string()).await?;
-    let nowplaying_client = CachingFetcher::<NowPlayingInfo>::new(NOWPLAYING_URL.to_string()).await?;
+    let pronouns_page_client =
+        CachingFetcher::<PronounsPageProfile>::new(PRONOUNS_PAGE_URL.to_string()).await?;
+    let nowplaying_client =
+        CachingFetcher::<NowPlayingInfo>::new(NOWPLAYING_URL.to_string()).await?;
 
     let app = routes::build_router()
         .layer(Extension(pronouns_page_client))

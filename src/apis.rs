@@ -1,7 +1,14 @@
-use std::{sync::Arc, time::{Instant, Duration}, fmt::Display};
+use std::{
+    fmt::Display,
+    sync::Arc,
+    time::{Duration, Instant},
+};
 
 use reqwest::{Client, ClientBuilder};
-use serde::{Deserialize, de::{Visitor, DeserializeOwned}};
+use serde::{
+    de::{DeserializeOwned, Visitor},
+    Deserialize,
+};
 use serde_repr::Deserialize_repr;
 use tokio::sync::{Mutex, RwLock};
 
@@ -12,7 +19,7 @@ pub const PRONOUNS_PAGE_URL: &str = "https://en.pronouns.page/api/profile/get/as
 pub const NOWPLAYING_URL: &str = "https://api.ashhhleyyy.dev/playing";
 const MIN_REFRESH_TIME: Duration = Duration::from_secs(5);
 
-lazy_static::lazy_static!{
+lazy_static::lazy_static! {
     static ref CLIENT: Client = ClientBuilder::new()
         .user_agent(USER_AGENT)
         .build().expect("failed to build client");
@@ -53,11 +60,9 @@ impl<T: DeserializeOwned + Sized + Clone> CachingFetcher<T> {
     }
 
     async fn fetch(url: &str) -> Result<T> {
-        let req = CLIENT.get(url)
-            .build()?;
+        let req = CLIENT.get(url).build()?;
 
-        let res = CLIENT.execute(req).await?
-            .error_for_status()?;
+        let res = CLIENT.execute(req).await?.error_for_status()?;
 
         let res = res.json::<T>().await?;
 
@@ -95,7 +100,10 @@ impl<'de> Visitor<'de> for WordsVisitor {
         formatter.write_str("a map of words")
     }
 
-    fn visit_map<A>(self, mut map: A) -> std::result::Result<Self::Value, A::Error> where A: serde::de::MapAccess<'de>, {
+    fn visit_map<A>(self, mut map: A) -> std::result::Result<Self::Value, A::Error>
+    where
+        A: serde::de::MapAccess<'de>,
+    {
         let mut words = Words(Vec::with_capacity(map.size_hint().unwrap_or(0)));
         while let Some((key, value)) = map.next_entry()? {
             words.0.push((key, value));
@@ -107,7 +115,8 @@ impl<'de> Visitor<'de> for WordsVisitor {
 impl<'de> Deserialize<'de> for Words {
     fn deserialize<D>(deserializer: D) -> std::result::Result<Self, D::Error>
     where
-        D: serde::Deserializer<'de> {
+        D: serde::Deserializer<'de>,
+    {
         deserializer.deserialize_map(WordsVisitor)
     }
 }
@@ -126,10 +135,9 @@ impl WordOpinion {
     pub fn is_negative(&self) -> bool {
         match self {
             WordOpinion::Yes
-                | WordOpinion::Jokingly
-                | WordOpinion::OnlyClose
-                | WordOpinion::Okay
-                => false,
+            | WordOpinion::Jokingly
+            | WordOpinion::OnlyClose
+            | WordOpinion::Okay => false,
             WordOpinion::Nope => true,
         }
     }

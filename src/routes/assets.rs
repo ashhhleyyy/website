@@ -1,12 +1,12 @@
 use axum::{
-    extract::{Path, TypedHeader, Query},
-    headers::{ETag, HeaderMapExt, IfNoneMatch, ContentType},
-    http::{header::CONTENT_TYPE, HeaderValue, StatusCode, HeaderMap},
+    extract::{Path, Query, TypedHeader},
+    headers::{ContentType, ETag, HeaderMapExt, IfNoneMatch},
+    http::{header::CONTENT_TYPE, HeaderMap, HeaderValue, StatusCode},
     response::IntoResponse,
 };
 use hex::ToHex;
 use image::GenericImageView;
-use mime_guess::mime::{IMAGE_SVG, APPLICATION_JAVASCRIPT_UTF_8};
+use mime_guess::mime::{APPLICATION_JAVASCRIPT_UTF_8, IMAGE_SVG};
 use rust_embed::{EmbeddedFile, RustEmbed};
 use serde::Deserialize;
 
@@ -69,9 +69,15 @@ pub async fn background(Query(query): Query<BackgroundQuery>) -> (HeaderMap, Str
 
     let mut svg = String::new();
 
-    svg.push_str(&format!(r#"<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 {} {}">"#, width, height));
+    svg.push_str(&format!(
+        r#"<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 {} {}">"#,
+        width, height
+    ));
 
-    svg.push_str(&format!(r#"<rect x="0" y="0" width="{}" height="{}" fill='#13092b' />"#, width, height));
+    svg.push_str(&format!(
+        r#"<rect x="0" y="0" width="{}" height="{}" fill='#13092b' />"#,
+        width, height
+    ));
 
     let fill = if query.error {
         "orange".to_string()
@@ -82,7 +88,10 @@ pub async fn background(Query(query): Query<BackgroundQuery>) -> (HeaderMap, Str
     for _ in 0..256 {
         let x = fastrand::u32(0..width);
         let y = fastrand::u32(0..height);
-        svg.push_str(&format!(r#"<circle class="star" cx="{}" cy="{}" r="2" fill="{}" />"#, x, y, fill));
+        svg.push_str(&format!(
+            r#"<circle class="star" cx="{}" cy="{}" r="2" fill="{}" />"#,
+            x, y, fill
+        ));
     }
 
     svg.push_str("</svg>");
@@ -96,10 +105,17 @@ pub async fn image_script() -> (HeaderMap, String) {
 
     let image_data = Asset::get("images/pfp.png").unwrap().data;
     let image = image::load_from_memory(&image_data).unwrap();
-    let resized = image.resize(SIZE as u32, SIZE as u32, image::imageops::FilterType::Nearest);
+    let resized = image.resize(
+        SIZE as u32,
+        SIZE as u32,
+        image::imageops::FilterType::Nearest,
+    );
     let mut pixels = [[0; SIZE]; SIZE];
     for (x, y, pixel) in resized.pixels() {
-        let col = ((pixel.0[0] as u32) << 24) | ((pixel.0[1] as u32) << 16) | ((pixel.0[2] as u32) << 8) | (pixel.0[3] as u32);
+        let col = ((pixel.0[0] as u32) << 24)
+            | ((pixel.0[1] as u32) << 16)
+            | ((pixel.0[2] as u32) << 8)
+            | (pixel.0[3] as u32);
         pixels[y as usize][x as usize] = col;
     }
 
