@@ -184,6 +184,6 @@ pub enum PlaybackState {
 
 impl PlaybackState {
     pub fn playing(&self) -> bool {
-        return self == &Self::Playing;
+        self == &Self::Playing
     }
 }
