@@ -1,0 +1,80 @@
+{% extends "base.html" %}
+
+
+{% block title %}
+    About > Words
+{% endblock %}
+
+{% block content %}
+<main class="content">
+    <h1>About > Words</h1>
+
+    <p>
+        Here's a (non-exhaustive) list of words that I'm okay (or not) for people to use to refer to me.
+    </p>
+
+    <p>
+        This list is automatically generated from <a href="https://en.pronouns.page/@ashhhleyyy">my profile</a> on <a href="https://pronouns.page/">pronouns.page</a>
+    </p>
+
+    <div class="word-columns">
+        <div class="word-column">
+            <h2>Names</h2>
+            <ul>
+                {% for (name, opinion) in card.names.0 %}
+                    <li>
+                        {% if opinion.is_negative() %}
+                            <i class="word-negative">
+                                {{ opinion.emoji() }} {{ name }}: {{ opinion }}
+                            </i>
+                        {% else %}
+                            {{ opinion.emoji() }} {{ name }}: {{ opinion }}
+                        {% endif %}
+                    </li>
+                {% endfor %}
+            </ul>
+        </div>
+
+        <div class="word-column">
+            <h2>Pronouns</h2>
+            <ul>
+                {% for (pronoun, opinion) in card.pronouns.0 %}
+                    <li>
+                        {% if opinion.is_negative() %}
+                            <i class="word-negative">
+                                {{ opinion.emoji() }} {{ pronoun }}: {{ opinion }}
+                            </i>
+                        {% else %}
+                            {{ opinion.emoji() }} {{ pronoun }}: {{ opinion }}
+                        {% endif %}
+                    </li>
+                {% endfor %}
+            </ul>
+        </div>
+    </div>
+
+    <div>
+        <h2>Other words</h2>
+
+        <div class="word-columns">
+            {% for wordlist in card.words %}
+                <div class="word-column">
+                    <ul>
+                        {% for (word, opinion) in wordlist.0 %}
+                            <li>
+                                {% if opinion.is_negative() %}
+                                    <i class="word-negative">
+                                        {{ opinion.emoji() }} {{ word }}: {{ opinion }}
+                                    </i>
+                                {% else %}
+                                    {{ opinion.emoji() }} {{ word }}: {{ opinion }}
+                                {% endif %}
+                            </li>
+                        {% endfor %}
+                    </ul>
+                </div>
+            {% endfor %}
+        </div>
+    </div>
+</main>
+{% endblock %}

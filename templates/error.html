@@ -1,0 +1,28 @@
+{% extends "base.html" %}
+
+
+{% block title %}
+    Oh no - Error {{ error_code }}
+{% endblock %}
+
+{% block body %}
+<body class="error">
+    {% block body_inner %}
+    {% call super() %}
+    {% endblock %}
+</body>
+{% endblock %}
+
+{% block content %}
+<main class="content">
+    <h1>Oh no! Error {{ error_code }}</h1>
+
+    <h2>
+        {{ error_message }}
+    </h2>
+
+    <p>
+        If you clicked a link from someone else, let them know that their link is broken. If you clicked somewhere on this site, let me know.
+    </p>
+</main>
+{% endblock %}

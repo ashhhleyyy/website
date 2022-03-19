@@ -1,0 +1,63 @@
+{% extends "base.html" %}
+
+
+{% block title %}
+    About > Music
+{% endblock %}
+
+{% block content %}
+<main class="content">
+    <h1>About > Music</h1>
+
+    <p>
+        {% if playing.state.playing() %}
+            I'm currently listening to:
+        {% else %}
+            I recently listened to:
+        {% endif %}
+    </p>
+
+    <div class="playing-card">
+        {% match playing.album_artwork %}
+            {% when Some with (url) %}
+                <img class="album-art" alt="album artwork" src="{{ url }}" width="196" height="196">
+            {% when None %}
+        {% endmatch %}
+        <div class="playing-text">
+            {% if playing.state.playing() %}
+            <div class="music-bars">
+                <span class="bar-1"></span>
+                <span class="bar-2"></span>
+                <span class="bar-3"></span>
+            </div>
+            {% endif %}
+            <h2>
+                {{ playing.title }}
+            </h2>
+            <h3>by {{ playing.artist }}</h3>
+        </div>
+    </div>
+    {% match playing.track_id %}
+        {% when Some with (track_id) %}
+            <div id="spotify-wrapper">
+                <a id="open-spotify" href="https://open.spotify.com/track/{{ track_id }}" onclick="loadSpotifyWidget(event); event.preventDefault()">View on Spotify</a>
+                <script>
+                    function loadSpotifyWidget(event) {
+                        event.target.remove();
+                        var wrapper = document.getElementById('spotify-wrapper');
+                        var iframe = document.createElement('iframe');
+                        iframe.classList.add('spotify-widget');
+                        iframe.src = 'https://open.spotify.com/embed/track/{{ track_id }}';
+                        iframe.width = 300;
+                        iframe.height = 80;
+                        iframe.frameBorder = false;
+                        iframe.allow = "encrypted-media";
+                        wrapper.appendChild(iframe);
+                    }
+                    document.getElementById('open-spotify').innerText = 'Load spotify widget';
+                </script>
+            </div>
+        {% when None %}
+    {% endmatch %}
+</main>
+{% endblock %}
