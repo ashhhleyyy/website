@@ -38,6 +38,24 @@ pub struct MusicTemplate {
 }
 
 #[derive(Template)]
+#[template(path = "blog-index.html")]
+pub struct BlogIndexTemplate {
+    pub generated: String,
+    pub copyright_year: i32,
+    pub posts: Vec<(String, String, String)>,
+}
+
+#[derive(Template)]
+#[template(path = "blog-post.html")]
+pub struct BlogPostTemplate {
+    pub generated: String,
+    pub copyright_year: i32,
+    pub title: String,
+    pub date: String,
+    pub content: String,
+}
+
+#[derive(Template)]
 #[template(path = "error.html")]
 pub struct ErrorTemplate {
     pub generated: String,

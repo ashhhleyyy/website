@@ -1,30 +1,39 @@
 mod assets;
+mod blog;
 
-use axum::{extract::Extension, handler::Handler, routing::get, Router};
-use time::OffsetDateTime;
+use axum::{extract::Extension, handler::Handler, routing::get, Router, response::Redirect, http::Uri};
 use tower_http::trace::TraceLayer;
 
 use crate::{
     apis::{CachingFetcher, NowPlayingInfo, PronounsPageProfile},
     templates::{
-        AboutTemplate, ErrorTemplate, HtmlTemplate, IndexTemplate, LinksTemplate, MusicTemplate,
+        AboutTemplate, ErrorTemplate, HtmlTemplate, LinksTemplate, MusicTemplate,
         WordsTemplate,
     },
 };
 
 use self::assets::{background, get_asset, image_script};
 
+
+#[macro_export]
 macro_rules! generated {
     () => {
-        OffsetDateTime::now_utc()
-            .format(&time::format_description::well_known::Rfc2822)
-            .expect("failed to format")
+        {
+            use time::OffsetDateTime;
+            OffsetDateTime::now_utc()
+                .format(&time::format_description::well_known::Rfc2822)
+                .expect("failed to format")
+        }
     };
 }
 
+#[macro_export]
 macro_rules! copyright_year {
     () => {
-        OffsetDateTime::now_utc().year()
+        {
+            use time::OffsetDateTime;
+            OffsetDateTime::now_utc().year()
+        }
     };
 }
 
@@ -39,9 +48,12 @@ macro_rules! simple_template {
     };
 }
 
-simple_template!(index, IndexTemplate);
-simple_template!(about, AboutTemplate);
+simple_template!(index, AboutTemplate);
 simple_template!(links, LinksTemplate);
+
+async fn about() -> Redirect {
+    Redirect::permanent(Uri::from_static("/"))
+}
 
 async fn words(
     Extension(fetcher): Extension<CachingFetcher<PronounsPageProfile>>,
@@ -81,6 +93,8 @@ pub fn build_router() -> Router {
         .route("/about", get(about))
         .route("/about/words", get(words))
         .route("/about/music", get(music))
+        .route("/blog", get(blog::index))
+        .route("/blog/:post", get(blog::post))
         .route("/me", get(links))
         .route("/assets-gen/background.svg", get(background))
         .route("/assets-gen/image.js", get(image_script))

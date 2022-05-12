@@ -1,0 +1,24 @@
+{% extends "base.html" %}
+
+
+{% block title %}Blog{% endblock %}
+
+{% block content %}
+<main class="content">
+    <h1>Blog</h1>
+
+    <p>
+        I write things sometimes, and then I post them here:
+    </p>
+
+    <ul>
+        {% for (date, name, url) in posts %}
+            <li>
+                <a href="{{ url }}">
+                    {{ date }}: {{ name }}
+                </a>
+            </li>
+        {% endfor %}
+    </ul>
+</main>
+{% endblock %}

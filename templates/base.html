@@ -8,7 +8,22 @@
     <link rel="stylesheet" href="/assets/css/fonts.css">
     <link rel="stylesheet" href="/assets/css/style.css">
     <script src="/assets-gen/image.js" async defer></script>
+    <meta name="color-scheme" content="dark">
+    <meta name="author" content="Ashhhleyyy">
+    <meta name="description" content="Hello, World!">
+    <meta property="og:type" content="website">
+    <meta property="og:title" content="{% block title %}{% endblock %}">
+    <meta property="og:image" content="/assets/images/pfp.png">
+    <meta name="twitter:card" content="summary">
+    <meta property="twitter:domain" content="ashhhleyyy.dev">
+    <meta name="twitter:title" content="{% block title %}{% endblock %}">
+    <meta name="twitter:image" content="/assets/images/pfp.png">
+
     {% block head %}{% endblock %}
+    {% block opengraph %}
+    <meta name="twitter:description" content="Hello, World!">
+    <meta property="og:description" content="Hello, World!">
+    {% endblock %}
 </head>
 {% block body %}
 <body>
@@ -19,6 +34,9 @@
 
             <a href="/" class="nav-link">
                 Home
+            </a>
+            <a href="/blog" class="nav-link">
+                Blog
             </a>
             <a href="/about" class="nav-link">
                 About
