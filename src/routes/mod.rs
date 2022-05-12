@@ -1,40 +1,36 @@
 mod assets;
 mod blog;
 
-use axum::{extract::Extension, handler::Handler, routing::get, Router, response::Redirect, http::Uri};
+use axum::{
+    extract::Extension, handler::Handler, http::Uri, response::Redirect, routing::get, Router,
+};
 use tower_http::trace::TraceLayer;
 
 use crate::{
     apis::{CachingFetcher, NowPlayingInfo, PronounsPageProfile},
     templates::{
-        AboutTemplate, ErrorTemplate, HtmlTemplate, LinksTemplate, MusicTemplate,
-        WordsTemplate,
+        AboutTemplate, ErrorTemplate, HtmlTemplate, LinksTemplate, MusicTemplate, WordsTemplate,
     },
 };
 
 use self::assets::{background, get_asset, image_script};
 
-
 #[macro_export]
 macro_rules! generated {
-    () => {
-        {
-            use time::OffsetDateTime;
-            OffsetDateTime::now_utc()
-                .format(&time::format_description::well_known::Rfc2822)
-                .expect("failed to format")
-        }
-    };
+    () => {{
+        use time::OffsetDateTime;
+        OffsetDateTime::now_utc()
+            .format(&time::format_description::well_known::Rfc2822)
+            .expect("failed to format")
+    }};
 }
 
 #[macro_export]
 macro_rules! copyright_year {
-    () => {
-        {
-            use time::OffsetDateTime;
-            OffsetDateTime::now_utc().year()
-        }
-    };
+    () => {{
+        use time::OffsetDateTime;
+        OffsetDateTime::now_utc().year()
+    }};
 }
 
 macro_rules! simple_template {

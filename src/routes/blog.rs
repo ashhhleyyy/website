@@ -1,9 +1,12 @@
 use regex::Regex;
 use rust_embed::RustEmbed;
 
-use axum::{http::StatusCode, extract::Path};
+use axum::{extract::Path, http::StatusCode};
 
-use crate::{templates::{HtmlTemplate, BlogIndexTemplate, BlogPostTemplate}, copyright_year, generated};
+use crate::{
+    copyright_year, generated,
+    templates::{BlogIndexTemplate, BlogPostTemplate, HtmlTemplate},
+};
 
 #[derive(RustEmbed)]
 #[folder = "blog/"]
@@ -20,11 +23,22 @@ pub struct BlogPost {
 
 impl BlogPost {
     fn url(&self) -> String {
-        format!("/blog/{year}-{month}-{day}-{slug}", year = self.year, month = self.month, day = self.day, slug = self.slug)
+        format!(
+            "/blog/{year}-{month}-{day}-{slug}",
+            year = self.year,
+            month = self.month,
+            day = self.day,
+            slug = self.slug
+        )
     }
 
     fn date(&self) -> String {
-        format!("{year}-{month}-{day}", year = self.year, month = self.month, day = self.day)
+        format!(
+            "{year}-{month}-{day}",
+            year = self.year,
+            month = self.month,
+            day = self.day
+        )
     }
 }
 
@@ -40,8 +54,17 @@ fn load_post(filename: &str) -> Option<BlogPost> {
         );
         let slug = captures.get(4).unwrap().as_str().to_string();
         if let Some(asset) = BlogAssets::get(filename) {
-            let html = comrak::markdown_to_html(&String::from_utf8(asset.data.to_vec()).unwrap(), &Default::default());
-            let title = title_regex.captures(&html).unwrap().get(1).unwrap().as_str().to_string();
+            let html = comrak::markdown_to_html(
+                &String::from_utf8(asset.data.to_vec()).unwrap(),
+                &Default::default(),
+            );
+            let title = title_regex
+                .captures(&html)
+                .unwrap()
+                .get(1)
+                .unwrap()
+                .as_str()
+                .to_string();
             Some(BlogPost {
                 year,
                 month,
@@ -67,14 +90,14 @@ pub async fn index() -> HtmlTemplate<BlogIndexTemplate> {
             entries.push((date, post.title, url));
         }
     }
-    return HtmlTemplate(BlogIndexTemplate {
+    HtmlTemplate(BlogIndexTemplate {
         copyright_year: copyright_year!(),
         generated: generated!(),
         posts: entries,
     })
 }
 
-pub async fn post(Path(path): Path<String>,) -> Result<HtmlTemplate<BlogPostTemplate>, StatusCode> {
+pub async fn post(Path(path): Path<String>) -> Result<HtmlTemplate<BlogPostTemplate>, StatusCode> {
     if let Some(post) = load_post(&format!("{}.md", path)) {
         Ok(HtmlTemplate(BlogPostTemplate {
             copyright_year: copyright_year!(),
