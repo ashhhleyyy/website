@@ -71,10 +71,7 @@ h1 {
     font-size: 24px;
     font-weight: 500;
     text-decoration: none;
-}
-
-.nav-link.active {
-    color: var(--accent);
+    color: var(--foreground-dim);
 }
 
 .nav-link::before {
@@ -85,6 +82,20 @@ h1 {
 .nav-link::after {
     content: "]";
     color: var(--accent-dim);
+}
+
+.nav-link.active {
+    color: var(--foreground);
+}
+
+.nav-link.active::before {
+    content: "[";
+    color: var(--accent);
+}
+
+.nav-link.active::after {
+    content: "]";
+    color: var(--accent);
 }
 
 .content {
