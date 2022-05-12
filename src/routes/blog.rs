@@ -103,7 +103,7 @@ pub async fn post(Path(path): Path<String>) -> Result<HtmlTemplate<BlogPostTempl
             copyright_year: copyright_year!(),
             generated: generated!(),
             title: post.title.clone(),
-            date: post.date().to_string(),
+            date: post.date(),
             content: post.rendered,
         }))
     } else {
