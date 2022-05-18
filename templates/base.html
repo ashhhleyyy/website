@@ -29,20 +29,21 @@
 <body>
     {% block body_inner %}
     <div class="page-container">
-        <nav class="nav">
+        <header class="site-header">
             <img class="avatar" src="/assets/images/pfp.png" alt="Ashhhleyyy's icon" width="64" height="64">
-
-            <a href="/" class="nav-link">
-                Home
-            </a>
-            <a href="/blog" class="nav-link">
-                Blog
-            </a>
-            <a href="/about" class="nav-link">
-                About
-            </a>
-            <script src="/assets/scripts/nav.js"></script>
-        </nav>
+            <nav class="nav">
+                <a href="/" class="nav-link">
+                    Home
+                </a>
+                <a href="/blog" class="nav-link">
+                    Blog
+                </a>
+                <a href="/about" class="nav-link">
+                    About
+                </a>
+                <script src="/assets/scripts/nav.js"></script>
+            </nav>
+        </header>
 
         {% block content %}{% endblock %}
 
