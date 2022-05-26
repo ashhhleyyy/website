@@ -336,3 +336,50 @@ pre > code {
     border: none;
     padding: 0;
 }
+
+.icon-row {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+}
+
+.icon-row > * {
+    margin-right: 16px;
+}
+
+.icon-row svg {
+    transition: fill 200ms ease;
+    fill: white;
+}
+
+.hover-email:hover {
+    fill: var(--accent);
+}
+
+.hover-discord:hover {
+    fill: #5865F2;
+}
+
+.hover-github:hover {
+    fill: #24292f;
+}
+
+.hover-mastodon:hover {
+    fill: #3c99dc;
+}
+
+.hover-reddit:hover {
+    fill: #ff4500;
+}
+
+.hover-twitch:hover {
+    fill: #6441a5;
+}
+
+.hover-twitter:hover {
+    fill: #00acee;
+}
+
+.hover-code:hover {
+    fill: #3a86ff;
+}
