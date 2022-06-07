@@ -90,7 +90,7 @@ pub fn build_router() -> Router {
         .route("/about", get(about))
         .route("/about/words", get(words))
         .route("/about/music", get(music))
-        .route("/blog", get(blog::index))
+        .route("/blog/", get(blog::index))
         .route("/blog/:post", get(blog::post))
         .route("/projects/", get(projects::index))
         .route("/projects/:year/:project", get(projects::project))
