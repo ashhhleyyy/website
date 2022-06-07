@@ -150,7 +150,7 @@ pub async fn image_script() -> (HeaderMap, String) {
 }
 
 #[rustfmt::skip]
-const COLOURS: &[&[&'static str]] = &[&["#a3a3a3","#ffffff","#800070",],&["#d60270","#d60270","#9b4f96","#0038A8","#0038A8",],&["#d62900","#ff9b55","#ffffff","#d461a6","#a50062",],&["#fff430","#ffffff","#9c59d1",],&["#ff1b8d","#ffda00","#1bb3ff",],&["#ff0018","#ffa52c","#ffff41","#008018","#0000f9","#86007d",],&["#55cdfc","#f7a8b8","#ffffff","#f7a8b8","#55cdfc",],];
+const COLOURS: &[&[&str]] = &[&["#a3a3a3","#ffffff","#800070",],&["#d60270","#d60270","#9b4f96","#0038A8","#0038A8",],&["#d62900","#ff9b55","#ffffff","#d461a6","#a50062",],&["#fff430","#ffffff","#9c59d1",],&["#ff1b8d","#ffda00","#1bb3ff",],&["#ff0018","#ffa52c","#ffff41","#008018","#0000f9","#86007d",],&["#55cdfc","#f7a8b8","#ffffff","#f7a8b8","#55cdfc",],];
 
 fn random_choice<T: Sized>(arr: &[T]) -> &T {
     &arr[fastrand::usize(..arr.len())]
