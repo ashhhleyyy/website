@@ -5,7 +5,7 @@ use axum::{extract::Path, http::StatusCode};
 
 use crate::{
     copyright_year, generated,
-    templates::{BlogIndexTemplate, BlogPostTemplate, HtmlTemplate},
+    templates::{BlogIndexTemplate, BlogPostTemplate, HtmlTemplate}, markdown::{extract_title, self},
 };
 
 #[derive(RustEmbed)]
@@ -28,7 +28,7 @@ impl BlogPost {
             year = self.year,
             month = self.month,
             day = self.day,
-            slug = self.slug
+            slug = self.slug,
         )
     }
 
@@ -43,10 +43,10 @@ impl BlogPost {
 }
 
 fn load_post(filename: &str) -> Option<BlogPost> {
-    let name_regex = Regex::new(r"([0-9]{4})-([0-9]{2})-([0-9]{2})-([a-z\-]+)\.md$").unwrap();
-    // Yes I know you're not *supposed* to parse html with regex
-    let title_regex = Regex::new(r"<h1>(.*)</h1>").unwrap();
-    if let Some(captures) = name_regex.captures(filename) {
+    lazy_static::lazy_static!{
+        static ref NAME_REGEX: Regex = Regex::new(r"([0-9]{4})-([0-9]{2})-([0-9]{2})-([a-z\-]+)\.md$").unwrap();
+    }
+    if let Some(captures) = NAME_REGEX.captures(filename) {
         let (year, month, day) = (
             captures.get(1).unwrap().as_str().to_string(),
             captures.get(2).unwrap().as_str().to_string(),
@@ -54,16 +54,8 @@ fn load_post(filename: &str) -> Option<BlogPost> {
         );
         let slug = captures.get(4).unwrap().as_str().to_string();
         if let Some(asset) = BlogAssets::get(filename) {
-            let html = comrak::markdown_to_html(
-                &String::from_utf8(asset.data.to_vec()).unwrap(),
-                &Default::default(),
-            );
-            let title = title_regex
-                .captures(&html)
-                .unwrap()
-                .get(1)
-                .unwrap()
-                .as_str()
+            let html = markdown::render_markdown(std::str::from_utf8(&asset.data).unwrap());
+            let title = extract_title(&html)
                 .to_string();
             Some(BlogPost {
                 year,

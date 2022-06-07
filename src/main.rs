@@ -1,8 +1,9 @@
 #[macro_use]
 extern crate tracing;
 
-pub mod apis;
-pub mod error;
+mod apis;
+mod error;
+mod markdown;
 mod routes;
 mod templates;
 
