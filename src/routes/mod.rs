@@ -1,5 +1,6 @@
 mod assets;
 mod blog;
+mod projects;
 
 use axum::{
     extract::Extension, handler::Handler, http::Uri, response::Redirect, routing::get, Router,
@@ -91,6 +92,8 @@ pub fn build_router() -> Router {
         .route("/about/music", get(music))
         .route("/blog", get(blog::index))
         .route("/blog/:post", get(blog::post))
+        .route("/projects/", get(projects::index))
+        .route("/projects/:year/:project", get(projects::project))
         .route("/me", get(links))
         .route("/assets-gen/background.svg", get(background))
         .route("/assets-gen/image.js", get(image_script))

@@ -1,0 +1,32 @@
+{% extends "base.html" %}
+
+{% block title %}Projects{% endblock %}
+
+{% block content %}
+<main class="content">
+    <h1>Projects</h1>
+
+    <p>
+        Here are a few of the projects I've worked on and shared:
+    </p>
+
+    {% for (year, projects) in projects_by_year %}
+        <section>
+            <h2>{{ year }}</h2>
+            <ul>
+                {% for (title, url) in projects %}
+                    <li>
+                        <a href="{{ url }}">
+                            {{ title }}
+                        </a>
+                    </li>
+                {% endfor %}
+            </ul>
+        </section>
+    {% endfor %}
+
+    <p>
+        I also have several projects under my deadname, so <a href="/">contact me</a> if you are interested in those.
+    </p>
+</main>
+{% endblock %}

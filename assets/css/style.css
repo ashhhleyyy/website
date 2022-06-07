@@ -383,3 +383,9 @@ pre > code {
 .hover-code:hover {
     fill: #3a86ff;
 }
+
+.icon {
+    height: 1.2em;
+    fill: var(--foreground-dim);
+    vertical-align: sub;
+}

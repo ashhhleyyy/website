@@ -56,6 +56,23 @@ pub struct BlogPostTemplate {
 }
 
 #[derive(Template)]
+#[template(path = "projects.html")]
+pub struct ProjectsTemplate {
+    pub generated: String,
+    pub copyright_year: i32,
+    pub projects_by_year: Vec<(String, Vec<(String, String)>)>,
+}
+
+#[derive(Template)]
+#[template(path = "project.html")]
+pub struct ProjectTemplate {
+    pub generated: String,
+    pub copyright_year: i32,
+    pub title: String,
+    pub content: String,
+}
+
+#[derive(Template)]
 #[template(path = "error.html")]
 pub struct ErrorTemplate {
     pub generated: String,
