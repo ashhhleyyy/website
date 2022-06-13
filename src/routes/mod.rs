@@ -16,31 +16,10 @@ use crate::{
 
 use self::assets::{background, get_asset, image_script};
 
-#[macro_export]
-macro_rules! generated {
-    () => {{
-        use time::OffsetDateTime;
-        OffsetDateTime::now_utc()
-            .format(&time::format_description::well_known::Rfc2822)
-            .expect("failed to format")
-    }};
-}
-
-#[macro_export]
-macro_rules! copyright_year {
-    () => {{
-        use time::OffsetDateTime;
-        OffsetDateTime::now_utc().year()
-    }};
-}
-
 macro_rules! simple_template {
     ($name:ident, $template:ident) => {
         async fn $name() -> HtmlTemplate<$template> {
-            HtmlTemplate($template {
-                generated: generated!(),
-                copyright_year: copyright_year!(),
-            })
+            HtmlTemplate($template)
         }
     };
 }
@@ -58,8 +37,6 @@ async fn words(
     let profile = fetcher.get().await;
 
     HtmlTemplate(WordsTemplate {
-        generated: generated!(),
-        copyright_year: copyright_year!(),
         card: profile.profiles.en,
     })
 }
@@ -69,16 +46,12 @@ async fn music(
 ) -> HtmlTemplate<MusicTemplate> {
     let playing = fetcher.get().await;
     HtmlTemplate(MusicTemplate {
-        generated: generated!(),
-        copyright_year: copyright_year!(),
         playing,
     })
 }
 
 async fn handle_404() -> HtmlTemplate<ErrorTemplate> {
     HtmlTemplate(ErrorTemplate {
-        generated: generated!(),
-        copyright_year: copyright_year!(),
         error_code: 404,
         error_message: "Page not found".to_string(),
     })

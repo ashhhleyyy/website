@@ -5,7 +5,7 @@ use regex::Regex;
 use reqwest::StatusCode;
 use rust_embed::RustEmbed;
 
-use crate::{templates::{ProjectTemplate, HtmlTemplate, ProjectsTemplate}, copyright_year, generated, markdown};
+use crate::{templates::{ProjectTemplate, HtmlTemplate, ProjectsTemplate}, markdown};
 
 #[derive(RustEmbed)]
 #[folder = "projects/"]
@@ -58,8 +58,6 @@ fn load_project(filename: &str) -> Option<Project> {
 pub async fn project(Path((year, slug)): Path<(String, String)>) -> Result<HtmlTemplate<ProjectTemplate>, StatusCode> {
     if let Some(post) = load_project(&format!("{}-{}.md", year, slug)) {
         Ok(HtmlTemplate(ProjectTemplate {
-            copyright_year: copyright_year!(),
-            generated: generated!(),
             title: post.title.clone(),
             content: post.rendered,
         }))
@@ -84,8 +82,6 @@ pub async fn index() -> HtmlTemplate<ProjectsTemplate> {
     projects_by_year.sort_by_cached_key(|(year, _)| year.clone());
 
     HtmlTemplate(ProjectsTemplate {
-        copyright_year: copyright_year!(),
-        generated: generated!(),
         projects_by_year,
     })
 }

@@ -4,7 +4,6 @@ use rust_embed::RustEmbed;
 use axum::{extract::Path, http::StatusCode};
 
 use crate::{
-    copyright_year, generated,
     templates::{BlogIndexTemplate, BlogPostTemplate, HtmlTemplate}, markdown::{extract_title, self},
 };
 
@@ -83,8 +82,6 @@ pub async fn index() -> HtmlTemplate<BlogIndexTemplate> {
         }
     }
     HtmlTemplate(BlogIndexTemplate {
-        copyright_year: copyright_year!(),
-        generated: generated!(),
         posts: entries,
     })
 }
@@ -92,8 +89,6 @@ pub async fn index() -> HtmlTemplate<BlogIndexTemplate> {
 pub async fn post(Path(path): Path<String>) -> Result<HtmlTemplate<BlogPostTemplate>, StatusCode> {
     if let Some(post) = load_post(&format!("{}.md", path)) {
         Ok(HtmlTemplate(BlogPostTemplate {
-            copyright_year: copyright_year!(),
-            generated: generated!(),
             title: post.title.clone(),
             date: post.date(),
             content: post.rendered,

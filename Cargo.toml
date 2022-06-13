@@ -24,3 +24,4 @@ lazy_static = "1"
 image = { version = "0.24", default-features = false, features = ["png"]}
 regex = "1"
 comrak = "0.12"
+lol_html = "0.3.1"
