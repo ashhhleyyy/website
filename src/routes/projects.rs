@@ -57,7 +57,7 @@ fn load_project(filename: &str) -> Option<Project> {
 
 pub async fn project(Path((year, slug)): Path<(String, String)>) -> Result<HtmlTemplate<ProjectTemplate>, StatusCode> {
     if let Some(post) = load_project(&format!("{}-{}.md", year, slug)) {
-        Ok(HtmlTemplate(ProjectTemplate {
+        Ok(HtmlTemplate(format!("/projects/{}/{}", year, slug), ProjectTemplate {
             title: post.title.clone(),
             content: post.rendered,
         }))
@@ -81,7 +81,7 @@ pub async fn index() -> HtmlTemplate<ProjectsTemplate> {
     
     projects_by_year.sort_by_cached_key(|(year, _)| year.clone());
 
-    HtmlTemplate(ProjectsTemplate {
+    HtmlTemplate("/projects/".into(), ProjectsTemplate {
         projects_by_year,
     })
 }

@@ -66,15 +66,15 @@ pub struct ErrorTemplate {
     pub error_message: String,
 }
 
-pub struct HtmlTemplate<T>(pub T);
+pub struct HtmlTemplate<T>(pub String, pub T);
 
 impl<T> IntoResponse for HtmlTemplate<T>
 where
     T: Template,
 {
     fn into_response(self) -> axum::response::Response {
-        match self.0.render() {
-            Ok(html) => Html(rewrite_html(&html)).into_response(),
+        match self.1.render() {
+            Ok(html) => Html(rewrite_html(&self.0, &html)).into_response(),
             Err(e) => {
                 error!("Failed to render template: {}", e);
                 (
@@ -87,7 +87,8 @@ where
     }
 }
 
-fn rewrite_html(html: &str) -> String {
+// TODO: Refactor into a tower layer(?) to remove the requirement for passing the path directly
+fn rewrite_html(path: &str, html: &str) -> String {
     let now = OffsetDateTime::now_utc();
     rewrite_str(html, Settings {
         element_content_handlers: vec![
@@ -99,6 +100,24 @@ fn rewrite_html(html: &str) -> String {
                 el.replace(&now.format(&Rfc2822).expect("failed to format"), ContentType::Text);
                 Ok(())
             }),
+            element!(".nav-link", |el| {
+                if let Some(href) = el.get_attribute("href") {
+                    let mtchs = if href == "/" {
+                        path == "/"
+                    } else {
+                        let prefix = if href.ends_with('/') {
+                            href
+                        } else {
+                            format!("{}/", href)
+                        };
+                        path.starts_with(&prefix)
+                    };
+                    if mtchs {
+                        el.set_attribute("class", "nav-link active")?;
+                    }
+                }
+                Ok(())
+            })
         ],
         ..Default::default()
     }).unwrap()

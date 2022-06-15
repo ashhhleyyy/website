@@ -81,14 +81,14 @@ pub async fn index() -> HtmlTemplate<BlogIndexTemplate> {
             entries.push((date, post.title, url));
         }
     }
-    HtmlTemplate(BlogIndexTemplate {
+    HtmlTemplate("/blog/".into(), BlogIndexTemplate {
         posts: entries,
     })
 }
 
 pub async fn post(Path(path): Path<String>) -> Result<HtmlTemplate<BlogPostTemplate>, StatusCode> {
     if let Some(post) = load_post(&format!("{}.md", path)) {
-        Ok(HtmlTemplate(BlogPostTemplate {
+        Ok(HtmlTemplate(format!("/blog/{}", path), BlogPostTemplate {
             title: post.title.clone(),
             date: post.date(),
             content: post.rendered,

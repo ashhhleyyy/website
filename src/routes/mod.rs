@@ -17,15 +17,15 @@ use crate::{
 use self::assets::{background, get_asset, image_script};
 
 macro_rules! simple_template {
-    ($name:ident, $template:ident) => {
+    ($name:ident, $path:expr, $template:ident) => {
         async fn $name() -> HtmlTemplate<$template> {
-            HtmlTemplate($template)
+            HtmlTemplate($path.into(), $template)
         }
     };
 }
 
-simple_template!(index, AboutTemplate);
-simple_template!(links, LinksTemplate);
+simple_template!(index, "/", AboutTemplate);
+simple_template!(links, "/me", LinksTemplate);
 
 async fn about() -> Redirect {
     Redirect::permanent(Uri::from_static("/"))
@@ -36,7 +36,7 @@ async fn words(
 ) -> HtmlTemplate<WordsTemplate> {
     let profile = fetcher.get().await;
 
-    HtmlTemplate(WordsTemplate {
+    HtmlTemplate("/about/words".into(), WordsTemplate {
         card: profile.profiles.en,
     })
 }
@@ -45,13 +45,14 @@ async fn music(
     Extension(fetcher): Extension<CachingFetcher<NowPlayingInfo>>,
 ) -> HtmlTemplate<MusicTemplate> {
     let playing = fetcher.get().await;
-    HtmlTemplate(MusicTemplate {
+    HtmlTemplate("/about/music".into(), MusicTemplate {
         playing,
     })
 }
 
 async fn handle_404() -> HtmlTemplate<ErrorTemplate> {
-    HtmlTemplate(ErrorTemplate {
+    // TODO: Get the correct path here, so the right link is highlighted anyway
+    HtmlTemplate("/404".into(), ErrorTemplate {
         error_code: 404,
         error_message: "Page not found".to_string(),
     })
