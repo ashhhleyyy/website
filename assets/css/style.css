@@ -45,6 +45,7 @@ h1 {
 }
 
 .avatar {
+    margin-top: 16px;
     margin-right: 8px;
     border-radius: 50%;
     border: 2px solid var(--accent);
