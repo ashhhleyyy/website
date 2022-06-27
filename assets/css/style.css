@@ -389,3 +389,19 @@ pre > code {
     fill: var(--foreground-dim);
     vertical-align: sub;
 }
+
+table, th, td {
+    border: var(--accent-dim) 1px solid;
+}
+
+table {
+    border-spacing: 0;
+    border-spacing: 0;
+    overflow-x: scroll;
+    border-width: 2px;
+    border-radius: 4px;
+}
+
+td {
+    padding: 8px;
+}
