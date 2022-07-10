@@ -9,4 +9,4 @@ This is the third version of my website, this time built using a custom [Rust](h
 You can find my website in some of these places on the interwebs:
 - [Right here, right now](https://ashhhleyyy.dev)
 - [GitHub (source code)](github://ashhhleyyy/website)
-- [Code mirror](https://code.ashhhleyyy.dev/website)
+- [Code mirror](https://ashhhleyyy.dev/git/mirror/website)

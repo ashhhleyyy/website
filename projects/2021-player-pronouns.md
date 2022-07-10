@@ -11,4 +11,4 @@ Player pronouns is a Minecraft mod for the [Fabric](https://fabricmc.net/) and [
 You can find Player Pronouns in some of these places on the interwebs:
 - [Modrinth](modrinth://mod/player-pronouns)
 - [GitHub (source code)](github://ashhhleyyy/player-pronouns)
-- [Code mirror](https://code.ashhhleyyy.dev/player-pronouns)
+- [Code mirror](https://ashhhleyyy.dev/git/mirror/player-pronouns)
