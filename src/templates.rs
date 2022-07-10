@@ -3,8 +3,8 @@ use axum::{
     http::StatusCode,
     response::{Html, IntoResponse},
 };
-use lol_html::{rewrite_str, Settings, element, html_content::ContentType};
-use time::{OffsetDateTime, format_description::well_known::Rfc2822};
+use lol_html::{element, html_content::ContentType, rewrite_str, Settings};
+use time::{format_description::well_known::Rfc2822, OffsetDateTime};
 
 use crate::apis::{NowPlayingInfo, PronounsPageCard};
 
@@ -92,35 +92,42 @@ where
 // TODO: Refactor into a tower layer(?) to remove the requirement for passing the path directly
 fn rewrite_html(path: &str, html: &str) -> String {
     let now = OffsetDateTime::now_utc();
-    rewrite_str(html, Settings {
-        element_content_handlers: vec![
-            element!("copyright-year", |el| {
-                el.replace(&format!("{}", now.year()), ContentType::Text);
-                Ok(())
-            }),
-            element!("page-generated", |el| {
-                el.replace(&now.format(&Rfc2822).expect("failed to format"), ContentType::Text);
-                Ok(())
-            }),
-            element!(".nav-link", |el| {
-                if let Some(href) = el.get_attribute("href") {
-                    let mtchs = if href == "/" {
-                        path == "/"
-                    } else {
-                        let prefix = if href.ends_with('/') {
-                            href
+    rewrite_str(
+        html,
+        Settings {
+            element_content_handlers: vec![
+                element!("copyright-year", |el| {
+                    el.replace(&format!("{}", now.year()), ContentType::Text);
+                    Ok(())
+                }),
+                element!("page-generated", |el| {
+                    el.replace(
+                        &now.format(&Rfc2822).expect("failed to format"),
+                        ContentType::Text,
+                    );
+                    Ok(())
+                }),
+                element!(".nav-link", |el| {
+                    if let Some(href) = el.get_attribute("href") {
+                        let mtchs = if href == "/" {
+                            path == "/"
                         } else {
-                            format!("{}/", href)
+                            let prefix = if href.ends_with('/') {
+                                href
+                            } else {
+                                format!("{}/", href)
+                            };
+                            path.starts_with(&prefix)
                         };
-                        path.starts_with(&prefix)
-                    };
-                    if mtchs {
-                        el.set_attribute("class", "nav-link active")?;
+                        if mtchs {
+                            el.set_attribute("class", "nav-link active")?;
+                        }
                     }
-                }
-                Ok(())
-            })
-        ],
-        ..Default::default()
-    }).unwrap()
+                    Ok(())
+                }),
+            ],
+            ..Default::default()
+        },
+    )
+    .unwrap()
 }

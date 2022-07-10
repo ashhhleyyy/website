@@ -1,10 +1,14 @@
 use std::cell::RefCell;
 
-use comrak::{Arena, parse_document, ComrakOptions, nodes::{AstNode, NodeValue, Ast}, format_html_with_plugins};
-use regex::{Regex, Captures};
+use comrak::{
+    format_html_with_plugins,
+    nodes::{Ast, AstNode, NodeValue},
+    parse_document, Arena, ComrakOptions,
+};
+use regex::{Captures, Regex};
 use reqwest::Url;
 
-lazy_static::lazy_static!{
+lazy_static::lazy_static! {
     static ref TITLE_REGEX: Regex = Regex::new(r"<h1>(.*)</h1>").unwrap();
     static ref ICON_REGEX: Regex = Regex::new(r"!--icon\((.*)\)--!").unwrap();
 }
@@ -46,24 +50,31 @@ pub fn render_markdown(markdown: &str) -> (String, String) {
 
     iter_nodes(root, &|node| {
         if let NodeValue::Link(ref mut link) = node.data.borrow_mut().value {
-            let url = std::str::from_utf8(&link.url)
-                .unwrap();
+            let url = std::str::from_utf8(&link.url).unwrap();
             if let Ok(url) = Url::parse(url) {
                 let service = url.scheme();
                 let target_url = match service {
                     "modrinth" => {
-                        format!("https://modrinth.com/{}{}", url.host_str().unwrap_or("mod"), url.path())
+                        format!(
+                            "https://modrinth.com/{}{}",
+                            url.host_str().unwrap_or("mod"),
+                            url.path()
+                        )
                     }
                     "github" => {
-                        format!("https://github.com/{}{}", url.host_str().unwrap_or("ashhhleyyy"), url.path())
+                        format!(
+                            "https://github.com/{}{}",
+                            url.host_str().unwrap_or("ashhhleyyy"),
+                            url.path()
+                        )
                     }
                     _ => return,
                 };
                 link.url = target_url.into_bytes();
                 let insert = format!("!--icon({})--! ", service);
-                let new_node = arena.alloc(AstNode::new(RefCell::new(Ast::new(
-                    NodeValue::Text(insert.into_bytes()),
-                ))));
+                let new_node = arena.alloc(AstNode::new(RefCell::new(Ast::new(NodeValue::Text(
+                    insert.into_bytes(),
+                )))));
                 node.prepend(new_node);
             }
         }

@@ -2,14 +2,15 @@ use axum::{
     extract::{Path, Query, TypedHeader},
     headers::{ContentType, ETag, HeaderMapExt, IfNoneMatch},
     http::{header::CONTENT_TYPE, HeaderMap, HeaderValue, StatusCode},
-    response::IntoResponse, Json,
+    response::IntoResponse,
+    Json,
 };
 use hex::ToHex;
 use image::GenericImageView;
 use mime_guess::mime::{APPLICATION_JAVASCRIPT_UTF_8, IMAGE_SVG};
 use rust_embed::{EmbeddedFile, RustEmbed};
 use serde::Deserialize;
-use time::{OffsetDateTime, Month};
+use time::{Month, OffsetDateTime};
 
 #[derive(RustEmbed)]
 #[folder = "assets/"]
@@ -80,7 +81,11 @@ pub async fn background(Query(query): Query<BackgroundQuery>) -> (HeaderMap, Str
         width, height
     ));
 
-    let colours = if use_colours() { *random_choice(COLOURS) } else { &["#ccc"] };
+    let colours = if use_colours() {
+        *random_choice(COLOURS)
+    } else {
+        &["#ccc"]
+    };
 
     for _ in 0..256 {
         let x = fastrand::u32(0..width);
@@ -88,7 +93,10 @@ pub async fn background(Query(query): Query<BackgroundQuery>) -> (HeaderMap, Str
         let fill = if query.error {
             "orange".to_string()
         } else {
-            query.star_colour.clone().unwrap_or_else(|| random_choice(colours).to_string())
+            query
+                .star_colour
+                .clone()
+                .unwrap_or_else(|| random_choice(colours).to_string())
         };
         svg.push_str(&format!(
             r#"<circle class="star" cx="{}" cy="{}" r="2" fill="{}" />"#,
@@ -130,7 +138,10 @@ pub async fn image_script() -> (HeaderMap, String) {
             if pixel != 0 {
                 all_zero = false;
             }
-            row_colours.push_str(&format!(",\"color: #{:08x}; background-color: #{:08x}\"", pixel, pixel));
+            row_colours.push_str(&format!(
+                ",\"color: #{:08x}; background-color: #{:08x}\"",
+                pixel, pixel
+            ));
         }
         if !all_zero {
             for _ in 0..SIZE {

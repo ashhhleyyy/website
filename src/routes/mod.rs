@@ -36,26 +36,30 @@ async fn words(
 ) -> HtmlTemplate<WordsTemplate> {
     let profile = fetcher.get().await;
 
-    HtmlTemplate("/about/words".into(), WordsTemplate {
-        card: profile.profiles.en,
-    })
+    HtmlTemplate(
+        "/about/words".into(),
+        WordsTemplate {
+            card: profile.profiles.en,
+        },
+    )
 }
 
 async fn music(
     Extension(fetcher): Extension<CachingFetcher<NowPlayingInfo>>,
 ) -> HtmlTemplate<MusicTemplate> {
     let playing = fetcher.get().await;
-    HtmlTemplate("/about/music".into(), MusicTemplate {
-        playing,
-    })
+    HtmlTemplate("/about/music".into(), MusicTemplate { playing })
 }
 
 async fn handle_404() -> HtmlTemplate<ErrorTemplate> {
     // TODO: Get the correct path here, so the right link is highlighted anyway
-    HtmlTemplate("/404".into(), ErrorTemplate {
-        error_code: 404,
-        error_message: "Page not found".to_string(),
-    })
+    HtmlTemplate(
+        "/404".into(),
+        ErrorTemplate {
+            error_code: 404,
+            error_message: "Page not found".to_string(),
+        },
+    )
 }
 
 pub fn build_router() -> Router {
