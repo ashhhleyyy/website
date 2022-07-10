@@ -19,7 +19,10 @@ pub fn extract_title(content: &str) -> &str {
         .as_str()
 }
 
-pub fn render_markdown(markdown: &str) -> String {
+pub fn render_markdown(markdown: &str) -> (String, String) {
+    // 'front matter' parsing
+    let (description, body) = markdown.split_once("\n---\n").unwrap_or(("", markdown));
+
     let mut options = ComrakOptions::default();
     options.extension.autolink = true;
     options.extension.table = true;
@@ -29,7 +32,7 @@ pub fn render_markdown(markdown: &str) -> String {
     options.extension.footnotes = true;
 
     let arena = Arena::new();
-    let root = parse_document(&arena, markdown, &options);
+    let root = parse_document(&arena, body, &options);
 
     fn iter_nodes<'a, F>(node: &'a AstNode<'a>, f: &F)
     where
@@ -71,7 +74,7 @@ pub fn render_markdown(markdown: &str) -> String {
 
     let html = String::from_utf8(html).expect("post is somehow invalid UTF-8");
 
-    replace_icons(html)
+    (description.to_owned(), replace_icons(html))
 }
 
 fn replace_icons(html: String) -> String {

@@ -43,6 +43,7 @@ pub struct BlogIndexTemplate {
 pub struct BlogPostTemplate {
     pub title: String,
     pub date: String,
+    pub description: String,
     pub content: String,
 }
 
@@ -56,6 +57,7 @@ pub struct ProjectsTemplate {
 #[template(path = "project.html")]
 pub struct ProjectTemplate {
     pub title: String,
+    pub description: String,
     pub content: String,
 }
 

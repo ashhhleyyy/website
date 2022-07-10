@@ -1,3 +1,5 @@
+Pronoun mod for Minecraft servers.
+---
 # Player Pronouns
 
 ## About

@@ -1,3 +1,5 @@
+A web-based git repository browser.
+---
 # Gitit
 
 Gitit is a simple web-based [Git](https://git-scm.org) repository viewer, written in [Rust](https://rust-lang.org). It allows you to browse commits and branches in a list of mirrored repositories, and features syntax highlighting for supported files.

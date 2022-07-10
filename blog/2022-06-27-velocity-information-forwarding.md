@@ -1,3 +1,5 @@
+A summary of the Velocity modern forwarding protocol.
+---
 # Velocity modern player information forwarding
 
 When working on [the fallback server for Nucleoid](https://github.com/NucleoidMC/fallblock), one of the required features was to implement Velocity's [modern player information forwarding](https://velocitypowered.com/wiki/users/forwarding/), to allow skins to correctly load in on the fallback server. To do this, I first needed to find information about how the protocol worked, and I struggled to find any official documentation, and so I've summarised my understanding of how it works here.

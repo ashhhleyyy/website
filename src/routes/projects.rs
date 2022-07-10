@@ -15,6 +15,7 @@ pub struct Project {
     year: String,
     slug: String,
     title: String,
+    description: String,
     rendered: String,
 }
 
@@ -38,13 +39,14 @@ fn load_project(filename: &str) -> Option<Project> {
             captures.get(2).unwrap().as_str().to_string(),
         );
         if let Some(asset) = ProjectsAssets::get(filename) {
-            let html = markdown::render_markdown(std::str::from_utf8(&asset.data).unwrap());
+            let (description, html) = markdown::render_markdown(std::str::from_utf8(&asset.data).unwrap());
             let title = markdown::extract_title(&html)
                 .to_string();
             Some(Project {
                 year,
                 slug,
                 title,
+                description,
                 rendered: html,
             })
         } else {
@@ -59,6 +61,7 @@ pub async fn project(Path((year, slug)): Path<(String, String)>) -> Result<HtmlT
     if let Some(post) = load_project(&format!("{}-{}.md", year, slug)) {
         Ok(HtmlTemplate(format!("/projects/{}/{}", year, slug), ProjectTemplate {
             title: post.title.clone(),
+            description: post.description,
             content: post.rendered,
         }))
     } else {

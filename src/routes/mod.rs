@@ -72,6 +72,7 @@ pub fn build_router() -> Router {
         .route("/assets-gen/background.svg", get(background))
         .route("/assets-gen/image.js", get(image_script))
         .route("/assets/*path", get(get_asset))
+        .route("/api/oembed", get(assets::oembed))
         .layer(TraceLayer::new_for_http())
         .fallback(handle_404.into_service())
 }

@@ -17,6 +17,7 @@ pub struct BlogPost {
     day: String,
     slug: String,
     title: String,
+    description: String,
     rendered: String,
 }
 
@@ -53,7 +54,7 @@ fn load_post(filename: &str) -> Option<BlogPost> {
         );
         let slug = captures.get(4).unwrap().as_str().to_string();
         if let Some(asset) = BlogAssets::get(filename) {
-            let html = markdown::render_markdown(std::str::from_utf8(&asset.data).unwrap());
+            let (description, html) = markdown::render_markdown(std::str::from_utf8(&asset.data).unwrap());
             let title = extract_title(&html)
                 .to_string();
             Some(BlogPost {
@@ -62,6 +63,7 @@ fn load_post(filename: &str) -> Option<BlogPost> {
                 day,
                 slug,
                 title,
+                description,
                 rendered: html,
             })
         } else {
@@ -91,6 +93,7 @@ pub async fn post(Path(path): Path<String>) -> Result<HtmlTemplate<BlogPostTempl
         Ok(HtmlTemplate(format!("/blog/{}", path), BlogPostTemplate {
             title: post.title.clone(),
             date: post.date(),
+            description: post.description,
             content: post.rendered,
         }))
     } else {

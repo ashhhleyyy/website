@@ -2,7 +2,7 @@ use axum::{
     extract::{Path, Query, TypedHeader},
     headers::{ContentType, ETag, HeaderMapExt, IfNoneMatch},
     http::{header::CONTENT_TYPE, HeaderMap, HeaderValue, StatusCode},
-    response::IntoResponse,
+    response::IntoResponse, Json,
 };
 use hex::ToHex;
 use image::GenericImageView;
@@ -158,4 +158,19 @@ fn random_choice<T: Sized>(arr: &[T]) -> &T {
 
 fn use_colours() -> bool {
     OffsetDateTime::now_utc().month() == Month::June
+}
+
+#[derive(serde::Serialize)]
+pub struct Oembed {
+    version: &'static str,
+    author_name: &'static str,
+    author_url: &'static str,
+}
+
+pub async fn oembed() -> Json<Oembed> {
+    Json(Oembed {
+        version: "1.0",
+        author_name: "Ashhhleyyy",
+        author_url: "https://ashhhleyyy.dev",
+    })
 }
