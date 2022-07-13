@@ -5,6 +5,7 @@ mod projects;
 use axum::{
     extract::Extension, handler::Handler, http::Uri, response::Redirect, routing::get, Router,
 };
+use reqwest::StatusCode;
 use tower_http::trace::TraceLayer;
 
 use crate::{
@@ -51,15 +52,15 @@ async fn music(
     HtmlTemplate("/about/music".into(), MusicTemplate { playing })
 }
 
-async fn handle_404() -> HtmlTemplate<ErrorTemplate> {
+async fn handle_404() -> (StatusCode, HtmlTemplate<ErrorTemplate>) {
     // TODO: Get the correct path here, so the right link is highlighted anyway
-    HtmlTemplate(
+    (StatusCode::NOT_FOUND, HtmlTemplate(
         "/404".into(),
         ErrorTemplate {
             error_code: 404,
             error_message: "Page not found".to_string(),
         },
-    )
+    ))
 }
 
 pub fn build_router() -> Router {
