@@ -52,10 +52,15 @@ fn main() -> Result<()> {
         for asset in &assets {
             // TODO: Don't hardcode this prefix, lol
             let path = asset.output_path.to_string_lossy().replace("./assets-gen/", "");
-            if matches!(bucket.head_object(&path)?, (_, 404)) { // Doesn't exist, we need to upload
+            let res = bucket.head_object(&path)?;
+            if res.1 == 404 { // Doesn't exist, we need to upload
                 let mut reader = File::open(&asset.output_path)?;
                 bucket.put_object_stream(&mut reader, &path)?;
                 println!("Uploaded {path} to bucket!");
+            } else if res.1 != 200 {
+                eprintln!("failed to upload {path}: got status {}", res.1);
+            } else {
+                println!("{path} already exists in bucket!");
             }
         }
     }

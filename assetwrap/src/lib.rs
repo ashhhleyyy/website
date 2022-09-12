@@ -26,6 +26,8 @@ pub struct Cli {
     pub s3_secret_key: Option<String>,
     #[clap(long)]
     pub s3_bucket: Option<String>,
+    #[clap(long)]
+    pub s3_region: Option<String>,
 }
 
 pub fn create_s3_client() -> Option<Bucket> {
@@ -40,7 +42,7 @@ pub fn create_s3_client() -> Option<Bucket> {
         }
         let creds = Credentials::default().expect("failed to load s3 credentials");
         let region = Region::Custom {
-            region: "main".to_string(),
+            region: cli.s3_region.or_else(|| std::env::var("S3_REGION").ok()).expect("missing s3 region"),
             endpoint: cli.s3_endpoint.or_else(|| std::env::var("S3_ENDPOINT").ok()).expect("missing s3 endpoint"),
         };
         let bucket_name = cli.s3_bucket.or_else(|| std::env::var("S3_BUCKET").ok()).expect("missing s3 bucket");
