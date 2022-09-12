@@ -89,6 +89,20 @@ where
     }
 }
 
+macro_rules! attr_rewrite {
+    ($attr:literal) => {
+        element!(concat!("[", $attr, "]"), |el| {
+            let attr = el
+                .get_attribute($attr)
+                .expect(concat!($attr, " was required"));
+
+            el.set_attribute($attr, crate::assets::ASSET_INDEX.get(&attr))?;
+
+            Ok(())
+        })
+    };
+}
+
 // TODO: Refactor into a tower layer(?) to remove the requirement for passing the path directly
 fn rewrite_html(path: &str, html: &str) -> String {
     let now = OffsetDateTime::now_utc();
@@ -125,6 +139,8 @@ fn rewrite_html(path: &str, html: &str) -> String {
                     }
                     Ok(())
                 }),
+                attr_rewrite!("src"),
+                attr_rewrite!("href"),
             ],
             ..Default::default()
         },

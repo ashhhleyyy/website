@@ -1286,9 +1286,9 @@ dependencies = [
 
 [[package]]
 name = "once_cell"
-version = "1.10.0"
+version = "1.14.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "87f3e037eac156d1775da914196f0f37741a274155e34a0b7e427c35d2a2ecb9"
+checksum = "2f7254b99e31cad77da24b08ebf628882739a608578bb1bcdfc1f9c21260d7c0"
 
 [[package]]
 name = "onig"
@@ -2367,7 +2367,13 @@ dependencies = [
  "http",
  "http-body",
  "http-range-header",
+ "httpdate",
+ "mime",
+ "mime_guess",
+ "percent-encoding",
  "pin-project-lite",
+ "tokio",
+ "tokio-util 0.7.0",
  "tower",
  "tower-layer",
  "tower-service",
@@ -2716,6 +2722,7 @@ name = "website"
 version = "0.1.0"
 dependencies = [
  "askama",
+ "assetwrap",
  "axum",
  "comrak",
  "fastrand",
@@ -2724,10 +2731,12 @@ dependencies = [
  "lazy_static",
  "lol_html",
  "mime_guess",
+ "once_cell",
  "regex",
  "reqwest",
  "rust-embed",
  "serde",
+ "serde_json",
  "serde_repr",
  "thiserror",
  "time",

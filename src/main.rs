@@ -2,6 +2,7 @@
 extern crate tracing;
 
 mod apis;
+mod assets;
 mod error;
 mod markdown;
 mod routes;

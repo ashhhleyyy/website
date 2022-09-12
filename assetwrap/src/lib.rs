@@ -1,12 +1,12 @@
 use std::{path::{Path, PathBuf}, fs::File, io::Read, ffi::OsString};
 
 use color_eyre::Result;
-use serde::Serialize;
+use serde::{Serialize, Deserialize};
 use sha2::{Sha256, Digest};
 
 pub mod config;
 
-#[derive(Debug, Serialize)]
+#[derive(Debug, Deserialize, Serialize)]
 pub struct Asset {
     pub input_path: PathBuf,
     pub hash: String,

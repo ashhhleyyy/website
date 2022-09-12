@@ -2,11 +2,13 @@ mod assets;
 mod blog;
 mod projects;
 
+use std::path::Path;
+
 use axum::{
-    extract::Extension, handler::Handler, http::Uri, response::Redirect, routing::get, Router,
+    extract::Extension, handler::Handler, http::Uri, response::Redirect, routing::{get, any_service}, Router,
 };
 use reqwest::StatusCode;
-use tower_http::trace::TraceLayer;
+use tower_http::{trace::TraceLayer, services::ServeDir};
 
 use crate::{
     apis::{CachingFetcher, NowPlayingInfo, PronounsPageProfile},
@@ -76,8 +78,17 @@ pub fn build_router() -> Router {
         .route("/me", get(links))
         .route("/assets-gen/background.svg", get(background))
         .route("/assets-gen/image.js", get(image_script))
-        .route("/assets/*path", get(get_asset))
+        // .route("/assets/*path", get(get_asset))
         .route("/api/oembed", get(assets::oembed))
+        .nest(
+            "/assets",
+            any_service(ServeDir::new(&Path::new("assets-gen"))).handle_error(
+                |err: std::io::Error| async move {
+                    tracing::error!("unhandled error in static file server: {}", err);
+                    (StatusCode::INTERNAL_SERVER_ERROR, "internal server error")
+                },
+            ),
+        )
         .layer(TraceLayer::new_for_http())
         .fallback(handle_404.into_service())
 }
