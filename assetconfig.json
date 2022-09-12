@@ -1,0 +1,24 @@
+{
+    "asset_paths": [
+        {
+            "input": "./assets/css/*",
+            "output": "./assets-gen/css/"
+        },
+        {
+            "input": "./assets/fonts/*",
+            "output": "./assets-gen/fonts/",
+            "no_hash": true
+        },
+        {
+            "input": "./assets/images/*",
+            "output": "./assets-gen/images/",
+            "hash_ignore": [
+                "./assets/images/pfp.png"
+            ]
+        },
+        {
+            "input": "./assets/scripts/*",
+            "output": "./assets-gen/scripts/"
+        }
+    ]
+}

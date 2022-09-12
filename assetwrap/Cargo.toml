@@ -1,0 +1,17 @@
+[package]
+name = "assetwrap"
+version = "0.1.0"
+edition = "2021"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[dependencies]
+bytesize = "1.1.0"
+clap = "3.2.20"
+color-eyre = "0.6.2"
+globset = { version = "0.4.9", features = ["serde1"] }
+hex = "0.4.3"
+serde = { version = "1.0.144", features = ["derive"] }
+serde_json = "1.0.85"
+sha2 = "0.10.5"
+walkdir = "2.3.2"
