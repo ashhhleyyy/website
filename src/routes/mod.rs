@@ -17,7 +17,7 @@ use crate::{
     },
 };
 
-use self::assets::{background, get_asset, image_script};
+use self::assets::{background, image_script};
 
 macro_rules! simple_template {
     ($name:ident, $path:expr, $template:ident) => {

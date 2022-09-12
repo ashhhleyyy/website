@@ -1,54 +1,15 @@
+use std::fmt::Write;
+
 use axum::{
-    extract::{Path, Query, TypedHeader},
-    headers::{ContentType, ETag, HeaderMapExt, IfNoneMatch},
-    http::{header::CONTENT_TYPE, HeaderMap, HeaderValue, StatusCode},
-    response::IntoResponse,
+    extract::Query,
+    headers::{ContentType, HeaderMapExt},
+    http::HeaderMap,
     Json,
 };
-use hex::ToHex;
 use image::GenericImageView;
 use mime_guess::mime::{APPLICATION_JAVASCRIPT_UTF_8, IMAGE_SVG};
-use rust_embed::{EmbeddedFile, RustEmbed};
 use serde::Deserialize;
 use time::{Month, OffsetDateTime};
-
-#[derive(RustEmbed)]
-#[folder = "assets/"]
-struct Asset;
-
-pub struct AutoContentType(String, ETag, EmbeddedFile);
-
-impl IntoResponse for AutoContentType {
-    fn into_response(self) -> axum::response::Response {
-        let mut res = self.2.data.into_response();
-        res.headers_mut().remove(CONTENT_TYPE);
-        res.headers_mut().typed_insert(self.1);
-        if let Some(mime) = mime_guess::from_path(&self.0).first_raw() {
-            res.headers_mut()
-                .append(CONTENT_TYPE, HeaderValue::from_static(mime));
-        }
-        res
-    }
-}
-
-pub async fn get_asset(
-    Path(path): Path<String>,
-    if_none_match: Option<TypedHeader<IfNoneMatch>>,
-) -> Result<AutoContentType, StatusCode> {
-    match Asset::get(&path[1..]) {
-        Some(asset) => {
-            let hash = asset.metadata.sha256_hash().encode_hex::<String>();
-            let etag = format!(r#"{:?}"#, hash).parse::<ETag>().unwrap();
-            if let Some(if_none_match) = if_none_match {
-                if !if_none_match.precondition_passes(&etag) {
-                    return Err(StatusCode::NOT_MODIFIED);
-                }
-            }
-            Ok(AutoContentType(path[1..].to_string(), etag, asset))
-        }
-        None => Err(StatusCode::NOT_FOUND),
-    }
-}
 
 #[derive(Deserialize)]
 pub struct BackgroundQuery {
@@ -71,15 +32,15 @@ pub async fn background(Query(query): Query<BackgroundQuery>) -> (HeaderMap, Str
 
     let mut svg = String::new();
 
-    svg.push_str(&format!(
+    write!(svg,
         r#"<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 {} {}">"#,
         width, height
-    ));
+    ).expect("failed to write");
 
-    svg.push_str(&format!(
+    write!(svg,
         r#"<rect x="0" y="0" width="{}" height="{}" fill='#13092b' />"#,
         width, height
-    ));
+    ).expect("failed to write");
 
     let colours = if use_colours() {
         *random_choice(COLOURS)
@@ -98,10 +59,10 @@ pub async fn background(Query(query): Query<BackgroundQuery>) -> (HeaderMap, Str
                 .clone()
                 .unwrap_or_else(|| random_choice(colours).to_string())
         };
-        svg.push_str(&format!(
+        write!(svg,
             r#"<circle class="star" cx="{}" cy="{}" r="2" fill="{}" />"#,
             x, y, fill
-        ));
+        ).expect("failed to write");
     }
 
     svg.push_str("</svg>");
@@ -110,11 +71,11 @@ pub async fn background(Query(query): Query<BackgroundQuery>) -> (HeaderMap, Str
 }
 
 pub async fn image_script() -> (HeaderMap, String) {
-    const SIZE: usize = 64;
+    const SIZE: usize = 48;
     const SCRIPT_FOOTER: &str = r#"console.log("Ooh wow someone's interested in how my website works! If that sounds like you, then you can check out the code on my GitHub: https://github.com/ashhhleyyy/website")"#;
 
-    let image_data = Asset::get("images/pfp.png").unwrap().data;
-    let image = image::load_from_memory(&image_data).unwrap();
+    let image_data = include_bytes!("../../assets/images/pfp.png");
+    let image = image::load_from_memory(image_data).unwrap();
     let resized = image.resize(
         SIZE as u32,
         SIZE as u32,
@@ -138,10 +99,10 @@ pub async fn image_script() -> (HeaderMap, String) {
             if pixel != 0 {
                 all_zero = false;
             }
-            row_colours.push_str(&format!(
+            write!(row_colours,
                 ",\"color: #{:08x}; background-color: #{:08x}\"",
                 pixel, pixel
-            ));
+            ).expect("failed to write");
         }
         if !all_zero {
             for _ in 0..SIZE {
