@@ -304,7 +304,7 @@ pre {
     overflow-x: auto;
     border: var(--accent) 1px solid;
     padding: 8px;
-    background-color: black;
+    background-color: black !important;
     border-radius: 4px;
 }
 

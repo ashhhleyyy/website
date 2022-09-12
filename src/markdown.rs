@@ -3,7 +3,7 @@ use std::cell::RefCell;
 use comrak::{
     format_html_with_plugins,
     nodes::{Ast, AstNode, NodeValue},
-    parse_document, Arena, ComrakOptions,
+    parse_document, Arena, ComrakOptions, ComrakPlugins, plugins::syntect::SyntectAdapter,
 };
 use regex::{Captures, Regex};
 use reqwest::Url;
@@ -34,6 +34,7 @@ pub fn render_markdown(markdown: &str) -> (String, String) {
     options.extension.superscript = true;
     options.extension.strikethrough = true;
     options.extension.footnotes = true;
+    options.render.hardbreaks = true;
 
     let arena = Arena::new();
     let root = parse_document(&arena, body, &options);
@@ -81,7 +82,10 @@ pub fn render_markdown(markdown: &str) -> (String, String) {
     });
 
     let mut html = vec![];
-    format_html_with_plugins(root, &options, &mut html, &Default::default()).unwrap();
+    let mut plugins = ComrakPlugins::default();
+    let adapter = SyntectAdapter::new("base16-ocean.dark");
+    plugins.render.codefence_syntax_highlighter = Some(&adapter);
+    format_html_with_plugins(root, &options, &mut html, &plugins).unwrap();
 
     let html = String::from_utf8(html).expect("post is somehow invalid UTF-8");
 
