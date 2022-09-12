@@ -1,8 +1,13 @@
-use std::{path::{Path, PathBuf}, fs::File, io::Read, ffi::OsString};
+use std::{
+    ffi::OsString,
+    fs::File,
+    io::Read,
+    path::{Path, PathBuf},
+};
 
 use color_eyre::Result;
-use serde::{Serialize, Deserialize};
-use sha2::{Sha256, Digest};
+use serde::{Deserialize, Serialize};
+use sha2::{Digest, Sha256};
 
 pub mod config;
 
@@ -51,16 +56,16 @@ pub fn generate_asset(path: &Path, output_path: &Path, no_hash: bool) -> Result<
 
     let output_filename: OsString = {
         if no_hash {
-            path.file_name().expect("file does not have a filename!").to_owned()
+            path.file_name()
+                .expect("file does not have a filename!")
+                .to_owned()
+        } else if let Some(ext) = path.extension() {
+            let mut s = OsString::from(hash[..16].to_owned());
+            s.push(".");
+            s.push(ext);
+            s
         } else {
-            if let Some(ext) = path.extension() {
-                let mut s = OsString::from((&hash[..16]).clone());
-                s.push(".");
-                s.push(ext);
-                s
-            } else {
-                (&hash[..16]).clone().into()
-            }
+            hash[..16].to_owned().into()
         }
     };
 

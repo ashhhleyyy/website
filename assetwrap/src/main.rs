@@ -23,7 +23,11 @@ fn main() -> Result<()> {
         for entry in WalkDir::new(".").into_iter().filter_map(|e| e.ok()) {
             if glob.is_match(entry.path()) {
                 let no_hash = asset_path.no_hash || no_hash_matchers.is_match(entry.path());
-                assets.push(assetwrap::generate_asset(entry.path(), &asset_path.output, no_hash)?);
+                assets.push(assetwrap::generate_asset(
+                    entry.path(),
+                    &asset_path.output,
+                    no_hash,
+                )?);
             }
         }
     }

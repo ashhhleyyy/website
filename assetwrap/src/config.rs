@@ -1,6 +1,6 @@
-use std::{fs::File, path::PathBuf, io::Read};
+use std::{fs::File, io::Read, path::PathBuf};
 
-use color_eyre::{Result, eyre::eyre};
+use color_eyre::{eyre::eyre, Result};
 use globset::Glob;
 use serde::Deserialize;
 
@@ -25,6 +25,5 @@ pub fn load_config() -> Result<AssetConfig> {
         .map_err(|e| eyre!("failed to open config: {e}"))?
         .read_to_string(&mut buf)
         .map_err(|e| eyre!("failed to read config: {e}"))?;
-    serde_json::from_str(&buf)
-        .map_err(|e| eyre!("failed to parse config: {e}"))
+    serde_json::from_str(&buf).map_err(|e| eyre!("failed to parse config: {e}"))
 }
