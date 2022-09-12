@@ -109,6 +109,7 @@ dependencies = [
  "color-eyre",
  "globset",
  "hex",
+ "mime_guess",
  "rust-s3",
  "serde",
  "serde_json",

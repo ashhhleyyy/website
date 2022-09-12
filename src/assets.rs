@@ -11,7 +11,6 @@ pub static ASSET_INDEX: Lazy<AssetMap> = Lazy::new(load_asset_map);
 
 impl AssetMap {
     pub fn get<'a>(&'a self, name: &'a str) -> &'a str {
-        println!("{} {:?}", name, self.0);
         if let Some(s) = self.0.get(name) {
             s
         } else {
@@ -26,7 +25,7 @@ pub fn load_asset_map() -> AssetMap {
 
     for asset in assets {
         let original_name = asset.input_path.to_string_lossy().replace("./", "/");
-        let new_name = asset.output_path.to_string_lossy().replace("./assets-gen/", "/assets/");
+        let new_name = asset.output_path.to_string_lossy().replace("./assets-gen/", "https://cdn.ashhhleyyy.dev/file/ashhhleyyy-assets/");
         map.insert(original_name, new_name);
     }
 

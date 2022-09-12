@@ -55,7 +55,8 @@ fn main() -> Result<()> {
             let res = bucket.head_object(&path)?;
             if res.1 == 404 { // Doesn't exist, we need to upload
                 let mut reader = File::open(&asset.output_path)?;
-                bucket.put_object_stream(&mut reader, &path)?;
+                let content_type = mime_guess::from_path(asset.output_path).first_or_text_plain().essence_str();
+                bucket.put_object_stream_with_content_type(&mut reader, &path, content_type)?;
                 println!("Uploaded {path} to bucket!");
             } else if res.1 != 200 {
                 eprintln!("failed to upload {path}: got status {}", res.1);
