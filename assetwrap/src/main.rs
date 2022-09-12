@@ -8,6 +8,8 @@ use walkdir::WalkDir;
 fn main() -> Result<()> {
     color_eyre::install()?;
 
+    let bucket = assetwrap::create_s3_client();
+
     let mut assets = vec![];
 
     let config = assetwrap::config::load_config()?;
@@ -44,6 +46,19 @@ fn main() -> Result<()> {
     }
 
     println!("Rendered {} assets ({})", assets.len(), total_size);
+
+    if let Some(bucket) = bucket {
+        println!("Uploading {} assets to S3...", assets.len());
+        for asset in &assets {
+            // TODO: Don't hardcode this prefix, lol
+            let path = asset.output_path.to_string_lossy().replace("./assets-gen/", "");
+            if matches!(bucket.head_object(&path)?, (_, 404)) { // Doesn't exist, we need to upload
+                let mut reader = File::open(&asset.output_path)?;
+                bucket.put_object_stream(&mut reader, &path)?;
+                println!("Uploaded {path} to bucket!");
+            }
+        }
+    }
 
     Ok(())
 }

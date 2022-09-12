@@ -5,11 +5,50 @@ use std::{
     path::{Path, PathBuf},
 };
 
+use clap::Parser;
 use color_eyre::Result;
+use s3::{creds::Credentials, Region, Bucket};
 use serde::{Deserialize, Serialize};
 use sha2::{Digest, Sha256};
 
 pub mod config;
+
+#[derive(Parser)]
+pub struct Cli {
+    #[clap(long)]
+    pub upload_s3: bool,
+
+    #[clap(long)]
+    pub s3_endpoint: Option<String>,
+    #[clap(long)]
+    pub s3_access_key: Option<String>,
+    #[clap(long)]
+    pub s3_secret_key: Option<String>,
+    #[clap(long)]
+    pub s3_bucket: Option<String>,
+}
+
+pub fn create_s3_client() -> Option<Bucket> {
+    let cli = Cli::parse();
+
+    if cli.upload_s3 {
+        if let Some(s3_access_key) = cli.s3_access_key {
+            std::env::set_var("AWS_ACCESS_KEY_ID", s3_access_key);
+        }
+        if let Some(s3_secret_key) = cli.s3_secret_key {
+            std::env::set_var("AWS_SECRET_ACCESS_KEY", s3_secret_key);
+        }
+        let creds = Credentials::default().expect("failed to load s3 credentials");
+        let region = Region::Custom {
+            region: "main".to_string(),
+            endpoint: cli.s3_endpoint.or_else(|| std::env::var("S3_ENDPOINT").ok()).expect("missing s3 endpoint"),
+        };
+        let bucket_name = cli.s3_bucket.or_else(|| std::env::var("S3_BUCKET").ok()).expect("missing s3 bucket");
+        Some(Bucket::new(&bucket_name, region, creds).expect("failed to load s3 bucket").with_path_style())
+    } else {
+        None
+    }
+}
 
 #[derive(Debug, Deserialize, Serialize)]
 pub struct Asset {
