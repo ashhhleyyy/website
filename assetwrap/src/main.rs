@@ -54,9 +54,9 @@ fn main() -> Result<()> {
             let path = asset.output_path.to_string_lossy().replace("./assets-gen/", "");
             let res = bucket.head_object(&path)?;
             if res.1 == 404 { // Doesn't exist, we need to upload
-                let mut reader = File::open(&asset.output_path)?;
+                let content = std::fs::read(&asset.output_path)?;
                 let content_type = mime_guess::from_path(&asset.output_path).first_or_text_plain().essence_str().to_owned();
-                bucket.put_object_stream_with_content_type(&mut reader, &path, &content_type)?;
+                bucket.put_object_with_content_type(&path, &content[..], &content_type)?;
                 println!("Uploaded {path} to bucket!");
             } else if res.1 != 200 {
                 eprintln!("failed to upload {path}: got status {}", res.1);
