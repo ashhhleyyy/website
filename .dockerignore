@@ -1,4 +1,5 @@
 target/
+!target/aarch64-unknown-linux-gnu
 assets-gen/
 .github/
 src/
