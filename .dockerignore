@@ -1,3 +1,9 @@
 target/
 assets-gen/
 .github/
+src/
+projects/
+blog/
+templates/
+assets/
+assetwrap/
