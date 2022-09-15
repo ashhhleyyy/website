@@ -66,10 +66,10 @@ jobs:
           path: target/release/website
 
       - name: Build container image
-        run: docker buildx build -t ghcr.io/${github.repository}:latest -t ghcr.io/${github.repository}:${GITHUB_SHA} --platform linux/arm64 .
+        run: docker buildx build -t ghcr.io/${{ github.repository }}:latest -t ghcr.io/${{ github.repository }}:${GITHUB_SHA} --platform linux/arm64 .
 
       - name: Push image (latest)
-        run: docker push ghcr.io/${github.repository}:latest
+        run: docker push ghcr.io/${{ github.repository }}:latest
 
       - name: Push image
-        run: docker push ghcr.io/${github.repository}:${GITHUB_SHA}
+        run: docker push ghcr.io/${{ github.repository }}:${GITHUB_SHA}
