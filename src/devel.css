@@ -1,0 +1,45 @@
+body {
+    background-image: url('/assets-gen/background.svg');
+}
+
+body.error {
+    background-image: url('/assets-gen/background.svg?error=true');
+}
+
+@media only screen and (max-width: 720px) {
+    body {
+        background-image: url('/assets-gen/background.svg?small=true');
+    }
+
+    body.error {
+        background-image: url('/assets-gen/background.svg?error=true&small=true');
+    }
+}
+
+.link-list > li.about {
+    background-image: url('/assets-gen/background.svg?small=true&star_colour=%23f9027a');
+}
+
+.link-list > li.github {
+    background-image: url('/assets-gen/background.svg?small=true&star_colour=%23891ee3');
+}
+
+.link-list > li.twitter {
+    background-image: url('/assets-gen/background.svg?small=true&star_colour=%2300acee');
+}
+
+.link-list > li.twitch {
+    background-image: url('/assets-gen/background.svg?small=true&star_colour=%236441a5');
+}
+
+.link-list > li.twitch {
+    background-image: url('/assets-gen/background.svg?small=true&star_colour=%236441a5');
+}
+
+.link-list > li.nucleoid {
+    background-image: url('/assets-gen/background.svg?small=true&star_colour=%232cab6b');
+}
+
+.link-list > li.modrinth {
+    background-image: url('/assets-gen/background.svg?small=true&star_colour=%2330b27b');
+}

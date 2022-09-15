@@ -141,6 +141,12 @@ fn rewrite_html(path: &str, html: &str) -> String {
                 }),
                 attr_rewrite!("src"),
                 attr_rewrite!("href"),
+                #[cfg(debug_assertions)]
+                element!("head", |el| {
+                    let stylesheet = concat!("<style>", include_str!("devel.css"), "</style>");
+                    el.append(stylesheet, ContentType::Html);
+                    Ok(())
+                }),
             ],
             ..Default::default()
         },
