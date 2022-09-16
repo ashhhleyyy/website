@@ -1,6 +1,6 @@
 # syntax = docker/dockerfile:1.4
 
-FROM debian:11.3-slim
+FROM debian:11.5-slim
 
 RUN set -eux; \
 	export DEBIAN_FRONTEND=noninteractive; \
@@ -13,5 +13,5 @@ RUN set -eux; \
 
 WORKDIR /app
 
-COPY target/release/aarch64-unknown-linux-gnu/website ./website
+COPY target/aarch64-unknown-linux-gnu/release/website ./website
 CMD ["./website"]
