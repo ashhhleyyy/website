@@ -86,10 +86,4 @@ jobs:
           path: target/aarch64-unknown-linux-gnu/release/website
 
       - name: Build container image
-        run: docker buildx build -t ghcr.io/ashhhleyyy/website:latest -t ghcr.io/ashhhleyyy/website:${GITHUB_SHA} --platform linux/arm64 .
-
-      - name: Push image (latest)
-        run: docker push ghcr.io/ashhhleyyy/website:latest
-
-      - name: Push image
-        run: docker push ghcr.io/ashhhleyyy/website:${GITHUB_SHA}
+        run: docker buildx build -t ghcr.io/ashhhleyyy/website:latest -t ghcr.io/ashhhleyyy/website:${GITHUB_SHA} --platform linux/arm64 --push .
