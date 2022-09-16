@@ -8,6 +8,7 @@ use walkdir::WalkDir;
 fn main() -> Result<()> {
     color_eyre::install()?;
 
+    #[cfg(feature = "rust-s3")]
     let bucket = assetwrap::create_s3_client();
 
     let mut assets = vec![];
@@ -47,6 +48,7 @@ fn main() -> Result<()> {
 
     println!("Rendered {} assets ({})", assets.len(), total_size);
 
+    #[cfg(feature = "rust-s3")]
     if let Some(bucket) = bucket {
         println!("Uploading {} assets to S3...", assets.len());
         for asset in &assets {

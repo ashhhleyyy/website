@@ -13,5 +13,5 @@ RUN set -eux; \
 
 WORKDIR /app
 
-COPY target/aarch64-unknown-linux-gnu/release/website ./website
+COPY target/aarch64-unknown-linux-musl/release/website ./website
 CMD ["./website"]

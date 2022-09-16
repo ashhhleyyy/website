@@ -1,5 +1,5 @@
 target/
-!target/aarch64-unknown-linux-gnu
+!target/aarch64-unknown-linux-musl
 assets-gen/
 .github/
 src/

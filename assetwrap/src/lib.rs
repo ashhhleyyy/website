@@ -7,6 +7,7 @@ use std::{
 
 use clap::Parser;
 use color_eyre::Result;
+#[cfg(feature = "rust-s3")]
 use s3::{creds::Credentials, Region, Bucket};
 use serde::{Deserialize, Serialize};
 use sha2::{Digest, Sha256};
@@ -15,21 +16,28 @@ pub mod config;
 
 #[derive(Parser)]
 pub struct Cli {
+    #[cfg(feature = "rust-s3")]
     #[clap(long)]
     pub upload_s3: bool,
 
+    #[cfg(feature = "rust-s3")]
     #[clap(long)]
     pub s3_endpoint: Option<String>,
+    #[cfg(feature = "rust-s3")]
     #[clap(long)]
     pub s3_access_key: Option<String>,
+    #[cfg(feature = "rust-s3")]
     #[clap(long)]
     pub s3_secret_key: Option<String>,
+    #[cfg(feature = "rust-s3")]
     #[clap(long)]
     pub s3_bucket: Option<String>,
+    #[cfg(feature = "rust-s3")]
     #[clap(long)]
     pub s3_region: Option<String>,
 }
 
+#[cfg(feature = "rust-s3")]
 pub fn create_s3_client() -> Option<Bucket> {
     let cli = Cli::parse();
 
