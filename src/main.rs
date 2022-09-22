@@ -8,10 +8,14 @@ mod markdown;
 mod routes;
 mod templates;
 
+use std::path::Path;
+
 use apis::{
     CachingFetcher, NowPlayingInfo, PronounsPageProfile, NOWPLAYING_URL, PRONOUNS_PAGE_URL,
 };
-use axum::extract::Extension;
+use axum::{extract::Extension, routing::any_service};
+use reqwest::StatusCode;
+use tower_http::services::ServeDir;
 use tracing_subscriber::{prelude::*, util::SubscriberInitExt};
 
 #[tokio::main]
@@ -31,6 +35,17 @@ async fn main() -> error::Result<()> {
     let app = routes::build_router()
         .layer(Extension(pronouns_page_client))
         .layer(Extension(nowplaying_client));
+
+    #[cfg(debug_assertions)]
+    let app = app.nest(
+        "/assets",
+        any_service(ServeDir::new(&Path::new("assets-gen"))).handle_error(
+            |err: std::io::Error| async move {
+                tracing::error!("unhandled error in static file server: {}", err);
+                (StatusCode::INTERNAL_SERVER_ERROR, "internal server error")
+            },
+        ),
+    );
 
     axum::Server::bind(&"0.0.0.0:3000".parse().unwrap())
         .serve(app.into_make_service())

@@ -86,17 +86,7 @@ pub fn build_router() -> Router {
         .route("/me", get(links))
         .route("/assets-gen/background.svg", get(background))
         .route("/assets-gen/image.js", get(image_script))
-        // .route("/assets/*path", get(get_asset))
         .route("/api/oembed", get(assets::oembed))
-        .nest(
-            "/assets",
-            any_service(ServeDir::new(&Path::new("assets-gen"))).handle_error(
-                |err: std::io::Error| async move {
-                    tracing::error!("unhandled error in static file server: {}", err);
-                    (StatusCode::INTERNAL_SERVER_ERROR, "internal server error")
-                },
-            ),
-        )
         .layer(TraceLayer::new_for_http())
         .fallback(handle_404.into_service())
 }
