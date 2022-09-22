@@ -90,8 +90,8 @@ where
 }
 
 macro_rules! attr_rewrite {
-    ($attr:literal) => {
-        element!(concat!("[", $attr, "]"), |el| {
+    ($tag:literal, $attr:literal) => {
+        element!(concat!($tag, "[", $attr, "]"), |el| {
             let attr = el
                 .get_attribute($attr)
                 .expect(concat!($attr, " was required"));
@@ -100,6 +100,10 @@ macro_rules! attr_rewrite {
 
             Ok(())
         })
+    };
+
+    ($attr:literal) => {
+        attr_rewrite!("", $attr)
     };
 }
 
@@ -141,6 +145,7 @@ fn rewrite_html(path: &str, html: &str) -> String {
                 }),
                 attr_rewrite!("src"),
                 attr_rewrite!("href"),
+                attr_rewrite!("meta", "content"),
                 #[cfg(debug_assertions)]
                 element!("head", |el| {
                     let stylesheet = concat!("<style>", include_str!("devel.css"), "</style>");
