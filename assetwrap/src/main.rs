@@ -24,7 +24,7 @@ fn main() -> Result<()> {
         };
         let glob = asset_path.input.compile_matcher();
         for entry in WalkDir::new(".").into_iter().filter_map(|e| e.ok()) {
-            if glob.is_match(entry.path()) {
+            if entry.file_type().is_file() && glob.is_match(entry.path()) {
                 let no_hash = asset_path.no_hash || no_hash_matchers.is_match(entry.path());
                 assets.push(assetwrap::generate_asset(
                     entry.path(),
