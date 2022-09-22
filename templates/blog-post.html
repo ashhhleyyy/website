@@ -5,10 +5,14 @@
 
 {% block content %}
 <main class="content">
-    <p>Posted on {{ date }}</p>
-
     <h1>{{ title }}</h1>
 
     {{ content|safe }}
+
+    <footer>
+        <blockquote>
+            Posted on {{ date }} by <a href="https://ashhhleyyy.dev/">Ashhhleyyy</a>
+        </blockquote>
+    </footer>
 </main>
 {% endblock %}
