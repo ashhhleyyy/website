@@ -50,7 +50,7 @@ Looking at this you might be thinking "but surely anyone could access your stuff
 
 A simple approach to protect this would be to make use of nginx's built-in support for HTTP Basic Authentication, which just takes a `username:password` pair and looks it up in an `/etc/passwd`-style file.
 
-However, I run an instance of [Keycloak](https://keycloak.org/) for easy sign in for some other things already (mainly my [Gitea](https://git.ashhhleyyy.dev/) and [Grafana](https://grafana.com) instances), so this lead me to look for a way to integrate that instead...
+However, I run an instance of [Keycloak](https://keycloak.org/) for easy sign in for some other things already (mainly my [Gitea](https://git.ashhhleyyy.dev/) and [Grafana](https://grafana.com) instances), so this led me to look for a way to integrate that instead...
 
 ## Vouch-proxy
 
@@ -115,7 +115,7 @@ vouch:
       - /etc/vouch:/config
 ```
 
-Once I had Vouch running, the next step was to proxy it using nginx:
+Once I had Vouch running, the next step was to proxy it with nginx:
 
 ```
 server {
@@ -194,4 +194,4 @@ Now, when you try to access any of these domains, you'll be greeted by a login p
 
 ...
 
-Maybe I should write another post about setting up Keycloak and making my custom login theme 🤔.
+Maybe I should write another post about setting up Keycloak and making my custom login theme 🤔...
