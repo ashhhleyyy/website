@@ -2,18 +2,16 @@ mod assets;
 mod blog;
 mod projects;
 
-use std::path::Path;
-
 use axum::{
     extract::Extension,
     handler::Handler,
     http::Uri,
     response::Redirect,
-    routing::{any_service, get},
+    routing::get,
     Router,
 };
 use reqwest::StatusCode;
-use tower_http::{services::ServeDir, trace::TraceLayer};
+use tower_http::trace::TraceLayer;
 
 use crate::{
     apis::{CachingFetcher, NowPlayingInfo, PronounsPageProfile},
