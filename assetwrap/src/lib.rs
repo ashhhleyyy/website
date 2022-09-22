@@ -8,7 +8,7 @@ use std::{
 use clap::Parser;
 use color_eyre::Result;
 #[cfg(feature = "rust-s3")]
-use s3::{creds::Credentials, Region, Bucket};
+use s3::{creds::Credentials, Bucket, Region};
 use serde::{Deserialize, Serialize};
 use sha2::{Digest, Sha256};
 
@@ -50,11 +50,24 @@ pub fn create_s3_client() -> Option<Bucket> {
         }
         let creds = Credentials::default().expect("failed to load s3 credentials");
         let region = Region::Custom {
-            region: cli.s3_region.or_else(|| std::env::var("S3_REGION").ok()).expect("missing s3 region"),
-            endpoint: cli.s3_endpoint.or_else(|| std::env::var("S3_ENDPOINT").ok()).expect("missing s3 endpoint"),
+            region: cli
+                .s3_region
+                .or_else(|| std::env::var("S3_REGION").ok())
+                .expect("missing s3 region"),
+            endpoint: cli
+                .s3_endpoint
+                .or_else(|| std::env::var("S3_ENDPOINT").ok())
+                .expect("missing s3 endpoint"),
         };
-        let bucket_name = cli.s3_bucket.or_else(|| std::env::var("S3_BUCKET").ok()).expect("missing s3 bucket");
-        Some(Bucket::new(&bucket_name, region, creds).expect("failed to load s3 bucket").with_path_style())
+        let bucket_name = cli
+            .s3_bucket
+            .or_else(|| std::env::var("S3_BUCKET").ok())
+            .expect("missing s3 bucket");
+        Some(
+            Bucket::new(&bucket_name, region, creds)
+                .expect("failed to load s3 bucket")
+                .with_path_style(),
+        )
     } else {
         None
     }

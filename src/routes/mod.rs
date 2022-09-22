@@ -5,10 +5,15 @@ mod projects;
 use std::path::Path;
 
 use axum::{
-    extract::Extension, handler::Handler, http::Uri, response::Redirect, routing::{get, any_service}, Router,
+    extract::Extension,
+    handler::Handler,
+    http::Uri,
+    response::Redirect,
+    routing::{any_service, get},
+    Router,
 };
 use reqwest::StatusCode;
-use tower_http::{trace::TraceLayer, services::ServeDir};
+use tower_http::{services::ServeDir, trace::TraceLayer};
 
 use crate::{
     apis::{CachingFetcher, NowPlayingInfo, PronounsPageProfile},
@@ -56,13 +61,16 @@ async fn music(
 
 async fn handle_404() -> (StatusCode, HtmlTemplate<ErrorTemplate>) {
     // TODO: Get the correct path here, so the right link is highlighted anyway
-    (StatusCode::NOT_FOUND, HtmlTemplate(
-        "/404".into(),
-        ErrorTemplate {
-            error_code: 404,
-            error_message: "Page not found".to_string(),
-        },
-    ))
+    (
+        StatusCode::NOT_FOUND,
+        HtmlTemplate(
+            "/404".into(),
+            ErrorTemplate {
+                error_code: 404,
+                error_message: "Page not found".to_string(),
+            },
+        ),
+    )
 }
 
 pub fn build_router() -> Router {

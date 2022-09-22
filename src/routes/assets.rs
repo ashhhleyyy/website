@@ -32,15 +32,19 @@ pub async fn background(Query(query): Query<BackgroundQuery>) -> (HeaderMap, Str
 
     let mut svg = String::new();
 
-    write!(svg,
+    write!(
+        svg,
         r#"<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 {} {}">"#,
         width, height
-    ).expect("failed to write");
+    )
+    .expect("failed to write");
 
-    write!(svg,
+    write!(
+        svg,
         r#"<rect x="0" y="0" width="{}" height="{}" fill='#13092b' />"#,
         width, height
-    ).expect("failed to write");
+    )
+    .expect("failed to write");
 
     let colours = if use_colours() {
         *random_choice(COLOURS)
@@ -59,10 +63,12 @@ pub async fn background(Query(query): Query<BackgroundQuery>) -> (HeaderMap, Str
                 .clone()
                 .unwrap_or_else(|| random_choice(colours).to_string())
         };
-        write!(svg,
+        write!(
+            svg,
             r#"<circle class="star" cx="{}" cy="{}" r="2" fill="{}" />"#,
             x, y, fill
-        ).expect("failed to write");
+        )
+        .expect("failed to write");
     }
 
     svg.push_str("</svg>");
@@ -99,10 +105,12 @@ pub async fn image_script() -> (HeaderMap, String) {
             if pixel != 0 {
                 all_zero = false;
             }
-            write!(row_colours,
+            write!(
+                row_colours,
                 ",\"color: #{:08x}; background-color: #{:08x}\"",
                 pixel, pixel
-            ).expect("failed to write");
+            )
+            .expect("failed to write");
         }
         if !all_zero {
             for _ in 0..SIZE {

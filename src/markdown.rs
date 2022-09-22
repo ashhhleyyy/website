@@ -3,9 +3,11 @@ use std::cell::RefCell;
 use comrak::{
     format_html_with_plugins,
     nodes::{Ast, AstNode, NodeValue},
-    parse_document, Arena, ComrakOptions, ComrakPlugins, plugins::syntect::SyntectAdapter,
+    parse_document,
+    plugins::syntect::SyntectAdapter,
+    Arena, ComrakOptions, ComrakPlugins,
 };
-use extract_frontmatter::{Extractor, config::Splitter};
+use extract_frontmatter::{config::Splitter, Extractor};
 use regex::{Captures, Regex};
 use reqwest::Url;
 use serde::Deserialize;
