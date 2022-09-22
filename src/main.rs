@@ -8,13 +8,18 @@ mod markdown;
 mod routes;
 mod templates;
 
+#[cfg(debug_assertions)]
 use std::path::Path;
 
 use apis::{
     CachingFetcher, NowPlayingInfo, PronounsPageProfile, NOWPLAYING_URL, PRONOUNS_PAGE_URL,
 };
-use axum::{extract::Extension, routing::any_service};
+#[cfg(debug_assertions)]
+use axum::routing::any_service;
+use axum::extract::Extension;
+#[cfg(debug_assertions)]
 use reqwest::StatusCode;
+#[cfg(debug_assertions)]
 use tower_http::services::ServeDir;
 use tracing_subscriber::{prelude::*, util::SubscriberInitExt};
 
