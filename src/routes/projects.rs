@@ -42,14 +42,13 @@ fn load_project(filename: &str) -> Option<Project> {
             captures.get(2).unwrap().as_str().to_string(),
         );
         if let Some(asset) = ProjectsAssets::get(filename) {
-            let (description, html) =
+            let (metadata, html) =
                 markdown::render_markdown(std::str::from_utf8(&asset.data).unwrap());
-            let title = markdown::extract_title(&html).to_string();
             Some(Project {
                 year,
                 slug,
-                title,
-                description,
+                title: metadata.title,
+                description: metadata.description,
                 rendered: html,
             })
         } else {

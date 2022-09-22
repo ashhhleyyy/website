@@ -1,6 +1,7 @@
-A speedy guide to coding on (relatively) locked down computers.
----
-# How I program at school
++++
+title = "How I program at school"
+description = "A speedy guide to coding on (relatively) locked down computers."
++++
 
 A speedy guide to coding on (relatively) locked-down computers.
 

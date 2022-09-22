@@ -1,6 +1,7 @@
-Pronoun mod for Minecraft servers.
----
-# Player Pronouns
++++
+title = "Player Pronouns"
+description = "Pronoun mod for Minecraft servers."
++++
 
 ## About
 

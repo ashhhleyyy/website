@@ -4,7 +4,7 @@ use rust_embed::RustEmbed;
 use axum::{extract::Path, http::StatusCode};
 
 use crate::{
-    markdown::{self, extract_title},
+    markdown,
     templates::{BlogIndexTemplate, BlogPostTemplate, HtmlTemplate},
 };
 
@@ -55,16 +55,15 @@ fn load_post(filename: &str) -> Option<BlogPost> {
         );
         let slug = captures.get(4).unwrap().as_str().to_string();
         if let Some(asset) = BlogAssets::get(filename) {
-            let (description, html) =
+            let (metadata, html) =
                 markdown::render_markdown(std::str::from_utf8(&asset.data).unwrap());
-            let title = extract_title(&html).to_string();
             Some(BlogPost {
                 year,
                 month,
                 day,
                 slug,
-                title,
-                description,
+                title: metadata.title,
+                description: metadata.description,
                 rendered: html,
             })
         } else {
@@ -84,6 +83,7 @@ pub async fn index() -> HtmlTemplate<BlogIndexTemplate> {
             entries.push((date, post.title, url));
         }
     }
+    entries.sort_by(|a, b| b.0.cmp(&a.0));
     HtmlTemplate("/blog/".into(), BlogIndexTemplate { posts: entries })
 }
 

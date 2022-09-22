@@ -655,6 +655,12 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "b5320ae4c3782150d900b79807611a59a99fc9a1d61d686faafc24b93fc8d7ca"
 
 [[package]]
+name = "extract-frontmatter"
+version = "4.1.1"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "426c23bd8fdd0cfde248e0481b4013cd186feb92fede97d6097d693abac6eeb2"
+
+[[package]]
 name = "eyre"
 version = "0.6.8"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -2543,9 +2549,9 @@ dependencies = [
 
 [[package]]
 name = "toml"
-version = "0.5.8"
+version = "0.5.9"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "a31142970826733df8241ef35dc040ef98c679ab14d7c3e54d827099b3acecaa"
+checksum = "8d82e1a7758622a465f8cee077614c73484dac5b836c02ff6a40d5d1010324d7"
 dependencies = [
  "serde",
 ]
@@ -2938,6 +2944,7 @@ dependencies = [
  "assetwrap",
  "axum",
  "comrak",
+ "extract-frontmatter",
  "fastrand",
  "hex",
  "image",
@@ -2954,6 +2961,7 @@ dependencies = [
  "thiserror",
  "time",
  "tokio",
+ "toml",
  "tower-http",
  "tracing",
  "tracing-subscriber",

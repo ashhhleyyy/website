@@ -5,27 +5,31 @@ use comrak::{
     nodes::{Ast, AstNode, NodeValue},
     parse_document, Arena, ComrakOptions, ComrakPlugins, plugins::syntect::SyntectAdapter,
 };
+use extract_frontmatter::{Extractor, config::Splitter};
 use regex::{Captures, Regex};
 use reqwest::Url;
+use serde::Deserialize;
 
 lazy_static::lazy_static! {
-    static ref TITLE_REGEX: Regex = Regex::new(r"<h1>(.*)</h1>").unwrap();
     static ref ICON_REGEX: Regex = Regex::new(r"!--icon\((.*)\)--!").unwrap();
 }
 
-// Yes I know you're not *supposed* to parse html with regex
-pub fn extract_title(content: &str) -> &str {
-    TITLE_REGEX
-        .captures(content)
-        .unwrap()
-        .get(1)
-        .unwrap()
-        .as_str()
+#[derive(Deserialize)]
+pub struct Metadata {
+    pub title: String,
+    pub description: String,
 }
 
-pub fn render_markdown(markdown: &str) -> (String, String) {
-    // 'front matter' parsing
-    let (description, body) = markdown.split_once("\n---\n").unwrap_or(("", markdown));
+pub fn render_markdown(markdown: &str) -> (Metadata, String) {
+    let (frontmatter, body) = Extractor::new(Splitter::EnclosingLines("+++")).extract(markdown);
+
+    let metadata = toml::from_str(&frontmatter).unwrap_or_else(|e| {
+        error!("failed to parse frontmatter: {e}");
+        Metadata {
+            title: "WARNING! An error occured while parsing the frontmatter".to_owned(),
+            description: "WARNING! An error occured while parsing the frontmatter".to_owned(),
+        }
+    });
 
     let mut options = ComrakOptions::default();
     options.extension.autolink = true;
@@ -35,6 +39,7 @@ pub fn render_markdown(markdown: &str) -> (String, String) {
     options.extension.strikethrough = true;
     options.extension.footnotes = true;
     options.render.hardbreaks = true;
+    options.extension.header_ids = Some("".to_owned());
 
     let arena = Arena::new();
     let root = parse_document(&arena, body, &options);
@@ -89,7 +94,7 @@ pub fn render_markdown(markdown: &str) -> (String, String) {
 
     let html = String::from_utf8(html).expect("post is somehow invalid UTF-8");
 
-    (description.to_owned(), replace_icons(html))
+    (metadata, replace_icons(html))
 }
 
 fn replace_icons(html: String) -> String {
