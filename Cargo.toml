@@ -20,7 +20,6 @@ tower-http = { version = "0.2", features = ["trace", "fs"] }
 hex = "0.4"
 fastrand = "1"
 serde = { version = "1", features = ["derive"] }
-serde_repr = "0.1"
 time = { version = "0.3", features = ["formatting"] }
 reqwest = { version = "0.11", features = ["json", "rustls-tls"], default-features = false }
 thiserror = "1"

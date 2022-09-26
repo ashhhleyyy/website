@@ -6,10 +6,9 @@ use std::{
 
 use reqwest::{Client, ClientBuilder};
 use serde::{
-    de::{DeserializeOwned, Visitor},
+    de::DeserializeOwned,
     Deserialize,
 };
-use serde_repr::Deserialize_repr;
 use tokio::sync::{Mutex, RwLock};
 
 use crate::error::Result;
@@ -93,7 +92,6 @@ pub struct Words {
     pub header: Option<String>,
     pub values: Vec<Word>,
 }
-
 
 #[derive(Clone, Deserialize)]
 pub struct Word {

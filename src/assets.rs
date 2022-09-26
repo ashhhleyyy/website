@@ -30,10 +30,10 @@ pub fn load_asset_map() -> AssetMap {
 
     for asset in assets {
         let original_name = asset.input_path.to_string_lossy().replace("./", "/");
-        let new_name = asset.output_path.to_string_lossy().replace(
-            "./assets-gen/",
-            ASSET_PREFIX,
-        );
+        let new_name = asset
+            .output_path
+            .to_string_lossy()
+            .replace("./assets-gen/", ASSET_PREFIX);
         map.insert(original_name, new_name);
     }
 

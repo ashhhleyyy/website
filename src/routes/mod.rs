@@ -3,12 +3,7 @@ mod blog;
 mod projects;
 
 use axum::{
-    extract::Extension,
-    handler::Handler,
-    http::Uri,
-    response::Redirect,
-    routing::get,
-    Router,
+    extract::Extension, handler::Handler, http::Uri, response::Redirect, routing::get, Router,
 };
 use reqwest::StatusCode;
 use tower_http::trace::TraceLayer;
