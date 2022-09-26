@@ -15,7 +15,7 @@ use tokio::sync::{Mutex, RwLock};
 use crate::error::Result;
 
 const USER_AGENT: &str = "ashhhleyyy.dev website backend (v1, https://github.com/ashhhleyyy/)";
-pub const PRONOUNS_PAGE_URL: &str = "https://en.pronouns.page/api/profile/get/ashhhleyyy";
+pub const PRONOUNS_PAGE_URL: &str = "https://en.pronouns.page/api/profile/get/ashhhleyyy?version=2";
 pub const NOWPLAYING_URL: &str = "https://api.ashhhleyyy.dev/playing";
 const MIN_REFRESH_TIME: Duration = Duration::from_secs(5);
 
@@ -82,53 +82,36 @@ pub struct PronounsPageProfiles {
 
 #[derive(Clone, Deserialize)]
 pub struct PronounsPageCard {
-    pub names: Words,
-    pub pronouns: Words,
+    pub names: Vec<Word>,
+    pub pronouns: Vec<Word>,
     pub flags: Vec<String>,
     pub words: Vec<Words>,
 }
 
-#[derive(Clone)]
-pub struct Words(pub Vec<(String, WordOpinion)>);
-
-struct WordsVisitor;
-
-impl<'de> Visitor<'de> for WordsVisitor {
-    type Value = Words;
-
-    fn expecting(&self, formatter: &mut std::fmt::Formatter) -> std::fmt::Result {
-        formatter.write_str("a map of words")
-    }
-
-    fn visit_map<A>(self, mut map: A) -> std::result::Result<Self::Value, A::Error>
-    where
-        A: serde::de::MapAccess<'de>,
-    {
-        let mut words = Words(Vec::with_capacity(map.size_hint().unwrap_or(0)));
-        while let Some((key, value)) = map.next_entry()? {
-            words.0.push((key, value));
-        }
-        Ok(words)
-    }
+#[derive(Clone, Deserialize)]
+pub struct Words {
+    pub header: Option<String>,
+    pub values: Vec<Word>,
 }
 
-impl<'de> Deserialize<'de> for Words {
-    fn deserialize<D>(deserializer: D) -> std::result::Result<Self, D::Error>
-    where
-        D: serde::Deserializer<'de>,
-    {
-        deserializer.deserialize_map(WordsVisitor)
-    }
+
+#[derive(Clone, Deserialize)]
+pub struct Word {
+    pub value: String,
+    pub opinion: WordOpinion,
 }
 
-#[derive(Clone, Copy, Deserialize_repr, Eq, PartialEq)]
-#[repr(i8)]
+#[derive(Clone, Copy, Deserialize)]
+#[serde(rename_all = "snake_case")]
 pub enum WordOpinion {
-    Yes = 1,
-    Jokingly = 2,
-    OnlyClose = 3,
-    Okay = 0,
-    Nope = -1,
+    Yes,
+    #[serde(rename = "meh")]
+    Okay,
+    #[serde(rename = "no")]
+    Nope,
+    Jokingly,
+    #[serde(rename = "close")]
+    OnlyClose,
 }
 
 impl WordOpinion {
@@ -175,6 +158,7 @@ pub struct NowPlayingInfo {
     pub artist: String,
     pub artist_artwork: Option<String>,
 }
+
 #[derive(Clone, Debug, Deserialize, Eq, PartialEq)]
 #[serde(rename_all = "snake_case")]
 pub enum PlaybackState {
