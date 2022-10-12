@@ -125,6 +125,15 @@ fn rewrite_html(path: &str, html: &str) -> String {
                     );
                     Ok(())
                 }),
+                element!(".blog-post a", |el| {
+                    // Only external links
+                    if matches!(el.get_attribute("href"), Some(href) if href.starts_with("https://")) {
+                        if !el.has_attribute("target") {
+                            el.set_attribute("target", "_blank")?;
+                        }
+                    }
+                    Ok(())
+                }),
                 element!(".nav-link", |el| {
                     if let Some(href) = el.get_attribute("href") {
                         let mtchs = if href == "/" {
