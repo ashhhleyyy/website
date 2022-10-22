@@ -30,6 +30,9 @@ jobs:
         with:
           toolchain: stable
 
+      - name: Install NASM
+        run: sudo apt install nasm
+
       - name: Set up QEMU
         uses: docker/setup-qemu-action@v1
 
