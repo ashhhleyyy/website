@@ -47,15 +47,19 @@ impl Loader {
             source,
             ParserOptions {
                 filename,
-                ..ParserOptions::default()
+                ..Default::default()
             },
         )
         .map_err(|e| eyre!("failed to parse: {e}"))?;
         let minify_options = MinifyOptions::default();
         stylesheet.minify(minify_options)?;
-        let mut printer_options = PrinterOptions::default();
-        printer_options.minify = true;
-        Ok(stylesheet.to_css(printer_options)?.code.into_bytes())
+        Ok(stylesheet
+            .to_css(PrinterOptions {
+                minify: true,
+                ..Default::default()
+            })?
+            .code
+            .into_bytes())
     }
 
     fn load_default(input_path: &Path, hashed_name: bool) -> Result<Asset> {

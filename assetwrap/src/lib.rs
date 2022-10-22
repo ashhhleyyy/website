@@ -1,7 +1,5 @@
 use std::{
     ffi::OsString,
-    fs::File,
-    io::Read,
     path::{Path, PathBuf},
 };
 
@@ -11,7 +9,6 @@ use loader::Loader;
 #[cfg(feature = "rust-s3")]
 use s3::{creds::Credentials, Bucket, Region};
 use serde::{Deserialize, Serialize};
-use sha2::{Digest, Sha256};
 
 pub mod config;
 pub mod loader;

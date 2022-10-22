@@ -48,7 +48,7 @@ fn main() -> Result<()> {
     #[cfg(feature = "rust-s3")]
     if let Some(bucket) = bucket {
         println!("Uploading {} assets to S3...", asset_map.len());
-        for (_, output_path) in &asset_map {
+        for output_path in asset_map.values() {
             // TODO: Don't hardcode this prefix, lol
             let res = bucket.head_object(&output_path)?;
             if res.1 == 404 {
