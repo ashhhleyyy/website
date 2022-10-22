@@ -43,3 +43,7 @@ body.error {
 .link-list > li.modrinth {
     background-image: url('/assets-gen/background.svg?small=true&star_colour=%2330b27b');
 }
+
+.link-list > li.email {
+    background-image: url('/assets-gen/background.svg?small=true&star_colour=%23f9027a');
+}

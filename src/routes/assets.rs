@@ -9,7 +9,6 @@ use axum::{
 use image::GenericImageView;
 use mime_guess::mime::{APPLICATION_JAVASCRIPT_UTF_8, IMAGE_SVG};
 use serde::Deserialize;
-use time::{Month, OffsetDateTime};
 
 #[derive(Deserialize)]
 pub struct BackgroundQuery {
@@ -34,39 +33,37 @@ pub async fn background(Query(query): Query<BackgroundQuery>) -> (HeaderMap, Str
 
     write!(
         svg,
-        r#"<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 {} {}">"#,
-        width, height
+        r#"<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 {width} {height}">"#,
+    )
+    .expect("failed to write");
+
+    let fill = if query.error {
+        "orange".to_string()
+    } else {
+        query
+            .star_colour
+            .unwrap_or_else(|| "white".to_string())
+    };
+
+    write!(
+        svg,
+        r##"<defs><radialGradient id="star"><stop offset="0%" stop-color="{fill}" /><stop offset="90%" stop-color="#00000000" /></radialGradient></defs>"##
     )
     .expect("failed to write");
 
     write!(
         svg,
-        r#"<rect x="0" y="0" width="{}" height="{}" fill='#13092b' />"#,
-        width, height
+        r#"<rect x="0" y="0" width="{width}" height="{height}" fill='#13092b' />"#
     )
     .expect("failed to write");
-
-    let colours = if use_colours() {
-        *random_choice(COLOURS)
-    } else {
-        &["#ccc"]
-    };
 
     for _ in 0..256 {
         let x = fastrand::u32(0..width);
         let y = fastrand::u32(0..height);
-        let fill = if query.error {
-            "orange".to_string()
-        } else {
-            query
-                .star_colour
-                .clone()
-                .unwrap_or_else(|| random_choice(colours).to_string())
-        };
+
         write!(
             svg,
-            r#"<circle class="star" cx="{}" cy="{}" r="2" fill="{}" />"#,
-            x, y, fill
+            r#"<circle class="star" cx="{x}" cy="{y}" r="4" fill="url('#star')" />"#
         )
         .expect("failed to write");
     }
@@ -127,17 +124,6 @@ pub async fn image_script() -> (HeaderMap, String) {
     let script = format!(r#"console.log("{}"{});{}"#, dots, colours, SCRIPT_FOOTER);
 
     (headers, script)
-}
-
-#[rustfmt::skip]
-const COLOURS: &[&[&str]] = &[&["#a3a3a3","#ffffff","#800070",],&["#d60270","#d60270","#9b4f96","#0038A8","#0038A8",],&["#d62900","#ff9b55","#ffffff","#d461a6","#a50062",],&["#fff430","#ffffff","#9c59d1",],&["#ff1b8d","#ffda00","#1bb3ff",],&["#ff0018","#ffa52c","#ffff41","#008018","#0000f9","#86007d",],&["#55cdfc","#f7a8b8","#ffffff","#f7a8b8","#55cdfc",],];
-
-fn random_choice<T: Sized>(arr: &[T]) -> &T {
-    &arr[fastrand::usize(..arr.len())]
-}
-
-fn use_colours() -> bool {
-    OffsetDateTime::now_utc().month() == Month::June
 }
 
 #[derive(serde::Serialize)]

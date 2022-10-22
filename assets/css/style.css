@@ -1,5 +1,6 @@
 :root {
     --background: #13092b;
+    --background-transparent: #13092baa;
     --background-2: #090f2b;
     --foreground: #ddd;
     --foreground-bright: #fff;
@@ -13,10 +14,13 @@ body {
     font-family: 'Poppins', sans-serif;
     background-color: var(--background);
     background-image: url('https://ashhhleyyy.dev/assets-gen/background.svg');
-    background-attachment: fixed;
-    background-position: center;
     color: var(--foreground);
     margin: 0;
+    box-sizing: border-box;
+}
+
+* {
+    box-sizing: inherit;
 }
 
 @media (prefers-reduced-motion: no-preference) {
@@ -48,6 +52,43 @@ h1 {
     display: flex;
     flex-direction: row;
     align-items: center;
+}
+
+h1::before {
+    content: '# ';
+    margin-right: 16px;
+    color: var(--foreground-dim);
+    font-family: 'JetBrains Mono', 'Oxygen Mono', monospace;
+}
+
+h2::before {
+    content: '## ';
+    color: var(--foreground-dim);
+    font-family: 'JetBrains Mono', 'Oxygen Mono', monospace;
+}
+
+h3::before {
+    content: '### ';
+    color: var(--foreground-dim);
+    font-family: 'JetBrains Mono', 'Oxygen Mono', monospace;
+}
+
+h4::before {
+    content: '#### ';
+    color: var(--foreground-dim);
+    font-family: 'JetBrains Mono', 'Oxygen Mono', monospace;
+}
+
+h5::before {
+    content: '##### ';
+    color: var(--foreground-dim);
+    font-family: 'JetBrains Mono', 'Oxygen Mono', monospace;
+}
+
+h6::before {
+    content: '###### ';
+    color: var(--foreground-dim);
+    font-family: 'JetBrains Mono', 'Oxygen Mono', monospace;
 }
 
 .avatar {
@@ -124,10 +165,7 @@ h1 {
     width: calc(100vw - 32px);
     max-width: 720px;
     flex: 1;
-    /* min-height: calc(100vh - 50px); */
-    background-color: var(--background-2);
-    border: 1px solid var(--accent);
-    border-radius: 4px;
+    background-color: var(--background-transparent);
 }
 
 .content img {
@@ -141,6 +179,7 @@ h1 {
 
 .footer {
     margin-bottom: 16px;
+    text-align: center;
 }
 
 .generated {
@@ -174,7 +213,6 @@ h1 {
 }
 
 .playing-text {
-    /* flex: 1; */
     overflow: visible;
 }
 
@@ -315,7 +353,7 @@ pre {
     overflow-x: auto;
     border: var(--accent) 1px solid;
     padding-left: 24px;
-    background-color: black !important;
+    background-color: var(--background-2) !important;
     border-radius: 4px;
 }
 
@@ -338,10 +376,16 @@ pre::-webkit-scrollbar-thumb:hover, code::-webkit-scrollbar-thumb:hover {
 
 code {
     font-family: 'JetBrains Mono', 'Oxygen Mono', monospace;
-    border: var(--accent-dim) 1px solid;
-    padding: 2px;
+    color: #edafb8;
+    text-decoration-color: initial;
+    border: #ffffff88 1px solid;
+    padding: 0.1em 0.2em;
     border-radius: 4px;
-    background-color: black;
+    background-color: var(--background-2);
+}
+
+a > code {
+    text-decoration: underline;
 }
 
 pre > code {
@@ -353,10 +397,8 @@ pre > code {
     display: flex;
     flex-direction: row;
     align-items: center;
-}
-
-.icon-row > * {
-    margin-right: 16px;
+    justify-content: center;
+    gap: 16px;
 }
 
 .icon-row svg {
@@ -407,7 +449,6 @@ table, th, td {
 }
 
 table {
-    border-spacing: 0;
     border-spacing: 0;
     overflow-x: scroll;
     border-width: 2px;

@@ -5,10 +5,7 @@ use std::{
 };
 
 use reqwest::{Client, ClientBuilder};
-use serde::{
-    de::DeserializeOwned,
-    Deserialize,
-};
+use serde::{de::DeserializeOwned, Deserialize};
 use tokio::sync::{Mutex, RwLock};
 
 use crate::error::Result;

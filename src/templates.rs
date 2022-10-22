@@ -127,10 +127,8 @@ fn rewrite_html(path: &str, html: &str) -> String {
                 }),
                 element!(".blog-post a", |el| {
                     // Only external links
-                    if matches!(el.get_attribute("href"), Some(href) if href.starts_with("https://")) {
-                        if !el.has_attribute("target") {
-                            el.set_attribute("target", "_blank")?;
-                        }
+                    if matches!(el.get_attribute("href"), Some(href) if href.starts_with("https://") && !el.has_attribute("target")) {
+                        el.set_attribute("target", "_blank")?;
                     }
                     Ok(())
                 }),
