@@ -4,6 +4,8 @@ use color_eyre::{eyre::eyre, Result};
 use globset::Glob;
 use serde::Deserialize;
 
+use crate::loader::Loader;
+
 #[derive(Deserialize)]
 pub struct AssetConfig {
     pub asset_paths: Vec<AssetPath>,
@@ -17,6 +19,8 @@ pub struct AssetPath {
     pub no_hash: bool,
     #[serde(default)]
     pub hash_ignore: Vec<Glob>,
+    #[serde(default)]
+    pub loader: Loader,
 }
 
 pub fn load_config() -> Result<AssetConfig> {

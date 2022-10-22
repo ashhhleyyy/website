@@ -11,6 +11,7 @@ clap = { version = "3.2.20", features = ["derive"] }
 color-eyre = "0.6.2"
 globset = { version = "0.4.9", features = ["serde1"] }
 hex = "0.4.3"
+lightningcss = "1.0.0-alpha.35"
 mime_guess = "2.0.4"
 rust-s3 = { version = "0.32.3", features = ["sync-native-tls", "tags"], default-features = false, optional = true }
 serde = { version = "1.0.144", features = ["derive"] }

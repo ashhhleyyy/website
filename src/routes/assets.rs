@@ -40,9 +40,7 @@ pub async fn background(Query(query): Query<BackgroundQuery>) -> (HeaderMap, Str
     let fill = if query.error {
         "orange".to_string()
     } else {
-        query
-            .star_colour
-            .unwrap_or_else(|| "white".to_string())
+        query.star_colour.unwrap_or_else(|| "white".to_string())
     };
 
     write!(

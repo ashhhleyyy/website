@@ -2,7 +2,8 @@
     "asset_paths": [
         {
             "input": "./assets/css/*",
-            "output": "./assets-gen/css/"
+            "output": "./assets-gen/css/",
+            "loader": "css"
         },
         {
             "input": "./assets/fonts/*",

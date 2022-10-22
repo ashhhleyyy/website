@@ -8,7 +8,6 @@ edition = "2021"
 members = [".", "assetwrap"]
 
 [dependencies]
-assetwrap = { path = "assetwrap/", default-features = false }
 axum = { version = "0.4", features = ["headers"] }
 tokio = { version = "1", features = ["full"] }
 tracing = "0.1"
