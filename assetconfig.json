@@ -15,7 +15,8 @@
             "output": "./assets-gen/images/",
             "hash_ignore": [
                 "./assets/images/pfp.png"
-            ]
+            ],
+          "loader": "image"
         },
         {
             "input": "./assets/scripts/*",

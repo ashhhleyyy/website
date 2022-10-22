@@ -92,6 +92,6 @@ impl Asset {
     }
 }
 
-pub fn generate_asset(path: &Path, loader: Loader, no_hash: bool) -> Result<Asset> {
+pub fn generate_assets(path: &Path, loader: Loader, no_hash: bool) -> Result<Vec<Asset>> {
     loader.process(path, !no_hash)
 }

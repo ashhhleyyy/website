@@ -6,7 +6,10 @@ use axum::{
 use lol_html::{element, html_content::ContentType, rewrite_str, Settings};
 use time::{format_description::well_known::Rfc2822, OffsetDateTime};
 
-use crate::apis::{NowPlayingInfo, PronounsPageCard};
+use crate::{
+    apis::{NowPlayingInfo, PronounsPageCard},
+    assets::ASSET_INDEX,
+};
 
 macro_rules! simple_template {
     ($filename:expr, $name:ident) => {
@@ -147,6 +150,24 @@ fn rewrite_html(path: &str, html: &str) -> String {
                         if mtchs {
                             el.set_attribute("class", "nav-link active")?;
                         }
+                    }
+                    Ok(())
+                }),
+                element!("img[src]", |el| {
+                    let src = el.get_attribute("src").expect("src required");
+                    if let Some(paths) = ASSET_INDEX.get_all(&src) {
+                        let html = maud::html! {
+                            picture {
+                                @for path in paths {
+                                    @if path.ends_with(".png") {
+                                        img src=[Some(path)] alt=[el.get_attribute("alt")] width=[el.get_attribute("width")] height=[el.get_attribute("height")] class=[el.get_attribute("class")];
+                                    } @else {
+                                        source srcset=[Some(path)] type=[mime_guess::from_path(path).first_raw()];
+                                    }
+                                }
+                            }
+                        };
+                        el.replace(&html.0, ContentType::Html);
                     }
                     Ok(())
                 }),
