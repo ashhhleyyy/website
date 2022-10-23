@@ -11,5 +11,4 @@ Gitit includes a tool for mirroring a set of repositories, which can be used to 
 
 You can find Gitit in some of these places on the interwebs:
 - [GitHub (source code)](github://ashhhleyyy/gitit)
-- [Code mirror](https://ashhhleyyy.dev/git/mirror/gitit)
-- [My instance](https://code.ashhhleyyy.dev/)
+- [Code mirror](https://git.ashhhleyyy.dev/mirror/gitit)
