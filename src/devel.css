@@ -24,8 +24,12 @@ body.error {
     background-image: url('/assets-gen/background.svg?small=true&star_colour=%23891ee3');
 }
 
-.link-list > li.twitter {
-    background-image: url('/assets-gen/background.svg?small=true&star_colour=%2300acee');
+.link-list > li.gitea {
+    background-image: url('/assets-gen/background.svg?small=true&star_colour=%23609926');
+}
+
+.link-list > li.mastodon {
+    background-image: url('/assets-gen/background.svg?small=true&star_colour=%233c99dc');
 }
 
 .link-list > li.twitch {

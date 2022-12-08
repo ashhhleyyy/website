@@ -319,8 +319,12 @@ h6::before {
     background-image: url('https://ashhhleyyy.dev/assets-gen/background.svg?small=true&star_colour=%23891ee3');
 }
 
-.link-list > li.twitter {
-    background-image: url('https://ashhhleyyy.dev/assets-gen/background.svg?small=true&star_colour=%2300acee');
+.link-list > li.gitea {
+    background-image: url('https://ashhhleyyy.dev/assets-gen/background.svg?small=true&star_colour=%23609926');
+}
+
+.link-list > li.mastodon {
+    background-image: url('https://ashhhleyyy.dev/assets-gen/background.svg?small=true&star_colour=%233c99dc');
 }
 
 .link-list > li.twitch {
@@ -410,8 +414,8 @@ pre > code {
     fill: var(--accent);
 }
 
-.hover-discord:hover {
-    fill: #5865F2;
+.hover-matrix:hover {
+    color: #0DBD8B;
 }
 
 .hover-github:hover {
@@ -428,10 +432,6 @@ pre > code {
 
 .hover-twitch:hover {
     fill: #6441a5;
-}
-
-.hover-twitter:hover {
-    fill: #00acee;
 }
 
 .hover-gitea:hover {
