@@ -1,3 +1,5 @@
 target/
 assets-gen/
 assetindex.json
+result/
+.direnv/
