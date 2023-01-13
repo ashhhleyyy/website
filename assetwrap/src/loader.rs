@@ -34,8 +34,7 @@ impl Loader {
     fn load_image(input_path: &Path, hashed_name: bool) -> Result<Vec<Asset>> {
         let img = ImageReader::open(input_path)?.decode()?;
         Ok(vec![
-            //            TODO: Render AVIF, currently the image crate's encoder is *really* slow
-            //            Self::generate_image(input_path, &img, ImageOutputFormat::Avif, "avif", hashed_name)?,
+            Self::generate_image(input_path, &img, ImageOutputFormat::Avif, "avif", hashed_name)?,
             Self::generate_image(
                 input_path,
                 &img,
@@ -79,7 +78,7 @@ impl Loader {
             source,
             ParserOptions {
                 filename,
-                ..Default::default()
+                ..ParserOptions::default()
             },
         )
         .map_err(|e| eyre!("failed to parse: {e}"))?;
