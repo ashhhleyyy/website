@@ -41,6 +41,7 @@ pub fn render_markdown(markdown: &str) -> (Metadata, String) {
     options.extension.strikethrough = true;
     options.extension.footnotes = true;
     options.render.hardbreaks = true;
+    options.render.unsafe_ = true;
     options.extension.header_ids = Some("".to_owned());
 
     let arena = Arena::new();

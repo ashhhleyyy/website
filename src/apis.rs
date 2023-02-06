@@ -15,8 +15,10 @@ pub const PRONOUNS_PAGE_URL: &str = "https://en.pronouns.page/api/profile/get/as
 pub const NOWPLAYING_URL: &str = "https://api.ashhhleyyy.dev/playing";
 const MIN_REFRESH_TIME: Duration = Duration::from_secs(5);
 
+pub(crate) mod fedi;
+
 lazy_static::lazy_static! {
-    static ref CLIENT: Client = ClientBuilder::new()
+    pub(crate) static ref CLIENT: Client = ClientBuilder::new()
         .user_agent(USER_AGENT)
         .build().expect("failed to build client");
 }

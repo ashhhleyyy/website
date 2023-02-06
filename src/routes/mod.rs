@@ -3,7 +3,7 @@ mod blog;
 mod projects;
 
 use axum::{
-    extract::Extension, handler::Handler, http::Uri, response::Redirect, routing::get, Router,
+    extract::Extension, handler::Handler, http::Uri, response::{Redirect, IntoResponse}, routing::get, Router,
 };
 use reqwest::StatusCode;
 use tower_http::trace::TraceLayer;
@@ -19,8 +19,8 @@ use self::assets::{background, image_script};
 
 macro_rules! simple_template {
     ($name:ident, $path:expr, $template:ident) => {
-        async fn $name() -> HtmlTemplate<$template> {
-            HtmlTemplate($path.into(), $template)
+        async fn $name() -> impl IntoResponse {
+            HtmlTemplate::new($path, $template).into_response().await
         }
     };
 }
@@ -34,35 +34,35 @@ async fn about() -> Redirect {
 
 async fn words(
     Extension(fetcher): Extension<CachingFetcher<PronounsPageProfile>>,
-) -> HtmlTemplate<WordsTemplate> {
+) -> impl IntoResponse {
     let profile = fetcher.get().await;
 
-    HtmlTemplate(
-        "/about/words".into(),
+    HtmlTemplate::new(
+        "/about/words",
         WordsTemplate {
             card: profile.profiles.en,
         },
-    )
+    ).into_response().await
 }
 
 async fn music(
     Extension(fetcher): Extension<CachingFetcher<NowPlayingInfo>>,
-) -> HtmlTemplate<MusicTemplate> {
+) -> impl IntoResponse {
     let playing = fetcher.get().await;
-    HtmlTemplate("/about/music".into(), MusicTemplate { playing })
+    HtmlTemplate::new("/about/music", MusicTemplate { playing }).into_response().await
 }
 
-async fn handle_404() -> (StatusCode, HtmlTemplate<ErrorTemplate>) {
+async fn handle_404() -> impl IntoResponse {
     // TODO: Get the correct path here, so the right link is highlighted anyway
     (
         StatusCode::NOT_FOUND,
-        HtmlTemplate(
-            "/404".into(),
+        HtmlTemplate::new(
+            "/404",
             ErrorTemplate {
                 error_code: 404,
                 error_message: "Page not found".to_string(),
             },
-        ),
+        ).into_response().await,
     )
 }
 

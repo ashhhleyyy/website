@@ -1,6 +1,6 @@
 use std::collections::HashMap;
 
-use axum::extract::Path;
+use axum::{extract::Path, response::IntoResponse};
 use regex::Regex;
 use reqwest::StatusCode;
 use rust_embed::RustEmbed;
@@ -61,22 +61,22 @@ fn load_project(filename: &str) -> Option<Project> {
 
 pub async fn project(
     Path((year, slug)): Path<(String, String)>,
-) -> Result<HtmlTemplate<ProjectTemplate>, StatusCode> {
+) -> Result<impl IntoResponse, StatusCode> {
     if let Some(post) = load_project(&format!("{}-{}.md", year, slug)) {
-        Ok(HtmlTemplate(
+        Ok(HtmlTemplate::new(
             format!("/projects/{}/{}", year, slug),
             ProjectTemplate {
                 title: post.title.clone(),
                 description: post.description,
                 content: post.rendered,
             },
-        ))
+        ).into_response().await)
     } else {
         Err(StatusCode::NOT_FOUND)
     }
 }
 
-pub async fn index() -> HtmlTemplate<ProjectsTemplate> {
+pub async fn index() -> impl IntoResponse {
     let mut projects_by_year = HashMap::new();
     for path in ProjectsAssets::iter() {
         if let Some(project) = load_project(&path) {
@@ -92,5 +92,5 @@ pub async fn index() -> HtmlTemplate<ProjectsTemplate> {
 
     projects_by_year.sort_by_cached_key(|(year, _)| year.clone());
 
-    HtmlTemplate("/projects/".into(), ProjectsTemplate { projects_by_year })
+    HtmlTemplate::new("/projects/", ProjectsTemplate { projects_by_year }).into_response().await
 }

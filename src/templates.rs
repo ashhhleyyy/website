@@ -1,3 +1,5 @@
+use std::collections::HashMap;
+
 use askama::Template;
 use axum::{
     http::StatusCode,
@@ -5,9 +7,10 @@ use axum::{
 };
 use lol_html::{element, html_content::ContentType, rewrite_str, Settings};
 use time::{format_description::well_known::Rfc2822, OffsetDateTime};
+use tokio::runtime::Handle;
 
 use crate::{
-    apis::{NowPlayingInfo, PronounsPageCard},
+    apis::{NowPlayingInfo, PronounsPageCard, fedi::{self, PostData, AccountData}},
     assets::ASSET_INDEX,
 };
 
@@ -71,15 +74,22 @@ pub struct ErrorTemplate {
     pub error_message: String,
 }
 
-pub struct HtmlTemplate<T>(pub String, pub T);
+pub struct HtmlTemplate<T> {
+    pub path: String,
+    pub template: T,
+}
 
-impl<T> IntoResponse for HtmlTemplate<T>
-where
-    T: Template,
-{
-    fn into_response(self) -> axum::response::Response {
-        match self.1.render() {
-            Ok(html) => Html(rewrite_html(&self.0, &html)).into_response(),
+impl<T: Template> HtmlTemplate<T> {
+    pub fn new<S: ToString>(path: S, template: T) -> Self {
+        Self {
+            path: path.to_string(),
+            template,
+        }
+    }
+
+    pub async fn into_response(&self) -> axum::response::Response {
+        match self.template.render() {
+            Ok(html) => Html(rewrite_html(&self.path, &html).await).into_response(),
             Err(e) => {
                 error!("Failed to render template: {}", e);
                 (
@@ -110,11 +120,84 @@ macro_rules! attr_rewrite {
     };
 }
 
+async fn load_post(server: &str, id: &str) -> PostData {
+    let post = fedi::POST_FETCHER.get_post(server.to_owned(), id.to_owned()).await;
+    match post {
+        Ok(post) => {
+            post
+        },
+        Err(e) => {
+            tracing::warn!(server, id, ?e, "failed to fetch post");
+            PostData {
+                url: "https://oopsie.ashhhleyyy.dev/".to_owned(),
+                content: "Failed to load toot!".to_owned(),
+                timestamps: fedi::Timestamps::Created {
+                    created_at: OffsetDateTime::UNIX_EPOCH,
+                },
+                account: AccountData {
+                    avatar_static: "https://cdn.ashhhleyyy.dev/file/ashhhleyyy-assets/images/pfp.png".to_owned(),
+                    avatar: "https://cdn.ashhhleyyy.dev/file/ashhhleyyy-assets/images/pfp.png".to_owned(),
+                    display_name: "Ashley".to_owned(),
+                    fqn: "ash@ashhhleyyy.dev".to_owned(),
+                    url: "https://ashhhleyyy.dev".to_owned(),
+                },
+                media_attachments: vec![],
+            }
+        },
+    }
+}
+
 // TODO: Refactor into a tower layer(?) to remove the requirement for passing the path directly
-fn rewrite_html(path: &str, html: &str) -> String {
+async fn rewrite_html(path: &str, html: &str) -> String {
     let now = OffsetDateTime::now_utc();
+
+    // First pass to locate fedi posts
+    let mut posts = vec![];
+
+    let html = rewrite_str(html, Settings {
+        element_content_handlers: vec![
+            element!("fedi-post", |el| {
+                if let (Some(server), Some(id)) = (el.get_attribute("data-server"), el.get_attribute("data-id")) {
+                    posts.push((server, id));
+                } else {
+                    tracing::warn!("invalid fedi-post element: missing data-server or data-id attribute!");
+                    let post = PostData {
+                        url: "https://oopsie.ashhhleyyy.dev/".to_owned(),
+                        content: "Invalid fedi-post element!".to_owned(),
+                        timestamps: fedi::Timestamps::Created {
+                            created_at: OffsetDateTime::UNIX_EPOCH,
+                        },
+                        account: AccountData {
+                            avatar_static: "https://cdn.ashhhleyyy.dev/file/ashhhleyyy-assets/images/pfp.png".to_owned(),
+                            avatar: "https://cdn.ashhhleyyy.dev/file/ashhhleyyy-assets/images/pfp.png".to_owned(),
+                            display_name: "Ashley".to_owned(),
+                            fqn: "ash@ashhhleyyy.dev".to_owned(),
+                            url: "https://ashhhleyyy.dev".to_owned(),
+                        },
+                        media_attachments: vec![],
+                    };
+                    el.replace(&post.as_html().0, ContentType::Html);
+                };
+                Ok(())
+            }),
+        ],
+        ..Default::default()
+    }).unwrap();
+
+    let posts = {
+        let mut resolved_posts = HashMap::new();
+        for (server, id) in posts {
+            let key = (server, id);
+            if !resolved_posts.contains_key(&key) {
+                let post = load_post(&key.0, &key.1).await;
+                resolved_posts.insert(key, post);
+            }
+        }
+        resolved_posts
+    };
+
     rewrite_str(
-        html,
+        &html,
         Settings {
             element_content_handlers: vec![
                 element!("copyright-year", |el| {
@@ -126,6 +209,10 @@ fn rewrite_html(path: &str, html: &str) -> String {
                         &now.format(&Rfc2822).expect("failed to format"),
                         ContentType::Text,
                     );
+                    Ok(())
+                }),
+                element!("fedi-post", |el| {
+                    el.replace(&posts.get(&(el.get_attribute("data-server").unwrap(), el.get_attribute("data-id").unwrap())).unwrap().as_html().0, ContentType::Html);
                     Ok(())
                 }),
                 element!(".blog-post a", |el| {

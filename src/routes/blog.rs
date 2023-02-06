@@ -1,7 +1,7 @@
 use regex::Regex;
 use rust_embed::RustEmbed;
 
-use axum::{extract::Path, http::StatusCode};
+use axum::{extract::Path, http::StatusCode, response::IntoResponse};
 
 use crate::{
     markdown,
@@ -74,7 +74,7 @@ fn load_post(filename: &str) -> Option<BlogPost> {
     }
 }
 
-pub async fn index() -> HtmlTemplate<BlogIndexTemplate> {
+pub async fn index() -> impl IntoResponse {
     let mut entries = vec![];
     for path in BlogAssets::iter() {
         if let Some(post) = load_post(&path) {
@@ -84,12 +84,12 @@ pub async fn index() -> HtmlTemplate<BlogIndexTemplate> {
         }
     }
     entries.sort_by(|a, b| b.0.cmp(&a.0));
-    HtmlTemplate("/blog/".into(), BlogIndexTemplate { posts: entries })
+    HtmlTemplate::new("/blog/", BlogIndexTemplate { posts: entries }).into_response().await
 }
 
-pub async fn post(Path(path): Path<String>) -> Result<HtmlTemplate<BlogPostTemplate>, StatusCode> {
+pub async fn post(Path(path): Path<String>) -> Result<impl IntoResponse, StatusCode> {
     if let Some(post) = load_post(&format!("{}.md", path)) {
-        Ok(HtmlTemplate(
+        Ok(HtmlTemplate::new(
             format!("/blog/{}", path),
             BlogPostTemplate {
                 title: post.title.clone(),
@@ -97,7 +97,7 @@ pub async fn post(Path(path): Path<String>) -> Result<HtmlTemplate<BlogPostTempl
                 description: post.description,
                 content: post.rendered,
             },
-        ))
+        ).into_response().await)
     } else {
         Err(StatusCode::NOT_FOUND)
     }
