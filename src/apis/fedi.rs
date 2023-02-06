@@ -12,6 +12,7 @@ lazy_static::lazy_static! {
 }
 
 pub struct CachingPostFetcher {
+    #[allow(clippy::type_complexity)]
     fetchers: Arc<Mutex<HashMap<(String, String), CachingFetcher<PostData>>>>,
 }
 
@@ -28,7 +29,9 @@ impl CachingPostFetcher {
         let fetcher = if let Some(fetcher) = fetchers.get_mut(&(server.clone(), id.clone())) {
             fetcher
         } else {
-            let fetcher = CachingFetcher::<PostData>::new(format!("https://{server}/api/v1/statuses/{id}")).await?;
+            let fetcher =
+                CachingFetcher::<PostData>::new(format!("https://{server}/api/v1/statuses/{id}"))
+                    .await?;
             fetchers.insert((server.clone(), id.clone()), fetcher);
             fetchers.get_mut(&(server, id)).unwrap()
         };
@@ -59,7 +62,7 @@ pub enum Timestamps {
         created_at: OffsetDateTime,
         #[serde(with = "time::serde::rfc3339")]
         edited_at: OffsetDateTime,
-    }
+    },
 }
 
 #[derive(Clone, serde::Deserialize)]
@@ -92,7 +95,7 @@ impl PostData {
                 blockquote {
                     .fedi-author {
                         img.fedi-avatar width="48" height="48" src=(self.account.avatar_static);
-    
+
                         a href=(self.account.url) {
                             (self.account.display_name) " (@" (self.account.display_name) ")"
                         }

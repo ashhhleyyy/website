@@ -7,10 +7,12 @@ use axum::{
 };
 use lol_html::{element, html_content::ContentType, rewrite_str, Settings};
 use time::{format_description::well_known::Rfc2822, OffsetDateTime};
-use tokio::runtime::Handle;
 
 use crate::{
-    apis::{NowPlayingInfo, PronounsPageCard, fedi::{self, PostData, AccountData}},
+    apis::{
+        fedi::{self, AccountData, PostData},
+        NowPlayingInfo, PronounsPageCard,
+    },
     assets::ASSET_INDEX,
 };
 
@@ -87,7 +89,7 @@ impl<T: Template> HtmlTemplate<T> {
         }
     }
 
-    pub async fn into_response(&self) -> axum::response::Response {
+    pub async fn into_response(self) -> axum::response::Response {
         match self.template.render() {
             Ok(html) => Html(rewrite_html(&self.path, &html).await).into_response(),
             Err(e) => {
@@ -121,11 +123,11 @@ macro_rules! attr_rewrite {
 }
 
 async fn load_post(server: &str, id: &str) -> PostData {
-    let post = fedi::POST_FETCHER.get_post(server.to_owned(), id.to_owned()).await;
+    let post = fedi::POST_FETCHER
+        .get_post(server.to_owned(), id.to_owned())
+        .await;
     match post {
-        Ok(post) => {
-            post
-        },
+        Ok(post) => post,
         Err(e) => {
             tracing::warn!(server, id, ?e, "failed to fetch post");
             PostData {
@@ -135,15 +137,18 @@ async fn load_post(server: &str, id: &str) -> PostData {
                     created_at: OffsetDateTime::UNIX_EPOCH,
                 },
                 account: AccountData {
-                    avatar_static: "https://cdn.ashhhleyyy.dev/file/ashhhleyyy-assets/images/pfp.png".to_owned(),
-                    avatar: "https://cdn.ashhhleyyy.dev/file/ashhhleyyy-assets/images/pfp.png".to_owned(),
+                    avatar_static:
+                        "https://cdn.ashhhleyyy.dev/file/ashhhleyyy-assets/images/pfp.png"
+                            .to_owned(),
+                    avatar: "https://cdn.ashhhleyyy.dev/file/ashhhleyyy-assets/images/pfp.png"
+                        .to_owned(),
                     display_name: "Ashley".to_owned(),
                     fqn: "ash@ashhhleyyy.dev".to_owned(),
                     url: "https://ashhhleyyy.dev".to_owned(),
                 },
                 media_attachments: vec![],
             }
-        },
+        }
     }
 }
 
@@ -154,13 +159,18 @@ async fn rewrite_html(path: &str, html: &str) -> String {
     // First pass to locate fedi posts
     let mut posts = vec![];
 
-    let html = rewrite_str(html, Settings {
-        element_content_handlers: vec![
-            element!("fedi-post", |el| {
-                if let (Some(server), Some(id)) = (el.get_attribute("data-server"), el.get_attribute("data-id")) {
+    let html = rewrite_str(
+        html,
+        Settings {
+            element_content_handlers: vec![element!("fedi-post", |el| {
+                if let (Some(server), Some(id)) =
+                    (el.get_attribute("data-server"), el.get_attribute("data-id"))
+                {
                     posts.push((server, id));
                 } else {
-                    tracing::warn!("invalid fedi-post element: missing data-server or data-id attribute!");
+                    tracing::warn!(
+                        "invalid fedi-post element: missing data-server or data-id attribute!"
+                    );
                     let post = PostData {
                         url: "https://oopsie.ashhhleyyy.dev/".to_owned(),
                         content: "Invalid fedi-post element!".to_owned(),
@@ -168,8 +178,12 @@ async fn rewrite_html(path: &str, html: &str) -> String {
                             created_at: OffsetDateTime::UNIX_EPOCH,
                         },
                         account: AccountData {
-                            avatar_static: "https://cdn.ashhhleyyy.dev/file/ashhhleyyy-assets/images/pfp.png".to_owned(),
-                            avatar: "https://cdn.ashhhleyyy.dev/file/ashhhleyyy-assets/images/pfp.png".to_owned(),
+                            avatar_static:
+                                "https://cdn.ashhhleyyy.dev/file/ashhhleyyy-assets/images/pfp.png"
+                                    .to_owned(),
+                            avatar:
+                                "https://cdn.ashhhleyyy.dev/file/ashhhleyyy-assets/images/pfp.png"
+                                    .to_owned(),
                             display_name: "Ashley".to_owned(),
                             fqn: "ash@ashhhleyyy.dev".to_owned(),
                             url: "https://ashhhleyyy.dev".to_owned(),
@@ -179,15 +193,18 @@ async fn rewrite_html(path: &str, html: &str) -> String {
                     el.replace(&post.as_html().0, ContentType::Html);
                 };
                 Ok(())
-            }),
-        ],
-        ..Default::default()
-    }).unwrap();
+            })],
+            ..Default::default()
+        },
+    )
+    .unwrap();
 
     let posts = {
         let mut resolved_posts = HashMap::new();
         for (server, id) in posts {
             let key = (server, id);
+
+            #[allow(clippy::map_entry)] // clippy's suggestion creates compiler errors
             if !resolved_posts.contains_key(&key) {
                 let post = load_post(&key.0, &key.1).await;
                 resolved_posts.insert(key, post);

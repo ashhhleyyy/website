@@ -84,7 +84,9 @@ pub async fn index() -> impl IntoResponse {
         }
     }
     entries.sort_by(|a, b| b.0.cmp(&a.0));
-    HtmlTemplate::new("/blog/", BlogIndexTemplate { posts: entries }).into_response().await
+    HtmlTemplate::new("/blog/", BlogIndexTemplate { posts: entries })
+        .into_response()
+        .await
 }
 
 pub async fn post(Path(path): Path<String>) -> Result<impl IntoResponse, StatusCode> {
@@ -97,7 +99,9 @@ pub async fn post(Path(path): Path<String>) -> Result<impl IntoResponse, StatusC
                 description: post.description,
                 content: post.rendered,
             },
-        ).into_response().await)
+        )
+        .into_response()
+        .await)
     } else {
         Err(StatusCode::NOT_FOUND)
     }

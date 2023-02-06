@@ -3,7 +3,12 @@ mod blog;
 mod projects;
 
 use axum::{
-    extract::Extension, handler::Handler, http::Uri, response::{Redirect, IntoResponse}, routing::get, Router,
+    extract::Extension,
+    handler::Handler,
+    http::Uri,
+    response::{IntoResponse, Redirect},
+    routing::get,
+    Router,
 };
 use reqwest::StatusCode;
 use tower_http::trace::TraceLayer;
@@ -42,14 +47,16 @@ async fn words(
         WordsTemplate {
             card: profile.profiles.en,
         },
-    ).into_response().await
+    )
+    .into_response()
+    .await
 }
 
-async fn music(
-    Extension(fetcher): Extension<CachingFetcher<NowPlayingInfo>>,
-) -> impl IntoResponse {
+async fn music(Extension(fetcher): Extension<CachingFetcher<NowPlayingInfo>>) -> impl IntoResponse {
     let playing = fetcher.get().await;
-    HtmlTemplate::new("/about/music", MusicTemplate { playing }).into_response().await
+    HtmlTemplate::new("/about/music", MusicTemplate { playing })
+        .into_response()
+        .await
 }
 
 async fn handle_404() -> impl IntoResponse {
@@ -62,7 +69,9 @@ async fn handle_404() -> impl IntoResponse {
                 error_code: 404,
                 error_message: "Page not found".to_string(),
             },
-        ).into_response().await,
+        )
+        .into_response()
+        .await,
     )
 }
 

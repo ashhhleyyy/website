@@ -44,7 +44,7 @@ async fn main() -> error::Result<()> {
     #[cfg(debug_assertions)]
     let app = app.nest(
         "/assets",
-        any_service(ServeDir::new(&Path::new("assets-gen"))).handle_error(
+        any_service(ServeDir::new(Path::new("assets-gen"))).handle_error(
             |err: std::io::Error| async move {
                 tracing::error!("unhandled error in static file server: {}", err);
                 (StatusCode::INTERNAL_SERVER_ERROR, "internal server error")

@@ -70,7 +70,9 @@ pub async fn project(
                 description: post.description,
                 content: post.rendered,
             },
-        ).into_response().await)
+        )
+        .into_response()
+        .await)
     } else {
         Err(StatusCode::NOT_FOUND)
     }
@@ -92,5 +94,7 @@ pub async fn index() -> impl IntoResponse {
 
     projects_by_year.sort_by_cached_key(|(year, _)| year.clone());
 
-    HtmlTemplate::new("/projects/", ProjectsTemplate { projects_by_year }).into_response().await
+    HtmlTemplate::new("/projects/", ProjectsTemplate { projects_by_year })
+        .into_response()
+        .await
 }
