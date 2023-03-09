@@ -48,6 +48,17 @@ origin = "https://sso.ashhhleyyy.dev"
 
 However, due to weird issues with the container builds, the `latest` tag isn't the most recent version, and the `x86_64_latest` is only compatible with `x86_64` CPUs, but my Raspberry Pi 4 has an `arm64` CPU. This means I have to use the slightly-outdated `latest` tag (this will cause issues later).
 
+## Setting up a user
+
+Kanidm comes with two pre-created users for managing an instance: `admin` and `idm_admin`. The `admin` account is meant for general administrative tasks, such as management of oauth2 clients and other global configuration, but does not have permissions to manage people, while the `idm_admin` does not have general administrative permissions, but is able to manage people's accounts.
+
+To start using the server, the first thing required is to stop the server container (this is because resetting the `admin` account password requires exclusive database access). The following command will then reset the password to allow us to log in:
+
+```
+$ docker run --rm -i -t -v <PATH TO DATA VOLUME>:/data \ <YOUR IMAGE NAME> /sbin/kanidmd recover_account -c /data/server.toml admin
+success - recover_account password for user admin: [REDACTED]
+```
+
 ## Configuring some clients
 
 Next up is to configure all my existing things to use Kanidm, which is a bit of a repetitive task, although I prefer the copy-paste command line configuration for Kanidm over Keycloak's web-based admin portal.
