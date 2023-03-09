@@ -1,9 +1,8 @@
 use maud::PreEscaped;
-use reqwest::{ClientBuilder, Client};
+use reqwest::{Client, ClientBuilder};
 use serde::{Deserialize, Serialize};
 
-use crate::{error::Result, apis::USER_AGENT};
-
+use crate::{apis::USER_AGENT, error::Result};
 
 #[derive(Clone)]
 pub struct MediawikiClient<S: ClientState> {
@@ -17,7 +16,8 @@ impl MediawikiClient<Credentials> {
         let client = ClientBuilder::new()
             .user_agent(USER_AGENT)
             .cookie_store(true)
-            .build().expect("failed to build client");
+            .build()
+            .expect("failed to build client");
         Self {
             state: Credentials { username, password },
             client,
@@ -26,19 +26,28 @@ impl MediawikiClient<Credentials> {
     }
 
     async fn get_login_token(&self) -> Result<String> {
-        let url = format!("https://{domain}/w/api.php?action=query&meta=tokens&format=json&type=login", domain = self.domain);
-        let res: QueryResponse = self.client.get(url)
-            .send().await?
+        let url = format!(
+            "https://{domain}/w/api.php?action=query&meta=tokens&format=json&type=login",
+            domain = self.domain
+        );
+        let res: QueryResponse = self
+            .client
+            .get(url)
+            .send()
+            .await?
             .error_for_status()?
-            .json().await?;
+            .json()
+            .await?;
 
         Ok(res.query.tokens.login_token)
     }
 
     pub async fn log_in(self, allowed_pages: Vec<String>) -> Result<MediawikiClient<LoggedIn>> {
         let login_token = self.get_login_token().await?;
-        let url = format!( "https://{domain}/w/api.php", domain = self.domain);
-        let _res = self.client.post(url)
+        let url = format!("https://{domain}/w/api.php", domain = self.domain);
+        let _res = self
+            .client
+            .post(url)
             .form(&LoginForm {
                 action: "login",
                 lgname: self.state.username,
@@ -46,21 +55,23 @@ impl MediawikiClient<Credentials> {
                 lgtoken: login_token,
                 format: "json",
             })
-            .send().await?
+            .send()
+            .await?
             .error_for_status()?;
 
         Ok(MediawikiClient {
             client: self.client,
             domain: self.domain,
-            state: LoggedIn {
-                allowed_pages,
-            },
+            state: LoggedIn { allowed_pages },
         })
     }
 }
 
 impl MediawikiClient<LoggedIn> {
-    pub async fn get_page(&self, page_title: String) -> Result<Option<(String, PreEscaped<String>)>> {
+    pub async fn get_page(
+        &self,
+        page_title: String,
+    ) -> Result<Option<(String, PreEscaped<String>)>> {
         if !self.state.allowed_pages.contains(&page_title) {
             return Ok(None);
         }
@@ -70,10 +81,14 @@ impl MediawikiClient<LoggedIn> {
             domain = self.domain,
         );
 
-        let res: ParseResponse = self.client.get(url)
-            .send().await?
+        let res: ParseResponse = self
+            .client
+            .get(url)
+            .send()
+            .await?
             .error_for_status()?
-            .json().await?;
+            .json()
+            .await?;
 
         Ok(Some((res.parse.title, PreEscaped(res.parse.text.content))))
     }

@@ -73,7 +73,8 @@ async fn handle_404() -> Response {
         )
         .into_response()
         .await,
-    ).into_response()
+    )
+        .into_response()
 }
 
 pub fn build_router() -> Router {

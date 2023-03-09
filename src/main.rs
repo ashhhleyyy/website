@@ -12,7 +12,8 @@ mod templates;
 use std::path::Path;
 
 use apis::{
-    CachingFetcher, NowPlayingInfo, PronounsPageProfile, NOWPLAYING_URL, PRONOUNS_PAGE_URL, mediawiki::MediawikiClient,
+    mediawiki::MediawikiClient, CachingFetcher, NowPlayingInfo, PronounsPageProfile,
+    NOWPLAYING_URL, PRONOUNS_PAGE_URL,
 };
 use axum::extract::Extension;
 #[cfg(debug_assertions)]
@@ -51,7 +52,12 @@ async fn main() -> error::Result<()> {
 
     tracing::info!("Logging into mediawiki instance...");
     let mediawiki_client = mediawiki_client
-        .log_in(fetch_env!("MW_TITLE_ALLOWLIST").split(',').map(|s| s.to_owned()).collect::<Vec<_>>())
+        .log_in(
+            fetch_env!("MW_TITLE_ALLOWLIST")
+                .split(',')
+                .map(|s| s.to_owned())
+                .collect::<Vec<_>>(),
+        )
         .await?;
 
     let app = routes::build_router()

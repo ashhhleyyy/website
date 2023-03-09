@@ -2,7 +2,6 @@ use std::collections::HashMap;
 
 use axum::{extract::Path, response::IntoResponse};
 use regex::Regex;
-use reqwest::StatusCode;
 use rust_embed::RustEmbed;
 
 use crate::{
@@ -59,9 +58,7 @@ fn load_project(filename: &str) -> Option<Project> {
     }
 }
 
-pub async fn project(
-    Path((year, slug)): Path<(String, String)>,
-) -> impl IntoResponse {
+pub async fn project(Path((year, slug)): Path<(String, String)>) -> impl IntoResponse {
     if let Some(post) = load_project(&format!("{}-{}.md", year, slug)) {
         HtmlTemplate::new(
             format!("/projects/{}/{}", year, slug),
