@@ -1,0 +1,12 @@
+{% extends "base.html" %}
+
+{% block title %}Pages > {{ title }}{% endblock %}
+{% block description %}An extra page. I wonder what this is 👀{% endblock %}
+
+{% block content %}
+<main class="content">
+    <h1>{{ title }}</h1>
+    
+    {{ content|safe }}
+</main>
+{% endblock %}

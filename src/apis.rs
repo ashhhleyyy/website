@@ -16,6 +16,7 @@ pub const NOWPLAYING_URL: &str = "https://api.ashhhleyyy.dev/playing";
 const MIN_REFRESH_TIME: Duration = Duration::from_secs(5);
 
 pub(crate) mod fedi;
+pub(crate) mod mediawiki;
 
 lazy_static::lazy_static! {
     pub(crate) static ref CLIENT: Client = ClientBuilder::new()

@@ -1,5 +1,6 @@
 mod assets;
 mod blog;
+mod extras;
 mod projects;
 
 use axum::{
@@ -85,6 +86,7 @@ pub fn build_router() -> Router {
         .route("/blog/:post", get(blog::post))
         .route("/projects/", get(projects::index))
         .route("/projects/:year/:project", get(projects::project))
+        .route("/extras/:title", get(extras::page))
         .route("/me", get(links))
         .route("/assets-gen/background.svg", get(background))
         .route("/assets-gen/image.js", get(image_script))

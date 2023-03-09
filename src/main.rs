@@ -12,7 +12,7 @@ mod templates;
 use std::path::Path;
 
 use apis::{
-    CachingFetcher, NowPlayingInfo, PronounsPageProfile, NOWPLAYING_URL, PRONOUNS_PAGE_URL,
+    CachingFetcher, NowPlayingInfo, PronounsPageProfile, NOWPLAYING_URL, PRONOUNS_PAGE_URL, mediawiki::MediawikiClient,
 };
 use axum::extract::Extension;
 #[cfg(debug_assertions)]
@@ -22,6 +22,12 @@ use reqwest::StatusCode;
 #[cfg(debug_assertions)]
 use tower_http::services::ServeDir;
 use tracing_subscriber::{prelude::*, util::SubscriberInitExt};
+
+macro_rules! fetch_env {
+    ($name:expr) => {
+        ::std::env::var($name).expect(concat!("environment variable `", $name, "` must be set!"))
+    };
+}
 
 #[tokio::main]
 async fn main() -> error::Result<()> {
@@ -37,9 +43,19 @@ async fn main() -> error::Result<()> {
     let nowplaying_client =
         CachingFetcher::<NowPlayingInfo>::new(NOWPLAYING_URL.to_string()).await?;
 
+    let mediawiki_client = MediawikiClient::new(
+        "wiki.ashhhleyyy.dev".to_owned(),
+        fetch_env!("MW_USERNAME"),
+        fetch_env!("MW_PASSWORD"),
+    );
+
+    tracing::info!("Logging into mediawiki instance...");
+    let mediawiki_client = mediawiki_client.log_in().await?;
+
     let app = routes::build_router()
         .layer(Extension(pronouns_page_client))
-        .layer(Extension(nowplaying_client));
+        .layer(Extension(nowplaying_client))
+        .layer(Extension(mediawiki_client));
 
     #[cfg(debug_assertions)]
     let app = app.nest(

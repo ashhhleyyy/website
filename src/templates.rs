@@ -70,6 +70,13 @@ pub struct ProjectTemplate {
 }
 
 #[derive(Template)]
+#[template(path = "extra.html")]
+pub struct ExtraTemplate {
+    pub title: String,
+    pub content: String,
+}
+
+#[derive(Template)]
 #[template(path = "error.html")]
 pub struct ErrorTemplate {
     pub error_code: u16,
