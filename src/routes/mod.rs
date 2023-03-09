@@ -7,7 +7,7 @@ use axum::{
     extract::Extension,
     handler::Handler,
     http::Uri,
-    response::{IntoResponse, Redirect},
+    response::{IntoResponse, Redirect, Response},
     routing::get,
     Router,
 };
@@ -60,7 +60,7 @@ async fn music(Extension(fetcher): Extension<CachingFetcher<NowPlayingInfo>>) ->
         .await
 }
 
-async fn handle_404() -> impl IntoResponse {
+async fn handle_404() -> Response {
     // TODO: Get the correct path here, so the right link is highlighted anyway
     (
         StatusCode::NOT_FOUND,
@@ -73,7 +73,7 @@ async fn handle_404() -> impl IntoResponse {
         )
         .into_response()
         .await,
-    )
+    ).into_response()
 }
 
 pub fn build_router() -> Router {

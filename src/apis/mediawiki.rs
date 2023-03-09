@@ -35,7 +35,7 @@ impl MediawikiClient<Credentials> {
         Ok(res.query.tokens.login_token)
     }
 
-    pub async fn log_in(self) -> Result<MediawikiClient<LoggedIn>> {
+    pub async fn log_in(self, allowed_pages: Vec<String>) -> Result<MediawikiClient<LoggedIn>> {
         let login_token = self.get_login_token().await?;
         let url = format!( "https://{domain}/w/api.php", domain = self.domain);
         let _res = self.client.post(url)
@@ -52,13 +52,19 @@ impl MediawikiClient<Credentials> {
         Ok(MediawikiClient {
             client: self.client,
             domain: self.domain,
-            state: LoggedIn,
+            state: LoggedIn {
+                allowed_pages,
+            },
         })
     }
 }
 
 impl MediawikiClient<LoggedIn> {
-    pub async fn get_page(&self, page_title: String) -> Result<(String, PreEscaped<String>)> {
+    pub async fn get_page(&self, page_title: String) -> Result<Option<(String, PreEscaped<String>)>> {
+        if !self.state.allowed_pages.contains(&page_title) {
+            return Ok(None);
+        }
+
         let url = format!(
             "https://{domain}/w/api.php?action=parse&format=json&page={page_title}",
             domain = self.domain,
@@ -69,7 +75,7 @@ impl MediawikiClient<LoggedIn> {
             .error_for_status()?
             .json().await?;
 
-        Ok((res.parse.title, PreEscaped(res.parse.text.content)))
+        Ok(Some((res.parse.title, PreEscaped(res.parse.text.content))))
     }
 }
 
@@ -82,7 +88,9 @@ pub struct Credentials {
 }
 
 #[derive(Clone)]
-pub struct LoggedIn;
+pub struct LoggedIn {
+    allowed_pages: Vec<String>,
+}
 
 impl ClientState for Credentials {}
 impl ClientState for LoggedIn {}

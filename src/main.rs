@@ -50,7 +50,9 @@ async fn main() -> error::Result<()> {
     );
 
     tracing::info!("Logging into mediawiki instance...");
-    let mediawiki_client = mediawiki_client.log_in().await?;
+    let mediawiki_client = mediawiki_client
+        .log_in(fetch_env!("MW_TITLE_ALLOWLIST").split(',').map(|s| s.to_owned()).collect::<Vec<_>>())
+        .await?;
 
     let app = routes::build_router()
         .layer(Extension(pronouns_page_client))
