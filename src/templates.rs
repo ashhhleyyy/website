@@ -275,6 +275,10 @@ async fn rewrite_html(path: &str, html: &str) -> String {
                     }
                     Ok(())
                 }),
+                element!(".mw-editsection", |el| {
+                    el.remove();
+                    Ok(())
+                }),
                 attr_rewrite!("src"),
                 attr_rewrite!("href"),
                 attr_rewrite!("meta", "content"),
