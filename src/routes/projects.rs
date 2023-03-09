@@ -61,9 +61,9 @@ fn load_project(filename: &str) -> Option<Project> {
 
 pub async fn project(
     Path((year, slug)): Path<(String, String)>,
-) -> Result<impl IntoResponse, StatusCode> {
+) -> impl IntoResponse {
     if let Some(post) = load_project(&format!("{}-{}.md", year, slug)) {
-        Ok(HtmlTemplate::new(
+        HtmlTemplate::new(
             format!("/projects/{}/{}", year, slug),
             ProjectTemplate {
                 title: post.title.clone(),
@@ -72,9 +72,9 @@ pub async fn project(
             },
         )
         .into_response()
-        .await)
+        .await
     } else {
-        Err(StatusCode::NOT_FOUND)
+        super::handle_404().await
     }
 }
 

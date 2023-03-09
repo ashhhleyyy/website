@@ -1,7 +1,7 @@
 use regex::Regex;
 use rust_embed::RustEmbed;
 
-use axum::{extract::Path, http::StatusCode, response::IntoResponse};
+use axum::{extract::Path, response::IntoResponse};
 
 use crate::{
     markdown,
@@ -89,9 +89,9 @@ pub async fn index() -> impl IntoResponse {
         .await
 }
 
-pub async fn post(Path(path): Path<String>) -> Result<impl IntoResponse, StatusCode> {
+pub async fn post(Path(path): Path<String>) -> impl IntoResponse {
     if let Some(post) = load_post(&format!("{}.md", path)) {
-        Ok(HtmlTemplate::new(
+        HtmlTemplate::new(
             format!("/blog/{}", path),
             BlogPostTemplate {
                 title: post.title.clone(),
@@ -101,8 +101,8 @@ pub async fn post(Path(path): Path<String>) -> Result<impl IntoResponse, StatusC
             },
         )
         .into_response()
-        .await)
+        .await
     } else {
-        Err(StatusCode::NOT_FOUND)
+        super::handle_404().await
     }
 }
