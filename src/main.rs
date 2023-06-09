@@ -44,26 +44,26 @@ async fn main() -> error::Result<()> {
     let nowplaying_client =
         CachingFetcher::<NowPlayingInfo>::new(NOWPLAYING_URL.to_string()).await?;
 
-    let mediawiki_client = MediawikiClient::new(
-        "wiki.ashhhleyyy.dev".to_owned(),
-        fetch_env!("MW_USERNAME"),
-        fetch_env!("MW_PASSWORD"),
-    );
+    //let mediawiki_client = MediawikiClient::new(
+    //    "wiki.ashhhleyyy.dev".to_owned(),
+    //    fetch_env!("MW_USERNAME"),
+    //    fetch_env!("MW_PASSWORD"),
+    //);
 
-    tracing::info!("Logging into mediawiki instance...");
-    let mediawiki_client = mediawiki_client
-        .log_in(
-            fetch_env!("MW_TITLE_ALLOWLIST")
-                .split(',')
-                .map(|s| s.to_owned())
-                .collect::<Vec<_>>(),
-        )
-        .await?;
+    //tracing::info!("Logging into mediawiki instance...");
+    //let mediawiki_client = mediawiki_client
+    //    .log_in(
+    //        fetch_env!("MW_TITLE_ALLOWLIST")
+    //            .split(',')
+    //            .map(|s| s.to_owned())
+    //            .collect::<Vec<_>>(),
+    //    )
+    //    .await?;
 
     let app = routes::build_router()
         .layer(Extension(pronouns_page_client))
-        .layer(Extension(nowplaying_client))
-        .layer(Extension(mediawiki_client));
+        .layer(Extension(nowplaying_client));
+    //.layer(Extension(mediawiki_client));
 
     #[cfg(debug_assertions)]
     let app = app.nest(
