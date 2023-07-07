@@ -438,6 +438,10 @@ pre > code {
     fill: #609926;
 }
 
+.hover-kofi:hover {
+    fill: #ff5a6a;
+}
+
 .icon {
     height: 1.2em;
     fill: var(--foreground-dim);
