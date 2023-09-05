@@ -5,6 +5,14 @@ description = "Or, \"Why I should just move my server to NixOS\""
 
 Or, "Why I should just move my server to [NixOS](https://nixos.org)".
 
+## Update 2023-09-05
+
+Since originally writing this post, Kanidm now provides `arm64` images for `kanidm/server` again, and I switched my setup over to using those, however I forgot to update this post, so parts about building my own image are now unneccessary.
+
+Any outdated sections are also marked below.
+
+---
+
 [Kanidm](https://github.com/kanidm/kanidm#readme) is The Hot New Thing (alright, its not actually that new, and it's still technically in alpha, but still), and I wanted to replace my resource-heavy [Keycloak](https://keycloak.org) server with it, to hopefully free up my server for more ~~important~~ tasks.
 
 ## Docker makes things 'easy'
@@ -46,7 +54,9 @@ domain = "sso.ashhhleyyy.dev"
 origin = "https://sso.ashhhleyyy.dev"
 ```
 
-However, due to weird issues with the container builds, the `latest` tag isn't the most recent version, and the `x86_64_latest` is only compatible with `x86_64` CPUs, but my Raspberry Pi 4 has an `arm64` CPU. This means I have to use the slightly-outdated `latest` tag (this will cause issues later).
+~~However, due to weird issues with the container builds, the `latest` tag isn't the most recent version, and the `x86_64_latest` is only compatible with `x86_64` CPUs, but my Raspberry Pi 4 has an `arm64` CPU. This means I have to use the slightly-outdated `latest` tag (this will cause issues later).~~
+
+Update 2023-09-05: Kanidm have since fixed their Docker publishing, and the `latest` tag is now the latest version, and compatible with `arm64`.
 
 ## Setting up a user
 
@@ -219,6 +229,15 @@ Eventually, after a lot of digging, I figured out what the issue was:
 
 In Kanidm v1.1.0-alpha.10, when `prefer-short-username` was added, the implementation did not take into account the [OpenID Connect userinfo endpoint](https://openid.net/specs/openid-connect-core-1_0.html#UserInfo), which is used by many implementations to fetch the full details about the authenticated user.
 
+### Correction (2023-09-05)
+
+At some point Kanidm fixed this issue, and the `latest` tag on Docker hub is now compatible with `arm64` again.
+
+The section below is outdated and no longer required.
+
+<details>
+<summary>Unneeded Dockerfile modifications</summary>
+
 The solution to this should simply be to update to the latest version (which was released while I was trying to work out what was going wrong), however the `arm64` images fail to build properly, due to missing prebuilt binaries for [`wasm-opt`](https://github.com/WebAssembly/binaryen#tools). As of writing, [this PR](https://github.com/rustwasm/wasm-pack/pull/1102) for [`wasm-pack`](https://github.com/rustwasm/wasm-pack/) to fix this problem has not been merged.
 
 This meant I had to adjust Kanidm's Dockerfile manually to either provide the required `wasm-opt` binary, remove the optimisation pass (ideally not), or use a prebuilt WASM binary for the web UI. I choose the first option, and (after learning how to use alternative package repositories with [`zypper`](https://en.opensuse.org/Portal:Zypper)), I came up with the following required changes:
@@ -260,12 +279,20 @@ $ env IMAGE_BASE=git.ashhhleyyy.dev/ash make buildx/kanidmd buildx/kanidm_tools
 
 This built and pushed the two images, which are compatible with both `x86_64` and `arm64` 🎉🎉🎉
 
-> If you'd like to use these prebuilt images, they're available on my Forgejo [here (kanidm_tools)](https://git.ashhhleyyy.dev/ash/-/packages/container/kanidm-tools/devel) and [here (kanidmd)](https://git.ashhhleyyy.dev/ash/-/packages/container/kanidm-server/devel), but I've also provided everything needed to build them from source too :)
+> ~~If you'd like to use these prebuilt images, they're available on my Forgejo [here (kanidm_tools)](https://git.ashhhleyyy.dev/ash/-/packages/container/kanidm-tools/devel) and [here (kanidmd)](https://git.ashhhleyyy.dev/ash/-/packages/container/kanidm-server/devel), but I've also provided everything needed to build them from source too :)~~
 >
-> Of course, if you're on `x86_64`, you probably can just use the official images [on Docker Hub](https://hub.docker.com/r/kanidm/server).
+> ~~Of course, if you're on `x86_64`, you probably can just use the official images [on Docker Hub](https://hub.docker.com/r/kanidm/server).~~
+> 
+> The official images are now fully compatible with `arm64`, so use the official `kanidm/server:latest` for both
+
+</details>
 
 ---
 
 ## Wrapping up
 
 Finally, once I had updated Kanidm, Forgejo basically Just Works&trade;, and I can continue moving services over, all of which worked without any hitch. I've kept my old Keycloak instance running for now, in case I've missed anything that still depends on it, however I've disabled all the clients that I have moved over, and I'm hoping I can stop running the server in the next few weeks and nothing will break :)
+
+### Extra update (2023-09-05)
+
+Shortly after writing this post I did in fact stop running the old Keycloak server, and nothing has broken 🎉. Kanidm is now the only SSO app running on my server!
