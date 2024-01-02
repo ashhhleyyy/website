@@ -125,7 +125,7 @@ It doesn't work :/
 
 ## The scope of the issue
 
-Kanidm has a feature called "scope maps", which controls which users/clients are able to request certain scopes when logging in. For OpenID Connect, a scope named `openid` [MUST](https://www.rfc-editor.org/rfc/rfc2119) be requested, along with additional scopes which control what user information is included in the provided token, such as [`profile`, `email` or `address`](https://github.com/kanidm/kanidm/blob/master/kanidm_book/src/integrations/oauth2.md#:~:text=HINT%20OpenID,connect).
+Kanidm has a feature called "scope maps", which controls which users/clients are able to request certain scopes when logging in. For OpenID Connect, a scope named `openid` [MUST](https://www.rfc-editor.org/rfc/rfc2119) be requested, along with additional scopes which control what user information is included in the provided token, such as [`profile`, `email` or `address`](https://kanidm.github.io/kanidm/stable/integrations/oauth2.html#create-the-kanidm-configuration).
 
 Vouch only needs the `openid` and `email` scopes to function, so we just need to create a scope mapping which grants those:
 
