@@ -11,7 +11,7 @@ pub static ASSET_INDEX: Lazy<AssetMap> = Lazy::new(load_asset_map);
 impl AssetMap {
     pub fn get<'a>(&'a self, name: &'a str) -> &'a str {
         if let Some(s) = self.0.get(name) {
-            if let Some(s) = s.get(0) {
+            if let Some(s) = s.last() {
                 s
             } else {
                 name
