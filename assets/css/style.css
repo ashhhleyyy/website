@@ -403,6 +403,7 @@ pre > code {
     align-items: center;
     justify-content: center;
     gap: 16px;
+    margin: 16px 0;
 }
 
 .icon-row svg {
