@@ -449,6 +449,10 @@ pre > code {
     vertical-align: sub;
 }
 
+.buttons-88x31 picture {
+    image-rendering: pixelated;
+}
+
 table, th, td {
     border: var(--accent-dim) 1px solid;
 }
