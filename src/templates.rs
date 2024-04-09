@@ -6,6 +6,7 @@ use axum::{
     response::{Html, IntoResponse},
 };
 use lol_html::{element, html_content::ContentType, rewrite_str, Settings};
+use maud::PreEscaped;
 use time::{format_description::well_known::Rfc2822, OffsetDateTime};
 
 use crate::{
@@ -163,44 +164,99 @@ async fn load_post(server: &str, id: &str) -> PostData {
 async fn rewrite_html(path: &str, html: &str) -> String {
     let now = OffsetDateTime::now_utc();
 
-    // First pass to locate fedi posts
+    // First pass to locate fedi posts and footnotes
     let mut posts = vec![];
+    let mut footnotes: Vec<Footnote> = vec![];
+
+    struct Footnote {
+        id: String,
+        content: String,
+        reference_count: usize,
+        target_id: usize,
+    }
+
+    let mut next_footnote_id = 0;
 
     let html = rewrite_str(
         html,
         Settings {
-            element_content_handlers: vec![element!("fedi-post", |el| {
-                if let (Some(server), Some(id)) =
-                    (el.get_attribute("data-server"), el.get_attribute("data-id"))
-                {
-                    posts.push((server, id));
-                } else {
-                    tracing::warn!(
-                        "invalid fedi-post element: missing data-server or data-id attribute!"
-                    );
-                    let post = PostData {
-                        url: "https://oopsie.ashhhleyyy.dev/".to_owned(),
-                        content: "Invalid fedi-post element!".to_owned(),
-                        timestamps: fedi::Timestamps::Created {
-                            created_at: OffsetDateTime::UNIX_EPOCH,
-                        },
-                        account: AccountData {
-                            avatar_static:
-                                "https://cdn.ashhhleyyy.dev/file/ashhhleyyy-assets/images/pfp.png"
-                                    .to_owned(),
-                            avatar:
-                                "https://cdn.ashhhleyyy.dev/file/ashhhleyyy-assets/images/pfp.png"
-                                    .to_owned(),
-                            display_name: "Ashley".to_owned(),
-                            fqn: "ash@ashhhleyyy.dev".to_owned(),
-                            url: "https://ashhhleyyy.dev".to_owned(),
-                        },
-                        media_attachments: vec![],
+            element_content_handlers: vec![
+                element!("fedi-post", |el| {
+                    if let (Some(server), Some(id)) =
+                        (el.get_attribute("data-server"), el.get_attribute("data-id"))
+                    {
+                        posts.push((server, id));
+                    } else {
+                        tracing::warn!(
+                            "invalid fedi-post element: missing data-server or data-id attribute!"
+                        );
+                        let post = PostData {
+                            url: "https://oopsie.ashhhleyyy.dev/".to_owned(),
+                            content: "Invalid fedi-post element!".to_owned(),
+                            timestamps: fedi::Timestamps::Created {
+                                created_at: OffsetDateTime::UNIX_EPOCH,
+                            },
+                            account: AccountData {
+                                avatar_static:
+                                    "https://cdn.ashhhleyyy.dev/file/ashhhleyyy-assets/images/pfp.png"
+                                        .to_owned(),
+                                avatar:
+                                    "https://cdn.ashhhleyyy.dev/file/ashhhleyyy-assets/images/pfp.png"
+                                        .to_owned(),
+                                display_name: "Ashley".to_owned(),
+                                fqn: "ash@ashhhleyyy.dev".to_owned(),
+                                url: "https://ashhhleyyy.dev".to_owned(),
+                            },
+                            media_attachments: vec![],
+                        };
+                        el.replace(&post.as_html().0, ContentType::Html);
                     };
-                    el.replace(&post.as_html().0, ContentType::Html);
-                };
-                Ok(())
-            })],
+                    Ok(())
+                }),
+                element!("fn", |el| {
+                    match (el.get_attribute("id"), el.get_attribute("content")) {
+                        (Some(id), Some(content)) => {
+                            if footnotes.iter().any(|f| f.id == id) {
+                                el.replace("[duplicate footnote ID!]", ContentType::Text);
+                            } else {
+                                footnotes.push(Footnote {
+                                    id,
+                                    content,
+                                    reference_count: 1,
+                                    target_id: footnotes.len() + 1,
+                                });
+                                el.set_attribute("ref_no", "1")?;
+                                el.set_attribute("target_id", &footnotes.len().to_string())?;
+                            }
+                        },
+                        (None, Some(content)) => {
+                            let id = format!("f~{next_footnote_id}");
+                            next_footnote_id += 1;
+                            footnotes.push(Footnote {
+                                id,
+                                content,
+                                reference_count: 1,
+                                target_id: footnotes.len() + 1,
+                            });
+                            el.set_attribute("ref_no", "1")?;
+                            el.set_attribute("target_id", &footnotes.len().to_string())?;
+                        }
+                        (Some(id), None) => {
+                            if let Some(footnote) = footnotes.iter_mut().find(|f| f.id == id) {
+                                footnote.reference_count += 1;
+                                el.set_attribute("ref_no", &format!("{}", footnote.reference_count))?;
+                                el.set_attribute("target_id", &footnote.target_id.to_string())?;
+                            } else {
+                                el.replace("[unknown footnote id]", ContentType::Text);
+                            }
+                        }
+                        _ => {
+                            el.replace("[footnote missing content]", ContentType::Text)
+                        },
+                    };
+                    Ok(())
+                }),
+            ],
             ..Default::default()
         },
     )
@@ -237,6 +293,39 @@ async fn rewrite_html(path: &str, html: &str) -> String {
                 }),
                 element!("fedi-post", |el| {
                     el.replace(&posts.get(&(el.get_attribute("data-server").unwrap(), el.get_attribute("data-id").unwrap())).unwrap().as_html().0, ContentType::Html);
+                    Ok(())
+                }),
+                element!("fn", |el| {
+                    let target_id = el.get_attribute("target_id").unwrap();
+                    let ref_no = el.get_attribute("ref_no").unwrap();
+                    let id = format!("~fn{target_id}~{ref_no}");
+                    let html = maud::html! {
+                        a href=(format!("#~fn{target_id}")) id=(id) {
+                            sup {
+                                (target_id)
+                            }
+                        }
+                    };
+                    el.replace(&html.0, ContentType::Html);
+                    Ok(())
+                }),
+                element!("footnotes", |el| {
+                    let footnotes = maud::html! {
+                        ol {
+                            @for footnote in &footnotes {
+                                li id=(format!("~fn{}", footnote.target_id)) {
+                                    @for ref_no in 0..(footnote.reference_count) {
+                                        a href=(format!("#~fn{}~{}", footnote.target_id, ref_no + 1)) {
+                                            (PreEscaped("&#8593;"))
+                                        }
+                                        " "
+                                    }
+                                    (PreEscaped(footnote.content.clone()))
+                                }
+                            }
+                        }
+                    };
+                    el.replace(&footnotes.0, ContentType::Html);
                     Ok(())
                 }),
                 element!(".nav-link", |el| {
