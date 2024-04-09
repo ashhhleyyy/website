@@ -17,7 +17,7 @@ use tower_http::trace::TraceLayer;
 use crate::{
     apis::{CachingFetcher, NowPlayingInfo, PronounsPageProfile},
     templates::{
-        AboutTemplate, ErrorTemplate, HtmlTemplate, LinksTemplate, MusicTemplate, WordsTemplate,
+        AboutTemplate, AttributionTemplate, ErrorTemplate, HtmlTemplate, LinksTemplate, MusicTemplate, WordsTemplate,
     },
 };
 
@@ -33,6 +33,7 @@ macro_rules! simple_template {
 
 simple_template!(index, "/", AboutTemplate);
 simple_template!(links, "/me", LinksTemplate);
+simple_template!(attribution, "/attribution", AttributionTemplate);
 
 async fn about() -> Redirect {
     Redirect::permanent(Uri::from_static("/"))
@@ -83,6 +84,7 @@ pub fn build_router() -> Router {
         .route("/about", get(about))
         .route("/about/words", get(words))
         .route("/about/music", get(music))
+        .route("/attribution", get(attribution))
         .route("/blog/", get(blog::index))
         .route("/blog/:post", get(blog::post))
         .route("/projects/", get(projects::index))

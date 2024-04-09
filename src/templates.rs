@@ -28,6 +28,7 @@ macro_rules! simple_template {
 simple_template!("index.html", IndexTemplate);
 simple_template!("about.html", AboutTemplate);
 simple_template!("links.html", LinksTemplate);
+simple_template!("attribution.html", AttributionTemplate);
 
 #[derive(Template)]
 #[template(path = "words.html")]
