@@ -182,6 +182,25 @@ async fn rewrite_html(path: &str, html: &str) -> String {
         html,
         Settings {
             element_content_handlers: vec![
+                // This is applied in the first pass so that images get rewritten in the second one.
+                element!("dialogue", |el| {
+                    if let (Some(character), Some(mood)) = (el.get_attribute("character"), el.get_attribute("mood")) {
+                        el.set_tag_name("blockquote")?;
+                        el.set_attribute("class", "dialogue")?;
+                        el.remove_attribute("character");
+                        el.remove_attribute("mood");
+                        let image = maud::html! {
+                            // TODO: improve alt text when i rework asset handling
+                            img width=(96) height=(96) src=(format!("/assets/images/characters/{character}/{mood}.png")) alt=(format!("{character}, {mood}"));
+                        };
+                        el.prepend("<span><b>Leah</b>:", ContentType::Html);
+                        el.prepend(&image.0, ContentType::Html);
+                        el.append("</span>", ContentType::Html);
+                    } else {
+                        el.replace("<blockquote>Oops! Invalid dialogue elemment.</blockquote>", ContentType::Html);
+                    }
+                    Ok(())
+                }),
                 element!("fedi-post", |el| {
                     if let (Some(server), Some(id)) =
                         (el.get_attribute("data-server"), el.get_attribute("data-id"))
@@ -301,7 +320,7 @@ async fn rewrite_html(path: &str, html: &str) -> String {
                     let ref_no = el.get_attribute("ref_no").unwrap();
                     let id = format!("~fn{target_id}~{ref_no}");
                     let html = maud::html! {
-                        a href=(format!("#~fn{target_id}")) id=(id) {
+                        a class="inline-note" href=(format!("#~fn{target_id}")) id=(id) {
                             sup {
                                 (target_id)
                             }

@@ -353,6 +353,23 @@ blockquote {
     color: var(--foreground-dim);
 }
 
+.inline-note {
+    user-select: none;
+}
+
+blockquote.dialogue {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 1em;
+    padding: 0.5em 1em;
+}
+
+blockquote.dialogue img {
+    user-select: none;
+    min-width: 96px;
+}
+
 pre {
     overflow-x: auto;
     border: var(--accent) 1px solid;
