@@ -67,20 +67,8 @@ jobs:
       - name: Display asset index
         run: cat assetindex.json
 
-      - name: Build with cargo
-        uses: actions-rs/cargo@v1
-        with:
-          command: build
-          args: --release
-
       - name: Build with cross (aarch64-unknown-linux-musl)
         run: cross build --release --target aarch64-unknown-linux-musl
-
-      - name: Upload artifacts (x64)
-        uses: actions/upload-artifact@v2
-        with:
-          name: website-x64
-          path: target/release/website
 
       - name: Upload artifacts (arm64)
         uses: actions/upload-artifact@v2
