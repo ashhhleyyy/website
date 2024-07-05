@@ -1,7 +1,7 @@
 use std::{ffi::OsString, io::Cursor, path::Path};
 
 use color_eyre::{eyre::eyre, Result};
-use image::{io::Reader as ImageReader, DynamicImage, ImageOutputFormat};
+use image::{io::Reader as ImageReader, ColorType, DynamicImage, ImageFormat};
 use lightningcss::stylesheet::{MinifyOptions, ParserOptions, PrinterOptions, StyleSheet};
 use serde::Deserialize;
 use sha2::{Digest, Sha256};
@@ -33,29 +33,33 @@ impl Loader {
 
     fn load_image(input_path: &Path, hashed_name: bool) -> Result<Vec<Asset>> {
         let img = ImageReader::open(input_path)?.decode()?;
-        Ok(vec![
+        let mut result = vec![
             Self::generate_image(
                 input_path,
                 &img,
-                ImageOutputFormat::Avif,
+                ImageFormat::Avif,
                 "avif",
                 hashed_name,
             )?,
             Self::generate_image(
                 input_path,
                 &img,
-                ImageOutputFormat::WebP,
+                ImageFormat::WebP,
                 "webp",
                 hashed_name,
             )?,
-            Self::generate_image(input_path, &img, ImageOutputFormat::Png, "png", hashed_name)?,
-        ])
+            Self::generate_image(input_path, &img, ImageFormat::Png, "png", hashed_name)?,
+        ];
+        if img.color() == ColorType::L8 || img.color() == ColorType::Rgb8 {
+            result.push(Self::generate_image(input_path, &img, ImageFormat::Jpeg, "jpg", hashed_name)?);
+        }
+        Ok(result)
     }
 
-    fn generate_image<F: Into<ImageOutputFormat>>(
+    fn generate_image(
         input_path: &Path,
         img: &DynamicImage,
-        format: F,
+        format: ImageFormat,
         ext: &str,
         hashed_name: bool,
     ) -> Result<Asset> {

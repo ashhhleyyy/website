@@ -36,7 +36,7 @@ simple_template!(links, "/me", LinksTemplate);
 simple_template!(attribution, "/attribution", AttributionTemplate);
 
 async fn about() -> Redirect {
-    Redirect::permanent(Uri::from_static("/"))
+    Redirect::permanent("/")
 }
 
 async fn words(
@@ -95,5 +95,5 @@ pub fn build_router() -> Router {
         .route("/assets-gen/image.js", get(image_script))
         .route("/api/oembed", get(assets::oembed))
         .layer(TraceLayer::new_for_http())
-        .fallback(handle_404.into_service())
+        .fallback(handle_404)
 }

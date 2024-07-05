@@ -1,6 +1,7 @@
 use std::collections::HashMap;
 
 use axum::{extract::Path, response::IntoResponse};
+use once_cell::sync::Lazy;
 use regex::Regex;
 use rust_embed::RustEmbed;
 
@@ -32,9 +33,7 @@ impl Project {
 }
 
 fn load_project(filename: &str) -> Option<Project> {
-    lazy_static::lazy_static! {
-        static ref NAME_REGEX: Regex = Regex::new(r"([0-9]{4})-([a-z\-]+)\.md$").unwrap();
-    }
+    static  NAME_REGEX: Lazy<Regex> = Lazy::new(|| Regex::new(r"([0-9]{4})-([a-z\-]+)\.md$").unwrap());
     if let Some(captures) = NAME_REGEX.captures(filename) {
         let (year, slug) = (
             captures.get(1).unwrap().as_str().to_string(),

@@ -2,19 +2,18 @@ use std::cell::RefCell;
 
 use comrak::{
     format_html_with_plugins,
-    nodes::{Ast, AstNode, NodeValue},
+    nodes::{Ast, AstNode, LineColumn, NodeValue},
     parse_document,
     plugins::syntect::SyntectAdapter,
     Arena, ComrakOptions, ComrakPlugins,
 };
 use extract_frontmatter::{config::Splitter, Extractor};
+use once_cell::sync::Lazy;
 use regex::{Captures, Regex};
 use reqwest::Url;
 use serde::Deserialize;
 
-lazy_static::lazy_static! {
-    static ref ICON_REGEX: Regex = Regex::new(r"!--icon\((.*)\)--!").unwrap();
-}
+static ICON_REGEX: Lazy<Regex> = Lazy::new(|| Regex::new(r"!--icon\((.*)\)--!").unwrap());
 
 #[derive(Deserialize)]
 pub struct Metadata {
@@ -58,8 +57,9 @@ pub fn render_markdown(markdown: &str) -> (Metadata, String) {
     }
 
     iter_nodes(root, &|node| {
-        if let NodeValue::Link(ref mut link) = node.data.borrow_mut().value {
-            let url = std::str::from_utf8(&link.url).unwrap();
+        let mut data = node.data.borrow_mut();
+        if let NodeValue::Link(ref mut link) = data.value {
+            let url = &link.url;
             if let Ok(url) = Url::parse(url) {
                 let service = url.scheme();
                 let target_url = match service {
@@ -79,11 +79,11 @@ pub fn render_markdown(markdown: &str) -> (Metadata, String) {
                     }
                     _ => return,
                 };
-                link.url = target_url.into_bytes();
+                link.url = target_url;
                 let insert = format!("!--icon({})--! ", service);
                 let new_node = arena.alloc(AstNode::new(RefCell::new(Ast::new(NodeValue::Text(
-                    insert.into_bytes(),
-                )))));
+                    insert,
+                ), data.sourcepos.start))));
                 node.prepend(new_node);
             }
         }
@@ -91,7 +91,7 @@ pub fn render_markdown(markdown: &str) -> (Metadata, String) {
 
     let mut html = vec![];
     let mut plugins = ComrakPlugins::default();
-    let adapter = SyntectAdapter::new("base16-ocean.dark");
+    let adapter = SyntectAdapter::new(Some("base16-ocean.dark"));
     plugins.render.codefence_syntax_highlighter = Some(&adapter);
     format_html_with_plugins(root, &options, &mut html, &plugins).unwrap();
 

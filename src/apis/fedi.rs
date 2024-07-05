@@ -1,5 +1,6 @@
 use std::{collections::HashMap, sync::Arc};
 
+use once_cell::sync::Lazy;
 use time::OffsetDateTime;
 use tokio::sync::Mutex;
 
@@ -7,9 +8,7 @@ use crate::error::Result;
 
 use super::CachingFetcher;
 
-lazy_static::lazy_static! {
-    pub(crate) static ref POST_FETCHER: CachingPostFetcher = CachingPostFetcher::new();
-}
+pub(crate) static POST_FETCHER: Lazy<CachingPostFetcher> = Lazy::new(CachingPostFetcher::new);
 
 pub struct CachingPostFetcher {
     #[allow(clippy::type_complexity)]

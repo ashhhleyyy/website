@@ -15,7 +15,7 @@ use apis::{
     mediawiki::MediawikiClient, CachingFetcher, NowPlayingInfo, PronounsPageProfile,
     NOWPLAYING_URL, PRONOUNS_PAGE_URL,
 };
-use axum::extract::Extension;
+use axum::{extract::Extension, response::IntoResponse, ServiceExt};
 #[cfg(debug_assertions)]
 use axum::routing::any_service;
 #[cfg(debug_assertions)]
@@ -66,20 +66,14 @@ async fn main() -> error::Result<()> {
     //.layer(Extension(mediawiki_client));
 
     #[cfg(debug_assertions)]
-    let app = app.nest(
-        "/assets",
-        any_service(ServeDir::new(Path::new("assets-gen"))).handle_error(
-            |err: std::io::Error| async move {
-                tracing::error!("unhandled error in static file server: {}", err);
-                (StatusCode::INTERNAL_SERVER_ERROR, "internal server error")
-            },
-        ),
+    let app = app.nest_service(
+        "/assets",  
+        ServeDir::new(Path::new("assets-gen"))
     );
 
-    axum::Server::bind(&"0.0.0.0:3000".parse().unwrap())
-        .serve(app.into_make_service())
-        .await
-        .unwrap();
+    let listener = tokio::net::TcpListener::bind("0.0.0.0:3000").await.unwrap();
+    axum::serve(listener, app).await.unwrap();
 
     Ok(())
 }
+    

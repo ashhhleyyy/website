@@ -1,3 +1,4 @@
+use once_cell::sync::Lazy;
 use regex::Regex;
 use rust_embed::RustEmbed;
 
@@ -44,9 +45,7 @@ impl BlogPost {
 }
 
 fn load_post(filename: &str) -> Option<BlogPost> {
-    lazy_static::lazy_static! {
-        static ref NAME_REGEX: Regex = Regex::new(r"([0-9]{4})-([0-9]{2})-([0-9]{2})-([a-z0-9\-]+)\.md$").unwrap();
-    }
+    static NAME_REGEX: Lazy<Regex> = Lazy::new(|| Regex::new(r"([0-9]{4})-([0-9]{2})-([0-9]{2})-([a-z0-9\-]+)\.md$").unwrap());
     if let Some(captures) = NAME_REGEX.captures(filename) {
         let (year, month, day) = (
             captures.get(1).unwrap().as_str().to_string(),
