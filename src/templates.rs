@@ -176,6 +176,10 @@ async fn rewrite_html(path: &str, html: &str) -> String {
         target_id: usize,
     }
 
+    fn is_url(s: &str) -> bool {
+        reqwest::Url::parse(s).is_ok()
+    }
+
     let mut next_footnote_id = 0;
 
     let html = rewrite_str(
@@ -191,7 +195,7 @@ async fn rewrite_html(path: &str, html: &str) -> String {
                         el.remove_attribute("mood");
                         let image = maud::html! {
                             // TODO: improve alt text when i rework asset handling
-                            img width=(96) height=(96) src=(format!("/assets/images/characters/{character}/{mood}.png")) alt=(format!("{character}, {mood}"));
+                            img width=(72) height=(72) src=(format!("/assets/images/characters/{character}/{mood}.png")) alt=(format!("{character}, {mood}"));
                         };
                         el.prepend("<span><b>Leah</b>:", ContentType::Html);
                         el.prepend(&image.0, ContentType::Html);
@@ -239,6 +243,13 @@ async fn rewrite_html(path: &str, html: &str) -> String {
                             if footnotes.iter().any(|f| f.id == id) {
                                 el.replace("[duplicate footnote ID!]", ContentType::Text);
                             } else {
+                                let content = if is_url(&content) {
+                                    maud::html! {
+                                        a href=(content) { (content) }
+                                    }.0
+                                } else {
+                                    content
+                                };
                                 footnotes.push(Footnote {
                                     id,
                                     content,
@@ -252,6 +263,13 @@ async fn rewrite_html(path: &str, html: &str) -> String {
                         (None, Some(content)) => {
                             let id = format!("f~{next_footnote_id}");
                             next_footnote_id += 1;
+                            let content = if is_url(&content) {
+                                maud::html! {
+                                    a href=(content) { (content) }
+                                }.0
+                            } else {
+                                content
+                            };
                             footnotes.push(Footnote {
                                 id,
                                 content,

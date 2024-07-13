@@ -367,12 +367,14 @@ blockquote.dialogue {
 
 blockquote.dialogue img {
     user-select: none;
-    min-width: 96px;
+    min-width: 72px;
 }
 
 pre {
     overflow-x: auto;
     border: var(--accent) 1px solid;
+    padding-top: 0.5em;
+    padding-bottom: 0.5em;
     padding-left: 24px;
     background-color: var(--background-2) !important;
     border-radius: 4px;
