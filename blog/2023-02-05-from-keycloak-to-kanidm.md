@@ -112,7 +112,7 @@ oauth:
 ```
 $ docker restart vouch-main
 vouch-main
-$ 
+$
 ```
 
 Aaand done! Let's try it out...
@@ -225,7 +225,7 @@ Hmmmmmmmmm
 
 Eventually, after a lot of digging, I figured out what the issue was:
 
-<fedi-post data-server="fedi.ashhhleyyy.dev" data-id="AS10mMiPosXdgjUKv2"></fedi-post>
+<fedi-post data-server="fedi.shorks.gay" data-id="9afstm0cv481dktc"></fedi-post>
 
 In Kanidm v1.1.0-alpha.10, when `prefer-short-username` was added, the implementation did not take into account the [OpenID Connect userinfo endpoint](https://openid.net/specs/openid-connect-core-1_0.html#UserInfo), which is used by many implementations to fetch the full details about the authenticated user.
 
@@ -254,7 +254,7 @@ index 0f0125a7f..17feefe2c 100644
 +RUN curl -o '/etc/zypp/repos.d/home:dziobian:gulgul-ultron.repo' 'https://download.opensuse.org/repositories/home:/dziobian:/gulgul-ultron/openSUSE_Tumbleweed/home:dziobian:gulgul-ultron.repo'
 +RUN zypper --gpg-auto-import-keys refresh --force
  RUN zypper dup -y
- 
+
  # ======================
 @@ -17,6 +18,8 @@ RUN zypper install -y \
          rsync \
@@ -264,7 +264,7 @@ index 0f0125a7f..17feefe2c 100644
 +        binaryen
  RUN zypper clean -a
  RUN rustup default stable
- 
+
 ```
 
 ([full patch with some Makefile changes too](https://git.ashhhleyyy.dev/ash/e/src/branch/main/patches/kanidm-docker-fix.patch))
@@ -282,7 +282,7 @@ This built and pushed the two images, which are compatible with both `x86_64` an
 > ~~If you'd like to use these prebuilt images, they're available on my Forgejo [here (kanidm_tools)](https://git.ashhhleyyy.dev/ash/-/packages/container/kanidm-tools/devel) and [here (kanidmd)](https://git.ashhhleyyy.dev/ash/-/packages/container/kanidm-server/devel), but I've also provided everything needed to build them from source too :)~~
 >
 > ~~Of course, if you're on `x86_64`, you probably can just use the official images [on Docker Hub](https://hub.docker.com/r/kanidm/server).~~
-> 
+>
 > The official images are now fully compatible with `arm64`, so use the official `kanidm/server:latest` for both
 
 </details>

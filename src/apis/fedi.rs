@@ -116,13 +116,15 @@ impl PostData {
 
                     br; br;
 
-                    @match self.timestamps {
-                        Timestamps::Created { created_at } => {
-                            "Posted " (format_odt(created_at))
-                        },
-                        Timestamps::Edited { created_at, edited_at } => {
-                            "Posted " (format_odt(created_at)) " (Edited at " (format_odt(edited_at)) ")"
-                        },
+                    a href=(self.url) {
+                        @match self.timestamps {
+                            Timestamps::Created { created_at } => {
+                                "Posted " (format_odt(created_at))
+                            },
+                            Timestamps::Edited { created_at, edited_at } => {
+                                "Posted " (format_odt(created_at)) " (Edited at " (format_odt(edited_at)) ")"
+                            },
+                        }
                     }
                 }
             }
