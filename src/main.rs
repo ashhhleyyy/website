@@ -18,8 +18,10 @@ use apis::{
 use axum::{extract::Extension, response::IntoResponse, ServiceExt};
 #[cfg(debug_assertions)]
 use axum::routing::any_service;
+use once_cell::sync::Lazy;
 #[cfg(debug_assertions)]
 use reqwest::StatusCode;
+use time::{format_description::well_known, OffsetDateTime};
 #[cfg(debug_assertions)]
 use tower_http::services::ServeDir;
 use tracing_subscriber::{prelude::*, util::SubscriberInitExt};
@@ -29,6 +31,8 @@ macro_rules! fetch_env {
         ::std::env::var($name).expect(concat!("environment variable `", $name, "` must be set!"))
     };
 }
+
+pub static SERVER_START_TIME: Lazy<OffsetDateTime> = Lazy::new(OffsetDateTime::now_utc);
 
 #[tokio::main]
 async fn main() -> error::Result<()> {
@@ -70,6 +74,9 @@ async fn main() -> error::Result<()> {
         "/assets",  
         ServeDir::new(Path::new("assets-gen"))
     );
+
+    // cheeky log line to initialise the lazy variable
+    info!("server started at {}", SERVER_START_TIME.format(&well_known::Rfc3339).unwrap());
 
     let listener = tokio::net::TcpListener::bind("0.0.0.0:3000").await.unwrap();
     axum::serve(listener, app).await.unwrap();

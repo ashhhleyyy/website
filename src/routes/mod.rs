@@ -87,6 +87,7 @@ pub fn build_router() -> Router {
         .route("/attribution", get(attribution))
         .route("/blog/", get(blog::index))
         .route("/blog.rss", get(blog::rss))
+        .route("/blog.atom", get(blog::atom))
         .route("/blog/:post", get(blog::post))
         .route("/projects/", get(projects::index))
         .route("/projects/:year/:project", get(projects::project))
