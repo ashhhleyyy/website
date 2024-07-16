@@ -14,7 +14,7 @@ use crate::{
         fedi::{self, AccountData, PostData},
         NowPlayingInfo, PronounsPageCard,
     },
-    assets::ASSET_INDEX,
+    assets::ASSET_INDEX, routes::blog::BlogPost,
 };
 
 macro_rules! simple_template {
@@ -45,7 +45,7 @@ pub struct MusicTemplate {
 #[derive(Template)]
 #[template(path = "blog-index.html")]
 pub struct BlogIndexTemplate {
-    pub posts: Vec<(String, String, String)>,
+    pub posts: Vec<BlogPost>,
 }
 
 #[derive(Template)]
@@ -162,7 +162,7 @@ async fn load_post(server: &str, id: &str) -> PostData {
 }
 
 // TODO: Refactor into a tower layer(?) to remove the requirement for passing the path directly
-async fn rewrite_html(path: &str, html: &str) -> String {
+pub(crate) async fn rewrite_html(path: &str, html: &str) -> String {
     let now = OffsetDateTime::now_utc();
 
     // First pass to locate fedi posts and footnotes

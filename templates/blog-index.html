@@ -8,15 +8,19 @@
 <main class="content">
     <h1>Blog</h1>
 
+    <dialogue character="leah" mood="happy">
+        You can add this blog to your reader as an <a href="/blog.rss">RSS</a> feed!
+    </dialogue>
+
     <p>
         I write things sometimes, and then I post them here:
     </p>
 
     <ul>
-        {% for (date, name, url) in posts %}
+        {% for post in posts %}
             <li>
-                <a href="{{ url }}">
-                    {{ date }}: {{ name }}
+                <a href="{{ post.url() }}">
+                    {{ post.date() }}: {{ post.title }}
                 </a>
             </li>
         {% endfor %}

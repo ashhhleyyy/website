@@ -1,5 +1,5 @@
 mod assets;
-mod blog;
+pub(crate) mod blog;
 mod extras;
 mod projects;
 
@@ -86,6 +86,7 @@ pub fn build_router() -> Router {
         .route("/about/music", get(music))
         .route("/attribution", get(attribution))
         .route("/blog/", get(blog::index))
+        .route("/blog.rss", get(blog::rss))
         .route("/blog/:post", get(blog::post))
         .route("/projects/", get(projects::index))
         .route("/projects/:year/:project", get(projects::project))
