@@ -14,7 +14,8 @@ use crate::{
         fedi::{self, AccountData, PostData},
         NowPlayingInfo, PronounsPageCard,
     },
-    assets::ASSET_INDEX, routes::blog::BlogPost,
+    assets::ASSET_INDEX,
+    routes::blog::BlogPost,
 };
 
 macro_rules! simple_template {
@@ -385,6 +386,10 @@ pub(crate) async fn rewrite_html(path: &str, html: &str) -> String {
                     Ok(())
                 }),
                 element!("img[src]", |el| {
+                    if el.get_attribute("data-no-rewrite").is_some() {
+                        el.remove_attribute("data-no-rewrite");
+                        return Ok(());
+                    }
                     let src = el.get_attribute("src").expect("src required");
                     if let Some(paths) = ASSET_INDEX.get_all(&src) {
                         let html = maud::html! {
@@ -407,6 +412,7 @@ pub(crate) async fn rewrite_html(path: &str, html: &str) -> String {
                     Ok(())
                 }),
                 attr_rewrite!("src"),
+                attr_rewrite!("srcset"),
                 attr_rewrite!("href"),
                 attr_rewrite!("meta", "content"),
                 #[cfg(debug_assertions)]

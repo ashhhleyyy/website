@@ -16,6 +16,9 @@
             "hash_ignore": [
                 "./assets/images/pfp.png"
             ],
+            "just_copy": [
+                "./assets/images/buttons/*"
+            ],
           "loader": "image"
         },
         {

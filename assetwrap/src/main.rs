@@ -27,6 +27,13 @@ fn main() -> Result<()> {
             }
             builder.build()?
         };
+        let copy_matchers = {
+            let mut builder = GlobSetBuilder::new();
+            for ignore in &asset_path.just_copy {
+                builder.add(ignore.clone());
+            }
+            builder.build()?
+        };
         let glob = asset_path.input.compile_matcher();
         let entries = WalkDir::new(".")
             .into_iter()
@@ -38,7 +45,15 @@ fn main() -> Result<()> {
             .into_par_iter()
             .map(|entry| {
                 let no_hash = asset_path.no_hash || no_hash_matchers.is_match(entry.path());
-                let assets = assetwrap::generate_assets(entry.path(), asset_path.loader, no_hash)?;
+                let assets = if copy_matchers.is_match(entry.path()) {
+                    assetwrap::generate_assets(
+                        entry.path(),
+                        assetwrap::loader::Loader::Default,
+                        true,
+                    )?
+                } else {
+                    assetwrap::generate_assets(entry.path(), asset_path.loader, no_hash)?
+                };
                 let mut output_paths = vec![];
                 let original_name = entry.path().to_string_lossy().replace("./", "/");
                 let mut size = ByteSize::b(0);

@@ -20,6 +20,8 @@ pub struct AssetPath {
     #[serde(default)]
     pub hash_ignore: Vec<Glob>,
     #[serde(default)]
+    pub just_copy: Vec<Glob>,
+    #[serde(default)]
     pub loader: Loader,
 }
 
