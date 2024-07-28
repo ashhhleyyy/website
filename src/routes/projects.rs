@@ -33,7 +33,8 @@ impl Project {
 }
 
 fn load_project(filename: &str) -> Option<Project> {
-    static  NAME_REGEX: Lazy<Regex> = Lazy::new(|| Regex::new(r"([0-9]{4})-([a-z\-]+)\.md$").unwrap());
+    static NAME_REGEX: Lazy<Regex> =
+        Lazy::new(|| Regex::new(r"([0-9]{4})-([a-z\-]+)\.md$").unwrap());
     if let Some(captures) = NAME_REGEX.captures(filename) {
         let (year, slug) = (
             captures.get(1).unwrap().as_str().to_string(),

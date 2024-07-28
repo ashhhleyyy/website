@@ -12,15 +12,11 @@ mod templates;
 use std::path::Path;
 
 use apis::{
-    mediawiki::MediawikiClient, CachingFetcher, NowPlayingInfo, PronounsPageProfile,
+    CachingFetcher, NowPlayingInfo, PronounsPageProfile,
     NOWPLAYING_URL, PRONOUNS_PAGE_URL,
 };
-use axum::{extract::Extension, response::IntoResponse, ServiceExt};
-#[cfg(debug_assertions)]
-use axum::routing::any_service;
+use axum::{extract::Extension};
 use once_cell::sync::Lazy;
-#[cfg(debug_assertions)]
-use reqwest::StatusCode;
 use time::{format_description::well_known, OffsetDateTime};
 #[cfg(debug_assertions)]
 use tower_http::services::ServeDir;
@@ -70,17 +66,16 @@ async fn main() -> error::Result<()> {
     //.layer(Extension(mediawiki_client));
 
     #[cfg(debug_assertions)]
-    let app = app.nest_service(
-        "/assets",  
-        ServeDir::new(Path::new("assets-gen"))
-    );
+    let app = app.nest_service("/assets", ServeDir::new(Path::new("assets-gen")));
 
     // cheeky log line to initialise the lazy variable
-    info!("server started at {}", SERVER_START_TIME.format(&well_known::Rfc3339).unwrap());
+    info!(
+        "server started at {}",
+        SERVER_START_TIME.format(&well_known::Rfc3339).unwrap()
+    );
 
     let listener = tokio::net::TcpListener::bind("0.0.0.0:3000").await.unwrap();
     axum::serve(listener, app).await.unwrap();
 
     Ok(())
 }
-    

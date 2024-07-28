@@ -19,10 +19,12 @@ const MIN_REFRESH_TIME: Duration = Duration::from_secs(5);
 pub(crate) mod fedi;
 pub(crate) mod mediawiki;
 
-pub(crate) static  CLIENT: Lazy<Client> = Lazy::new(||
+pub(crate) static CLIENT: Lazy<Client> = Lazy::new(|| {
     ClientBuilder::new()
         .user_agent(USER_AGENT)
-        .build().expect("failed to build client"));
+        .build()
+        .expect("failed to build client")
+});
 
 #[derive(Clone)]
 pub struct CachingFetcher<T: DeserializeOwned + Sized + Clone> {

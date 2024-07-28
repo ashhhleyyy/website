@@ -6,7 +6,6 @@ mod projects;
 use axum::{
     extract::Extension,
     handler::Handler,
-    http::Uri,
     response::{IntoResponse, Redirect, Response},
     routing::get,
     Router,
@@ -17,7 +16,8 @@ use tower_http::trace::TraceLayer;
 use crate::{
     apis::{CachingFetcher, NowPlayingInfo, PronounsPageProfile},
     templates::{
-        AboutTemplate, AttributionTemplate, ErrorTemplate, HtmlTemplate, LinksTemplate, MusicTemplate, WordsTemplate,
+        AboutTemplate, AttributionTemplate, ErrorTemplate, HtmlTemplate, LinksTemplate,
+        MusicTemplate, WordsTemplate,
     },
 };
 

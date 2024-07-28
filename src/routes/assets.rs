@@ -1,10 +1,6 @@
 use std::fmt::Write;
 
-use axum::{
-    extract::Query,
-    http::HeaderMap,
-    Json,
-};
+use axum::{extract::Query, http::HeaderMap, Json};
 use axum_extra::headers::{ContentType, HeaderMapExt};
 use image::GenericImageView;
 use mime_guess::mime::{APPLICATION_JAVASCRIPT_UTF_8, IMAGE_SVG};

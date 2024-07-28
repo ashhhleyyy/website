@@ -34,24 +34,18 @@ impl Loader {
     fn load_image(input_path: &Path, hashed_name: bool) -> Result<Vec<Asset>> {
         let img = ImageReader::open(input_path)?.decode()?;
         let mut result = vec![
-            Self::generate_image(
-                input_path,
-                &img,
-                ImageFormat::Avif,
-                "avif",
-                hashed_name,
-            )?,
-            Self::generate_image(
-                input_path,
-                &img,
-                ImageFormat::WebP,
-                "webp",
-                hashed_name,
-            )?,
+            Self::generate_image(input_path, &img, ImageFormat::Avif, "avif", hashed_name)?,
+            Self::generate_image(input_path, &img, ImageFormat::WebP, "webp", hashed_name)?,
             Self::generate_image(input_path, &img, ImageFormat::Png, "png", hashed_name)?,
         ];
         if img.color() == ColorType::L8 || img.color() == ColorType::Rgb8 {
-            result.push(Self::generate_image(input_path, &img, ImageFormat::Jpeg, "jpg", hashed_name)?);
+            result.push(Self::generate_image(
+                input_path,
+                &img,
+                ImageFormat::Jpeg,
+                "jpg",
+                hashed_name,
+            )?);
         }
         Ok(result)
     }

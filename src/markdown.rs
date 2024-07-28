@@ -2,7 +2,7 @@ use std::cell::RefCell;
 
 use comrak::{
     format_html_with_plugins,
-    nodes::{Ast, AstNode, LineColumn, NodeValue},
+    nodes::{Ast, AstNode, NodeValue},
     parse_document,
     plugins::syntect::SyntectAdapter,
     Arena, ComrakOptions, ComrakPlugins,
@@ -81,9 +81,10 @@ pub fn render_markdown(markdown: &str) -> (Metadata, String) {
                 };
                 link.url = target_url;
                 let insert = format!("!--icon({})--! ", service);
-                let new_node = arena.alloc(AstNode::new(RefCell::new(Ast::new(NodeValue::Text(
-                    insert,
-                ), data.sourcepos.start))));
+                let new_node = arena.alloc(AstNode::new(RefCell::new(Ast::new(
+                    NodeValue::Text(insert),
+                    data.sourcepos.start,
+                ))));
                 node.prepend(new_node);
             }
         }
