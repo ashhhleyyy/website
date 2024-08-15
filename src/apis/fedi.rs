@@ -96,11 +96,9 @@ impl PostData {
                         img.fedi-avatar width="48" height="48" src=(self.account.avatar_static);
 
                         a href=(self.account.url) {
-                            (self.account.display_name) " (@" (self.account.display_name) ")"
+                            (self.account.display_name) " (@" (self.account.fqn) ")"
                         }
                     }
-
-                    br;
 
                     (maud::PreEscaped(self.content.clone()))
 
@@ -113,8 +111,6 @@ impl PostData {
                             img src=(attachment.url) alt=(attachment.description);
                         }
                     }
-
-                    br; br;
 
                     a href=(self.url) {
                         @match self.timestamps {
