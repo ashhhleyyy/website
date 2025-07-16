@@ -12,7 +12,7 @@ use tokio::sync::{Mutex, RwLock};
 use crate::error::Result;
 
 const USER_AGENT: &str = "ashhhleyyy.dev website backend (v1, https://github.com/ashhhleyyy/)";
-pub const PRONOUNS_PAGE_URL: &str = "https://en.pronouns.page/api/profile/get/ashhhleyyy?version=2";
+pub const PRONOUNS_PAGE_URL: &str = "https://en.pronouns.page/api/profile/get/ashhhleyyy?version=2&props=names&props=pronouns&props=flags&props=words";
 pub const NOWPLAYING_URL: &str = "https://api.ashhhleyyy.dev/playing";
 const MIN_REFRESH_TIME: Duration = Duration::from_secs(5);
 
