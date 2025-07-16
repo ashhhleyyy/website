@@ -1,7 +1,7 @@
 :root {
     --background: #13092b;
     --background-transparent: #13092baa;
-    --background-2: #090f2b;
+    --background-code: #090f2b;
     --foreground: #ddd;
     --foreground-bright: #fff;
     --foreground-dim: #aaa;
@@ -14,6 +14,8 @@ body {
     font-family: 'Poppins', sans-serif;
     background-color: var(--background);
     background-image: url('https://ashhhleyyy.dev/assets-gen/background.svg');
+    background-repeat: repeat;
+    background-size: 1024px 1024px;
     color: var(--foreground);
     margin: 0;
     box-sizing: border-box;
@@ -31,16 +33,6 @@ body {
 
 body.error {
     background-image: url('https://ashhhleyyy.dev/assets-gen/background.svg?error=true');
-}
-
-@media only screen and (max-width: 720px) {
-    body {
-        background-image: url('https://ashhhleyyy.dev/assets-gen/background.svg?small=true');
-    }
-
-    body.error {
-        background-image: url('https://ashhhleyyy.dev/assets-gen/background.svg?error=true&small=true');
-    }
 }
 
 a {
@@ -133,6 +125,7 @@ h6::before {
 
 .nav-link:hover {
     color: var(--foreground);
+    font-weight: bold;
 }
 
 .nav-link::before {
@@ -147,6 +140,7 @@ h6::before {
 
 .nav-link.active {
     color: var(--foreground-bright);
+    font-weight: bold;
 }
 
 .nav-link.active::before {
@@ -288,6 +282,8 @@ h6::before {
 
 .spotify-widget {
     margin-top: 16px;
+    border-radius: 12px;
+    border: 0;
 }
 
 .link-list {
@@ -376,7 +372,7 @@ pre {
     padding-top: 0.5em;
     padding-bottom: 0.5em;
     padding-left: 24px;
-    background-color: var(--background-2) !important;
+    background-color: var(--background-code) !important;
     border-radius: 4px;
 }
 
@@ -404,7 +400,7 @@ code {
     border: #ffffff88 1px solid;
     padding: 0.1em 0.2em;
     border-radius: 4px;
-    background-color: var(--background-2);
+    background-color: var(--background-code);
 }
 
 a > code {
@@ -427,7 +423,7 @@ pre > code {
 
 .icon-row svg {
     transition: fill 200ms ease;
-    fill: white;
+    fill: var(--foreground-bright);
 }
 
 .hover-email:hover {

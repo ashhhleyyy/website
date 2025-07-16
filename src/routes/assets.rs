@@ -12,6 +12,8 @@ pub struct BackgroundQuery {
     error: bool,
     #[serde(default)]
     small: bool,
+    #[serde(default)]
+    light: bool,
     star_colour: Option<String>,
 }
 
@@ -33,31 +35,65 @@ pub async fn background(Query(query): Query<BackgroundQuery>) -> (HeaderMap, Str
     )
     .expect("failed to write");
 
+    let background_colour = if query.light {
+        "white"
+    } else {
+        "#13092b"
+    };
+
     let fill = if query.error {
         "orange".to_string()
     } else {
-        query.star_colour.unwrap_or_else(|| "white".to_string())
+        query.star_colour.unwrap_or_else(|| if query.light {
+            "#f9027a88"
+        } else {
+            "white"
+        }.to_string())
     };
 
-    write!(
-        svg,
-        r##"<defs><radialGradient id="star"><stop offset="0%" stop-color="{fill}" /><stop offset="90%" stop-color="#00000000" /></radialGradient></defs>"##
-    )
-    .expect("failed to write");
+    if !query.light {
+        write!(
+            svg,
+            r##"<defs><radialGradient id="star"><stop offset="0%" stop-color="{fill}" /><stop offset="90%" stop-color="#00000000" /></radialGradient></defs>"##
+        )
+        .expect("failed to write");
+    }
 
     write!(
         svg,
-        r#"<rect x="0" y="0" width="{width}" height="{height}" fill='#13092b' />"#
+        r#"<rect x="0" y="0" width="{width}" height="{height}" fill='{background_colour}' />"#
     )
     .expect("failed to write");
 
-    for _ in 0..256 {
-        let x = fastrand::u32(0..width);
-        let y = fastrand::u32(0..height);
+    let count = if query.light {
+        100
+    } else {
+        256
+    };
+
+    let r = if query.light {
+        6
+    } else {
+        4
+    };
+
+    // ensure the background tiles correctly
+    let x_range = r..(width - r);
+    let y_range = r..(height - r);
+
+    for _ in 0..count {
+        let x = fastrand::u32(x_range.clone());
+        let y = fastrand::u32(y_range.clone());
+
+        let fill = if query.light {
+            &fill
+        } else {
+            "url('#star')"
+        };
 
         write!(
             svg,
-            r#"<circle class="star" cx="{x}" cy="{y}" r="4" fill="url('#star')" />"#
+            r#"<circle class="star" cx="{x}" cy="{y}" r="{r}" fill="{fill}" />"#
         )
         .expect("failed to write");
     }

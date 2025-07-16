@@ -369,7 +369,7 @@ pub(crate) async fn rewrite_html(path: &str, html: &str) -> String {
                 }),
                 element!(".nav-link", |el| {
                     if let Some(href) = el.get_attribute("href") {
-                        let mtchs = if href == "/" {
+                        let matches = if href == "/" {
                             path == "/"
                         } else {
                             let prefix = if href.ends_with('/') {
@@ -379,9 +379,10 @@ pub(crate) async fn rewrite_html(path: &str, html: &str) -> String {
                             };
                             path.starts_with(&prefix)
                         };
-                        if mtchs {
+                        if matches {
                             el.set_attribute("class", "nav-link active")?;
                         }
+                        el.set_attribute("aria-current", if matches { "true" } else { "false" })?;
                     }
                     Ok(())
                 }),
@@ -418,6 +419,8 @@ pub(crate) async fn rewrite_html(path: &str, html: &str) -> String {
                 #[cfg(debug_assertions)]
                 element!("head", |el| {
                     let stylesheet = concat!("<style>", include_str!("devel.css"), "</style>");
+                    el.append(stylesheet, ContentType::Html);
+                    let stylesheet = concat!("<style>", include_str!("devel-light.css"), "</style>");
                     el.append(stylesheet, ContentType::Html);
                     Ok(())
                 }),

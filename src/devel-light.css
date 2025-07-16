@@ -1,0 +1,45 @@
+@media (prefers-color-scheme: light) {
+    body {
+        background-image: url('/assets-gen/background.svg?light=true');
+    }
+
+    body.error {
+        background-image: url('/assets-gen/background.svg?light=true&error=true');
+    }
+
+    .link-list > li.about {
+        background-image: url('/assets-gen/background.svg?light=true&small=true&star_colour=%23f9027a');
+    }
+
+    .link-list > li.github {
+        background-image: url('/assets-gen/background.svg?light=true&small=true&star_colour=%23891ee3');
+    }
+
+    .link-list > li.gitea {
+        background-image: url('/assets-gen/background.svg?light=true&small=true&star_colour=%23609926');
+    }
+
+    .link-list > li.mastodon {
+        background-image: url('/assets-gen/background.svg?light=true&small=true&star_colour=%233c99dc');
+    }
+
+    .link-list > li.twitch {
+        background-image: url('/assets-gen/background.svg?light=true&small=true&star_colour=%236441a5');
+    }
+
+    .link-list > li.twitch {
+        background-image: url('/assets-gen/background.svg?light=true&small=true&star_colour=%236441a5');
+    }
+
+    .link-list > li.nucleoid {
+        background-image: url('/assets-gen/background.svg?light=true&small=true&star_colour=%232cab6b');
+    }
+
+    .link-list > li.modrinth {
+        background-image: url('/assets-gen/background.svg?light=true&small=true&star_colour=%2330b27b');
+    }
+
+    .link-list > li.email {
+        background-image: url('/assets-gen/background.svg?light=true&small=true&star_colour=%23f9027a');
+    }
+}
