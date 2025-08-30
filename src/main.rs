@@ -67,13 +67,25 @@ async fn main() -> error::Result<()> {
     #[cfg(debug_assertions)]
     let app = app.nest_service("/assets", ServeDir::new(Path::new("assets-gen")));
 
+    let host = std::env::var("HOST").unwrap_or_else(|_| "127.0.0.1".to_string());
+
+    let port: u16 = std::env::var("PORT")
+        .unwrap_or_else(|_| "3000".to_string())
+        .parse()
+        .expect("failed to parse `PORT` environment variable");
+
+    let bind_addr = format!("{host}:{port}");
+
+    let listener = tokio::net::TcpListener::bind(&bind_addr)
+        .await
+        .expect("failed to bind listener");
+
     // cheeky log line to initialise the lazy variable
     info!(
-        "server started at {}",
+        "server started at {}, running on {bind_addr}",
         SERVER_START_TIME.format(&well_known::Rfc3339).unwrap()
     );
 
-    let listener = tokio::net::TcpListener::bind("0.0.0.0:3000").await.unwrap();
     axum::serve(listener, app).await.unwrap();
 
     Ok(())
