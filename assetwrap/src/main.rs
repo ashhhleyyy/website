@@ -1,6 +1,12 @@
-use std::{collections::BTreeMap, fs::File, path::PathBuf};
+use std::{
+    collections::BTreeMap,
+    fs::File,
+    path::{Path, PathBuf},
+    str::FromStr,
+};
 
 use bytesize::ByteSize;
+use clap::Parser;
 use color_eyre::Result;
 use globset::GlobSetBuilder;
 use walkdir::WalkDir;
@@ -10,17 +16,18 @@ use rayon::prelude::*;
 fn main() -> Result<()> {
     color_eyre::install()?;
 
+    let cli = assetwrap::Cli::parse();
+
     #[cfg(feature = "rust-s3")]
-    let bucket = assetwrap::create_s3_client();
+    let bucket = cli.create_s3_client();
 
     let mut asset_map = BTreeMap::new();
 
     let mut total_size = ByteSize::b(0);
 
-    let config_path = std::env::args()
-        .nth(1)
-        .unwrap_or_else(|| "assetconfig.json".to_string());
-    let config = assetwrap::config::load_config(&config_path)?;
+    let config = assetwrap::config::load_config(
+        &cli.config_path.unwrap_or_else(|| "assetconfig.json".into()),
+    )?;
 
     for asset_path in &config.asset_paths {
         let no_hash_matchers = {

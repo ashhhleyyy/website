@@ -1,4 +1,8 @@
-use std::{fs::File, io::Read, path::PathBuf};
+use std::{
+    fs::File,
+    io::Read,
+    path::{Path, PathBuf},
+};
 
 use color_eyre::{eyre::eyre, Result};
 use globset::Glob;
@@ -25,7 +29,7 @@ pub struct AssetPath {
     pub loader: Loader,
 }
 
-pub fn load_config(path: &str) -> Result<AssetConfig> {
+pub fn load_config(path: &Path) -> Result<AssetConfig> {
     let mut buf = String::new();
     File::open(path)
         .map_err(|e| eyre!("failed to open config: {e}"))?

@@ -84,7 +84,7 @@
         mkdir assets
         cp -r ${./assets}/* ./assets/
         ls -lah
-        ${assetwrap-internal}/bin/assetwrap ${./assetconfig.json}
+        ${assetwrap-internal}/bin/assetwrap --config ${./assetconfig.json}
         '';
 
         ASSET_INDEX = assetindex;
