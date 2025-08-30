@@ -73,7 +73,7 @@ jobs:
         run: GC_DONT_GC=1 nix build --show-trace --log-lines 10000 --fallback '.#docker.website'
 
       - name: Import image
-        run: docker image load -f result
+        run: docker image load -i result
       
       - name: Tag image
         run: docker image tag website:latest ghcr.io/ashhhleyyy/website:${GITHUB_SHA}
