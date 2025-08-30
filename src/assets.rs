@@ -4,7 +4,7 @@ use once_cell::sync::Lazy;
 
 pub struct AssetMap(HashMap<String, Vec<String>>);
 
-const ASSET_INDEX_STR: &str = include_str!("../assetindex.json");
+const ASSET_INDEX_STR: &str = include_str!(env!("ASSET_INDEX"));
 
 pub static ASSET_INDEX: Lazy<AssetMap> = Lazy::new(load_asset_map);
 

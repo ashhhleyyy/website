@@ -1,4 +1,4 @@
-use std::{collections::HashMap, fs::File, path::PathBuf};
+use std::{collections::BTreeMap, fs::File, path::PathBuf};
 
 use bytesize::ByteSize;
 use color_eyre::Result;
@@ -13,11 +13,12 @@ fn main() -> Result<()> {
     #[cfg(feature = "rust-s3")]
     let bucket = assetwrap::create_s3_client();
 
-    let mut asset_map = HashMap::new();
+    let mut asset_map = BTreeMap::new();
 
     let mut total_size = ByteSize::b(0);
 
-    let config = assetwrap::config::load_config()?;
+    let config_path = std::env::args().nth(1).unwrap_or_else(|| "assetconfig.json".to_string());
+    let config = assetwrap::config::load_config(&config_path)?;
 
     for asset_path in &config.asset_paths {
         let no_hash_matchers = {
@@ -70,15 +71,16 @@ fn main() -> Result<()> {
             .collect::<Vec<_>>();
 
         for asset in assets {
-            let (original_name, output_paths, size) = asset?;
+            let (original_name, mut output_paths, size) = asset?;
             total_size += size;
             if !output_paths.is_empty() {
+                output_paths.sort();
                 asset_map.insert(original_name, output_paths);
             }
         }
     }
 
-    let mut index = File::create("assetindex.json")?;
+    let mut index = File::create(std::env::var("ASSET_INDEX_OUT_PATH").unwrap_or_else(|_| "assetindex.json".to_string()))?;
     serde_json::to_writer_pretty(&mut index, &asset_map)?;
 
     println!("Rendered {} assets ({})", asset_map.len(), total_size);

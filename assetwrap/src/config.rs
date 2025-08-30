@@ -25,9 +25,9 @@ pub struct AssetPath {
     pub loader: Loader,
 }
 
-pub fn load_config() -> Result<AssetConfig> {
+pub fn load_config(path: &str) -> Result<AssetConfig> {
     let mut buf = String::new();
-    File::open("assetconfig.json")
+    File::open(path)
         .map_err(|e| eyre!("failed to open config: {e}"))?
         .read_to_string(&mut buf)
         .map_err(|e| eyre!("failed to read config: {e}"))?;
