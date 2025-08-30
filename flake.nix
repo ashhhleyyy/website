@@ -126,6 +126,9 @@
       packages = {
         inherit website assetwrap assetwrap-internal assetindex;
         default = website;
+        docker.website = pkgs.callPackage ./docker.nix {
+          inherit website;
+        };
       };
 
       apps = let

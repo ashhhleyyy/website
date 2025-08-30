@@ -12,7 +12,7 @@ jobs:
 
     steps:
       - name: Checkout code
-        uses: actions/checkout@v2
+        uses: actions/checkout@v5
 
       - name: Cache build artifacts
         uses: actions/cache@v4
@@ -24,6 +24,17 @@ jobs:
             ~/.cargo/git/db/**
             target/**
           key: ${{ runner.os }}-cargo-${{ hashFiles('**/Cargo.lock') }}
+
+      - name: Install nix
+        uses: cachix/install-nix-action@56a7bb7b56d9a92d4fd1bc05758de7eea4a370a8 # v31.6.0
+        with:
+          nix_path: nixpkgs=channel:nixpkgs-unstable
+
+      - name: Setup cachix
+        uses: cachix/cachix-action@v12
+        with:
+          name: ashhhleyyy
+          authToken: '${{ secrets.CACHIX_AUTH_TOKEN }}'
 
       - name: Install rust toolchain
         run: rustup update stable && rustup default stable
@@ -59,14 +70,20 @@ jobs:
       - name: Display asset index
         run: cat assetindex.json
 
-      - name: Build with cross (aarch64-unknown-linux-musl)
-        run: cross build --release --target aarch64-unknown-linux-musl
+      - name: Build website image
+        run: GC_DONT_GC=1 nix build --show-trace --log-lines 10000 --fallback '.#docker.website'
 
-      - name: Upload artifacts (arm64)
-        uses: actions/upload-artifact@v4
-        with:
-          name: website-arm64
-          path: target/aarch64-unknown-linux-musl/release/website
+      - name: Import image
+        run: docker image load -f result
+      
+      - name: Tag image
+        run: docker image tag website:latest ghcr.io/ashhhleyyy/website:${GITHUB_SHA}
+      
+      - name: Tag image (latest)
+        run: docker image tag website:latest ghcr.io/ashhhleyyy/website:latest
+      
+      - name: Push image
+        run: docker push ghcr.io/ashhhleyyy/website:${GITHUB_SHA}
 
-      - name: Build container image
-        run: docker buildx build -t ghcr.io/ashhhleyyy/website:latest -t ghcr.io/ashhhleyyy/website:${GITHUB_SHA} --platform linux/arm64 --push .
+      - name: Push image (latest)
+        run: docker push ghcr.io/ashhhleyyy/website:latest
