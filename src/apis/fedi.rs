@@ -67,6 +67,7 @@ pub enum Timestamps {
 #[derive(Clone, serde::Deserialize)]
 pub struct AccountData {
     pub avatar_static: String,
+    #[allow(unused)] // TODO: why avatar_static not this
     pub avatar: String,
     pub display_name: String,
     pub fqn: String,

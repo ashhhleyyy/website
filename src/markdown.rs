@@ -80,7 +80,7 @@ pub fn render_markdown(markdown: &str) -> (Metadata, String) {
                     _ => return,
                 };
                 link.url = target_url;
-                let insert = format!("!--icon({})--! ", service);
+                let insert = format!("!--icon({service})--! ");
                 let new_node = arena.alloc(AstNode::new(RefCell::new(Ast::new(
                     NodeValue::Text(insert),
                     data.sourcepos.start,

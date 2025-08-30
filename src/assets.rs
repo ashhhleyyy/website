@@ -21,7 +21,7 @@ impl AssetMap {
         }
     }
 
-    pub fn get_all<'a>(&'a self, name: &'a str) -> Option<Vec<&str>> {
+    pub fn get_all<'a>(&'a self, name: &'a str) -> Option<Vec<&'a str>> {
         self.0
             .get(name)
             .map(|s| s.iter().map(|s| s.as_str()).collect::<Vec<_>>())

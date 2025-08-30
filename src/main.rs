@@ -22,11 +22,11 @@ use time::{format_description::well_known, OffsetDateTime};
 use tower_http::services::ServeDir;
 use tracing_subscriber::{prelude::*, util::SubscriberInitExt};
 
-macro_rules! fetch_env {
-    ($name:expr) => {
-        ::std::env::var($name).expect(concat!("environment variable `", $name, "` must be set!"))
-    };
-}
+// macro_rules! fetch_env {
+//     ($name:expr) => {
+//         ::std::env::var($name).expect(concat!("environment variable `", $name, "` must be set!"))
+//     };
+// }
 
 pub static SERVER_START_TIME: Lazy<OffsetDateTime> = Lazy::new(OffsetDateTime::now_utc);
 

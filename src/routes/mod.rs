@@ -1,11 +1,11 @@
 mod assets;
 pub(crate) mod blog;
-mod extras;
+// TODO: resurrect or yeet
+// mod extras;
 mod projects;
 
 use axum::{
     extract::Extension,
-    handler::Handler,
     response::{IntoResponse, Redirect, Response},
     routing::get,
     Router,

@@ -12,12 +12,13 @@ use tokio::sync::{Mutex, RwLock};
 use crate::error::Result;
 
 const USER_AGENT: &str = "ashhhleyyy.dev website backend (v1, https://github.com/ashhhleyyy/)";
-pub const PRONOUNS_PAGE_URL: &str = "https://en.pronouns.page/api/profile/get/ashhhleyyy?version=2&props=names&props=pronouns&props=flags&props=words";
+pub const PRONOUNS_PAGE_URL: &str = "https://en.pronouns.page/api/profile/get/ashhhleyyy?version=2&props=names&props=pronouns&props=words";
 pub const NOWPLAYING_URL: &str = "https://api.ashhhleyyy.dev/playing";
 const MIN_REFRESH_TIME: Duration = Duration::from_secs(5);
 
 pub(crate) mod fedi;
-pub(crate) mod mediawiki;
+// TODO: resurrect or yeet
+// pub(crate) mod mediawiki;
 
 pub(crate) static CLIENT: Lazy<Client> = Lazy::new(|| {
     ClientBuilder::new()
@@ -85,12 +86,12 @@ pub struct PronounsPageProfiles {
 pub struct PronounsPageCard {
     pub names: Vec<Word>,
     pub pronouns: Vec<Word>,
-    pub flags: Vec<String>,
     pub words: Vec<Words>,
 }
 
 #[derive(Clone, Deserialize)]
 pub struct Words {
+    #[allow(unused)] // TODO: use
     pub header: Option<String>,
     pub values: Vec<Word>,
 }
@@ -153,9 +154,11 @@ pub struct NowPlayingInfo {
     pub state: PlaybackState,
     pub title: String,
     pub track_id: Option<String>,
+    #[allow(unused)]
     pub album: String,
     pub album_artwork: Option<String>,
     pub artist: String,
+    #[allow(unused)]
     pub artist_artwork: Option<String>,
 }
 

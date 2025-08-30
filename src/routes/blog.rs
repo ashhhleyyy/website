@@ -274,9 +274,9 @@ pub async fn atom() -> impl IntoResponse {
 }
 
 pub async fn post(Path(path): Path<String>) -> impl IntoResponse {
-    if let Some(post) = load_post(&format!("{}.md", path)) {
+    if let Some(post) = load_post(&format!("{path}.md")) {
         HtmlTemplate::new(
-            format!("/blog/{}", path),
+            format!("/blog/{path}"),
             BlogPostTemplate {
                 title: post.title.clone(),
                 date: post.date(),

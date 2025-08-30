@@ -134,8 +134,7 @@ pub async fn image_script() -> (HeaderMap, String) {
             }
             write!(
                 row_colours,
-                ",\"color: #{:08x}; background-color: #{:08x}\"",
-                pixel, pixel
+                ",\"color: #{pixel:08x}; background-color: #{pixel:08x}\""
             )
             .expect("failed to write");
         }
@@ -151,7 +150,7 @@ pub async fn image_script() -> (HeaderMap, String) {
     let mut headers = HeaderMap::new();
     headers.typed_insert(ContentType::from(APPLICATION_JAVASCRIPT_UTF_8));
 
-    let script = format!(r#"console.log("{}"{});{}"#, dots, colours, SCRIPT_FOOTER);
+    let script = format!(r#"console.log("{dots}"{colours});{SCRIPT_FOOTER}"#);
 
     (headers, script)
 }

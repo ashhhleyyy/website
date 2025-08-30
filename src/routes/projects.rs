@@ -59,9 +59,9 @@ fn load_project(filename: &str) -> Option<Project> {
 }
 
 pub async fn project(Path((year, slug)): Path<(String, String)>) -> impl IntoResponse {
-    if let Some(post) = load_project(&format!("{}-{}.md", year, slug)) {
+    if let Some(post) = load_project(&format!("{year}-{slug}.md")) {
         HtmlTemplate::new(
-            format!("/projects/{}/{}", year, slug),
+            format!("/projects/{year}/{slug}"),
             ProjectTemplate {
                 title: post.title.clone(),
                 description: post.description,

@@ -375,7 +375,7 @@ pub(crate) async fn rewrite_html(path: &str, html: &str) -> String {
                             let prefix = if href.ends_with('/') {
                                 href
                             } else {
-                                format!("{}/", href)
+                                format!("{href}/")
                             };
                             path.starts_with(&prefix)
                         };
