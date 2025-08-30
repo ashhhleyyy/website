@@ -17,7 +17,9 @@ fn main() -> Result<()> {
 
     let mut total_size = ByteSize::b(0);
 
-    let config_path = std::env::args().nth(1).unwrap_or_else(|| "assetconfig.json".to_string());
+    let config_path = std::env::args()
+        .nth(1)
+        .unwrap_or_else(|| "assetconfig.json".to_string());
     let config = assetwrap::config::load_config(&config_path)?;
 
     for asset_path in &config.asset_paths {
@@ -80,7 +82,9 @@ fn main() -> Result<()> {
         }
     }
 
-    let mut index = File::create(std::env::var("ASSET_INDEX_OUT_PATH").unwrap_or_else(|_| "assetindex.json".to_string()))?;
+    let mut index = File::create(
+        std::env::var("ASSET_INDEX_OUT_PATH").unwrap_or_else(|_| "assetindex.json".to_string()),
+    )?;
     serde_json::to_writer_pretty(&mut index, &asset_map)?;
 
     println!("Rendered {} assets ({})", asset_map.len(), total_size);

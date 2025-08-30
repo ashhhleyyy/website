@@ -12,10 +12,9 @@ mod templates;
 use std::path::Path;
 
 use apis::{
-    CachingFetcher, NowPlayingInfo, PronounsPageProfile,
-    NOWPLAYING_URL, PRONOUNS_PAGE_URL,
+    CachingFetcher, NowPlayingInfo, PronounsPageProfile, NOWPLAYING_URL, PRONOUNS_PAGE_URL,
 };
-use axum::{extract::Extension};
+use axum::extract::Extension;
 use once_cell::sync::Lazy;
 use time::{format_description::well_known, OffsetDateTime};
 #[cfg(debug_assertions)]

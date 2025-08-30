@@ -35,20 +35,14 @@ pub async fn background(Query(query): Query<BackgroundQuery>) -> (HeaderMap, Str
     )
     .expect("failed to write");
 
-    let background_colour = if query.light {
-        "white"
-    } else {
-        "#13092b"
-    };
+    let background_colour = if query.light { "white" } else { "#13092b" };
 
     let fill = if query.error {
         "orange".to_string()
     } else {
-        query.star_colour.unwrap_or_else(|| if query.light {
-            "#f9027a88"
-        } else {
-            "white"
-        }.to_string())
+        query
+            .star_colour
+            .unwrap_or_else(|| if query.light { "#f9027a88" } else { "white" }.to_string())
     };
 
     if !query.light {
@@ -65,17 +59,9 @@ pub async fn background(Query(query): Query<BackgroundQuery>) -> (HeaderMap, Str
     )
     .expect("failed to write");
 
-    let count = if query.light {
-        100
-    } else {
-        256
-    };
+    let count = if query.light { 100 } else { 256 };
 
-    let r = if query.light {
-        6
-    } else {
-        4
-    };
+    let r = if query.light { 6 } else { 4 };
 
     // ensure the background tiles correctly
     let x_range = r..(width - r);
@@ -85,11 +71,7 @@ pub async fn background(Query(query): Query<BackgroundQuery>) -> (HeaderMap, Str
         let x = fastrand::u32(x_range.clone());
         let y = fastrand::u32(y_range.clone());
 
-        let fill = if query.light {
-            &fill
-        } else {
-            "url('#star')"
-        };
+        let fill = if query.light { &fill } else { "url('#star')" };
 
         write!(
             svg,
