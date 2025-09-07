@@ -86,3 +86,9 @@ jobs:
 
       - name: Push image (latest)
         run: docker push ghcr.io/ashhhleyyy/website:latest
+      
+      - name: Trigger kubernetes deployment
+        run: .github/tools/submit-jenkins.sh
+        env:
+          JENKINS_USER: ${{ secrets.JENKINS_USER }}
+          JENKINS_TOKEN: ${{ secrets.JENKINS_TOKEN }}
