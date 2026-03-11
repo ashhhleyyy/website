@@ -1,6 +1,6 @@
 +++
 title = "shorks.gay"
-description = "An fedi server for me and my friends"
+description = "A fedi server for me and my friends"
 +++
 
 ## About
