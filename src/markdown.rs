@@ -5,7 +5,7 @@ use comrak::{
     nodes::{Ast, AstNode, NodeValue},
     parse_document,
     plugins::syntect::SyntectAdapter,
-    Arena, ComrakOptions, ComrakPlugins,
+    Arena,
 };
 use extract_frontmatter::{config::Splitter, Extractor};
 use once_cell::sync::Lazy;
@@ -32,7 +32,7 @@ pub fn render_markdown(markdown: &str) -> (Metadata, String) {
         }
     });
 
-    let mut options = ComrakOptions::default();
+    let mut options = comrak::Options::default();
     options.extension.autolink = true;
     options.extension.table = true;
     options.extension.description_lists = true;
@@ -40,7 +40,7 @@ pub fn render_markdown(markdown: &str) -> (Metadata, String) {
     options.extension.strikethrough = true;
     options.extension.footnotes = true;
     options.render.hardbreaks = true;
-    options.render.unsafe_ = true;
+    options.render.r#unsafe = true;
     options.extension.header_ids = Some("".to_owned());
 
     let arena = Arena::new();
@@ -82,7 +82,7 @@ pub fn render_markdown(markdown: &str) -> (Metadata, String) {
                 link.url = target_url;
                 let insert = format!("!--icon({service})--! ");
                 let new_node = arena.alloc(AstNode::new(RefCell::new(Ast::new(
-                    NodeValue::Text(insert),
+                    NodeValue::Text(insert.into()),
                     data.sourcepos.start,
                 ))));
                 node.prepend(new_node);
@@ -90,13 +90,11 @@ pub fn render_markdown(markdown: &str) -> (Metadata, String) {
         }
     });
 
-    let mut html = vec![];
-    let mut plugins = ComrakPlugins::default();
+    let mut html = String::new();
+    let mut plugins = comrak::options::Plugins::default();
     let adapter = SyntectAdapter::new(Some("base16-ocean.dark"));
     plugins.render.codefence_syntax_highlighter = Some(&adapter);
     format_html_with_plugins(root, &options, &mut html, &plugins).unwrap();
-
-    let html = String::from_utf8(html).expect("post is somehow invalid UTF-8");
 
     (metadata, replace_icons(html))
 }

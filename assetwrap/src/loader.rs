@@ -1,7 +1,7 @@
 use std::{ffi::OsString, io::Cursor, path::Path};
 
 use color_eyre::{eyre::eyre, Result};
-use image::{io::Reader as ImageReader, ColorType, DynamicImage, ImageFormat};
+use image::{ImageReader, ColorType, DynamicImage, ImageFormat};
 use lightningcss::stylesheet::{MinifyOptions, ParserOptions, PrinterOptions, StyleSheet};
 use serde::Deserialize;
 use sha2::{Digest, Sha256};

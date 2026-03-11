@@ -21,7 +21,7 @@ use crate::{
 macro_rules! simple_template {
     ($filename:expr, $name:ident) => {
         #[derive(Template)]
-        #[template(path = $filename)]
+        #[template(path = $filename, blocks = ["title", "description"])]
         pub struct $name;
     };
 }
@@ -32,25 +32,25 @@ simple_template!("links.html", LinksTemplate);
 simple_template!("attribution.html", AttributionTemplate);
 
 #[derive(Template)]
-#[template(path = "words.html")]
+#[template(path = "words.html", blocks = ["title", "description"])]
 pub struct WordsTemplate {
     pub card: PronounsPageCard,
 }
 
 #[derive(Template)]
-#[template(path = "music.html")]
+#[template(path = "music.html", blocks = ["title", "description"])]
 pub struct MusicTemplate {
     pub playing: NowPlayingInfo,
 }
 
 #[derive(Template)]
-#[template(path = "blog-index.html")]
+#[template(path = "blog-index.html", blocks = ["title", "description"])]
 pub struct BlogIndexTemplate {
     pub posts: Vec<BlogPost>,
 }
 
 #[derive(Template)]
-#[template(path = "blog-post.html")]
+#[template(path = "blog-post.html", blocks = ["title", "description"])]
 pub struct BlogPostTemplate {
     pub title: String,
     pub date: String,
@@ -59,13 +59,13 @@ pub struct BlogPostTemplate {
 }
 
 #[derive(Template)]
-#[template(path = "projects.html")]
+#[template(path = "projects.html", blocks = ["title", "description"])]
 pub struct ProjectsTemplate {
     pub projects_by_year: Vec<(String, Vec<(String, String)>)>,
 }
 
 #[derive(Template)]
-#[template(path = "project.html")]
+#[template(path = "project.html", blocks = ["title", "description"])]
 pub struct ProjectTemplate {
     pub title: String,
     pub description: String,
@@ -73,14 +73,14 @@ pub struct ProjectTemplate {
 }
 
 #[derive(Template)]
-#[template(path = "extra.html")]
+#[template(path = "extra.html", blocks = ["title", "description"])]
 pub struct ExtraTemplate {
     pub title: String,
     pub content: String,
 }
 
 #[derive(Template)]
-#[template(path = "error.html")]
+#[template(path = "error.html", blocks = ["title", "description"])]
 pub struct ErrorTemplate {
     pub error_code: u16,
     pub error_message: String,
@@ -315,7 +315,7 @@ pub(crate) async fn rewrite_html(path: &str, html: &str) -> String {
         resolved_posts
     };
 
-    rewrite_str(
+    let rewritten = rewrite_str(
         &html,
         Settings {
             element_content_handlers: vec![
@@ -428,5 +428,7 @@ pub(crate) async fn rewrite_html(path: &str, html: &str) -> String {
             ..Default::default()
         },
     )
-    .unwrap()
+    .unwrap();
+
+    rewritten
 }

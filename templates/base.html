@@ -17,14 +17,14 @@
     <meta name="author" content="Ashhhleyyy">
     <meta name="description" content="{% block description %}{% endblock %}">
     <meta property="og:type" content="website">
-    <meta property="og:title" content="{% block title %}{% endblock %}">
+    <meta property="og:title" content="{{ as_title() }}">
     <meta property="og:image" content="/assets/images/pfp.png">
     <meta name="twitter:card" content="summary">
     <meta property="twitter:domain" content="ashhhleyyy.dev">
-    <meta name="twitter:title" content="{% block title %}{% endblock %}">
+    <meta name="twitter:title" content="{{ as_title() }}">
     <meta name="twitter:image" content="/assets/images/pfp.png">
-    <meta name="twitter:description" content="{% block description %}{% endblock %}">
-    <meta property="og:description" content="{% block description %}{% endblock %}">
+    <meta name="twitter:description" content="{{ as_description() }}">
+    <meta property="og:description" content="{{ as_description() }}">
     <link type="application/json+oembed" href="https://ashhhleyyy.dev/api/oembed">
 
     {% block head %}{% endblock %}

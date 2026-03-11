@@ -41,7 +41,7 @@ pub struct Cli {
 
 impl Cli {
     #[cfg(feature = "rust-s3")]
-    pub fn create_s3_client(&self) -> Option<Bucket> {
+    pub fn create_s3_client(&self) -> Option<Box<Bucket>> {
         if self.upload_s3 {
             if let Some(s3_access_key) = &self.s3_access_key {
                 std::env::set_var("AWS_ACCESS_KEY_ID", s3_access_key);
