@@ -1,17 +1,15 @@
 {
   dockerTools,
-  buildEnv,
   website,
 }:
-dockerTools.buildImage {
+dockerTools.buildLayeredImage {
   name = "website";
   tag = "latest";
 
-  copyToRoot = buildEnv {
-    name = "image-root";
-    paths = [ website ];
-    pathsToLink = [ "/bin" ];
-  };
+  contents = [
+    website
+    (dockerTools.caCertificates)
+  ];
 
   config = {
     Cmd = [ "/bin/website" ];
