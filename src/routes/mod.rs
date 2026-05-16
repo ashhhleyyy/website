@@ -47,7 +47,11 @@ async fn words(
     HtmlTemplate::new(
         "/about/words",
         WordsTemplate {
-            card: profile.profiles.en,
+            card: profile
+                .profiles
+                .into_iter()
+                .find(|card| card.locale == "en")
+                .unwrap(),
         },
     )
     .into_response()

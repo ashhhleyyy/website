@@ -12,7 +12,8 @@ use tokio::sync::{Mutex, RwLock};
 use crate::error::Result;
 
 const USER_AGENT: &str = "ashhhleyyy.dev website backend (v1, https://github.com/ashhhleyyy/)";
-pub const PRONOUNS_PAGE_URL: &str = "https://en.pronouns.page/api/profile/get/ashhhleyyy?version=2&props=names&props=pronouns&props=words";
+pub const PRONOUNS_PAGE_URL: &str =
+    "https://en.pronouns.page/api/public/v3/profile/get/ashhhleyyy?props=names&props=pronouns&props=words";
 pub const NOWPLAYING_URL: &str = "https://api.ashhhleyyy.dev/playing";
 const MIN_REFRESH_TIME: Duration = Duration::from_secs(5);
 
@@ -74,16 +75,12 @@ impl<T: DeserializeOwned + Sized + Clone> CachingFetcher<T> {
 
 #[derive(Clone, Deserialize)]
 pub struct PronounsPageProfile {
-    pub profiles: PronounsPageProfiles,
-}
-
-#[derive(Clone, Deserialize)]
-pub struct PronounsPageProfiles {
-    pub en: PronounsPageCard,
+    pub profiles: Vec<PronounsPageCard>,
 }
 
 #[derive(Clone, Deserialize)]
 pub struct PronounsPageCard {
+    pub locale: String,
     pub names: Vec<Word>,
     pub pronouns: Vec<Word>,
     pub words: Vec<Words>,
