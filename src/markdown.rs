@@ -41,7 +41,7 @@ pub fn render_markdown(markdown: &str) -> (Metadata, String) {
     options.extension.footnotes = true;
     options.render.hardbreaks = true;
     options.render.r#unsafe = true;
-    options.extension.header_ids = Some("".to_owned());
+    options.extension.header_id_prefix = Some("".to_owned());
 
     let arena = Arena::new();
     let root = parse_document(&arena, body, &options);
