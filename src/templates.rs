@@ -418,7 +418,7 @@ pub(crate) async fn rewrite_html(path: &str, html: &str) -> String {
         Ok(())
     }));
 
-    let rewritten = rewrite_str(&html, settings).unwrap();
+    
 
-    rewritten
+    rewrite_str(&html, settings).unwrap()
 }

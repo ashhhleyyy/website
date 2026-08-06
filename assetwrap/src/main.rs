@@ -1,8 +1,4 @@
-use std::{
-    collections::BTreeMap,
-    fs::File,
-    path::PathBuf,
-};
+use std::{collections::BTreeMap, fs::File, path::PathBuf};
 
 use bytesize::ByteSize;
 use clap::Parser;
