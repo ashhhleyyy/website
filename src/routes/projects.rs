@@ -90,6 +90,7 @@ pub async fn index() -> impl IntoResponse {
     let mut projects_by_year = projects_by_year.into_iter().collect::<Vec<_>>();
 
     projects_by_year.sort_by_cached_key(|(year, _)| year.clone());
+    projects_by_year.reverse();
 
     HtmlTemplate::new("/projects/", ProjectsTemplate { projects_by_year })
         .into_response()
