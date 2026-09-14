@@ -7,6 +7,19 @@
 <main class="content blog-post">
     <h1>{{ title }}</h1>
 
+    {% if let Some(spoiler) = spoiler %}
+    <div class="spoiler-container">
+        <section class="spoiler">
+            <h2>Spoiler warning</h2>
+            <p>{{ spoiler }}</p>
+            <label>
+                <input type="checkbox" autocomplete="off">
+                I am happy to see these spoilers.
+            </label>
+        </section>
+    </div>
+    {% endif %}
+
     {{ content|safe }}
 
     <footer>

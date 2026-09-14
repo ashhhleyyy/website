@@ -30,6 +30,8 @@ pub struct BlogPost {
     pub slug: String,
     pub title: String,
     pub description: String,
+    pub spoiler: Option<String>,
+    pub unlisted: bool,
     pub rendered: String,
 }
 
@@ -74,6 +76,8 @@ fn load_post(filename: &str) -> Option<BlogPost> {
                 slug,
                 title: metadata.title,
                 description: metadata.description,
+                spoiler: metadata.spoiler,
+                unlisted: metadata.unlisted,
                 rendered: html,
             })
         } else {
@@ -99,6 +103,7 @@ impl FeedPost {
 fn list_posts() -> Vec<BlogPost> {
     let mut posts = BlogAssets::iter()
         .filter_map(|path| load_post(&path))
+        .filter(|post| !post.unlisted)
         .collect::<Vec<_>>();
     posts.sort_by_key(|p| p.date());
     posts.reverse();
@@ -281,6 +286,7 @@ pub async fn post(Path(path): Path<String>) -> impl IntoResponse {
                 title: post.title.clone(),
                 date: post.date(),
                 description: post.description,
+                spoiler: post.spoiler,
                 content: post.rendered,
             },
         )

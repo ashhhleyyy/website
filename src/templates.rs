@@ -55,6 +55,7 @@ pub struct BlogPostTemplate {
     pub title: String,
     pub date: String,
     pub description: String,
+    pub spoiler: Option<String>,
     pub content: String,
 }
 

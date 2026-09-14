@@ -19,6 +19,10 @@ static ICON_REGEX: Lazy<Regex> = Lazy::new(|| Regex::new(r"!--icon\((.*)\)--!").
 pub struct Metadata {
     pub title: String,
     pub description: String,
+    #[serde(default)]
+    pub spoiler: Option<String>,
+    #[serde(default)]
+    pub unlisted: bool,
 }
 
 pub fn render_markdown(markdown: &str) -> (Metadata, String) {
@@ -29,6 +33,8 @@ pub fn render_markdown(markdown: &str) -> (Metadata, String) {
         Metadata {
             title: "WARNING! An error occured while parsing the frontmatter".to_owned(),
             description: "WARNING! An error occured while parsing the frontmatter".to_owned(),
+            spoiler: Some("WARNING! An error occured while parsing the frontmatter".to_owned()),
+            unlisted: false,
         }
     });
 

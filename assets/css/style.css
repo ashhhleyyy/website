@@ -339,6 +339,29 @@ h6::before {
     background-image: url('https://ashhhleyyy.dev/assets-gen/background.svg?small=true&star_colour=%2330b27b');
 }
 
+.spoiler-container {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    display: grid;
+    place-items: center;
+    backdrop-filter: blur(16px);
+}
+
+.spoiler {
+    padding: 0 16px 16px;
+    width: calc(100vw - 32px);
+    max-width: 720px;
+    background-color: var(--background);
+    color: var(--foreground);
+}
+
+.spoiler-container:has(input:checked) {
+    display: none;
+}
+
 blockquote {
     border-left: var(--accent) 2px solid;
     margin-block-start: 1em;

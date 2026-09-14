@@ -1,6 +1,7 @@
 +++
 title = "i don't know"
 description = "sometimes, the hardest answer to a question is \"i don't know\"."
+unlisted = true
 +++
 
 > this is a bit of an unusual blog post, it's basically just raw unfiltered 2am thoughts, so don't treat everything in here as fact, this is just me musing about the way my own brain works.
