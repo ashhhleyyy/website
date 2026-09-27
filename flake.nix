@@ -45,7 +45,7 @@
             filter = path: type: (craneLib.filterCargoSources path type)
               || (builtins.match ".*html$" path != null)
               || (builtins.match ".*/assets/images/pfp\\.png$" path != null)
-              || (builtins.match ".*/(blog|projects)/.*\\.md$" path != null);
+              || (builtins.match ".*/(blog|galleries|projects)/.*\\.md$" path != null);
             name = "source";
           };
         };
