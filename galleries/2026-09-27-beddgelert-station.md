@@ -7,7 +7,7 @@ photos = [
     },
     {
         filename = "P1100758.JPG",
-        alt = "Looking down the platform of the station. There are two narrow-gague tracks that meet at the end of the platform, one running along side the platform edge, and one away towards the grass opposite. Two signals at the far end are visible, along with a water tower. Along the platform are several metal and wood benches, along with two traditional streetlamp-looking lights. In the foreground to the right, there is a small cream passenger lounge building. The whole scene looks quite grey, as it was raining on and off for most of the morning.",
+        alt = "Looking down the platform of the station. There are two narrow-gauge tracks that meet at the end of the platform, one running along side the platform edge, and one away towards the grass opposite. Two signals at the far end are visible, along with a water tower. Along the platform are several metal and wood benches, along with two traditional streetlamp-looking lights. In the foreground to the right, there is a small cream passenger lounge building. The whole scene looks quite grey, as it was raining on and off for most of the morning.",
     },
     {
         filename = "P1100748.JPG",
@@ -36,7 +36,7 @@ photos = [
 ]
 +++
 
-Pictures of [Beddgelert Railway Station], on the [Welsh Highland Railway], a narrow gague railway in North Wales.
+Pictures of [Beddgelert Railway Station], on the [Welsh Highland Railway], a narrow gauge railway in North Wales.
 
 Photos taken with a Panasonic DMC-GF2 and a LUMIX G VARIO 45-200mm F4.0-5.6.
 
