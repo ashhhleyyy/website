@@ -8,6 +8,14 @@ use sha2::{Digest, Sha256};
 
 use crate::Asset;
 
+const LOSSY_FORMATS: &[ImageFormat] = &[
+    ImageFormat::Jpeg,
+    ImageFormat::WebP,
+    ImageFormat::Tiff,
+    ImageFormat::OpenExr,
+    ImageFormat::Avif,
+];
+
 #[derive(Copy, Clone, Deserialize)]
 #[serde(rename_all = "snake_case")]
 pub enum Loader {
@@ -32,12 +40,25 @@ impl Loader {
     }
 
     fn load_image(input_path: &Path, hashed_name: bool) -> Result<Vec<Asset>> {
-        let img = ImageReader::open(input_path)?.decode()?;
+        let reader = ImageReader::open(input_path)?;
+        let lossy = reader
+            .format()
+            .map(|f| LOSSY_FORMATS.contains(&f))
+            .unwrap_or(false);
+        let img = reader.decode()?;
         let mut result = vec![
             Self::generate_image(input_path, &img, ImageFormat::Avif, "avif", hashed_name)?,
             Self::generate_image(input_path, &img, ImageFormat::WebP, "webp", hashed_name)?,
-            Self::generate_image(input_path, &img, ImageFormat::Png, "png", hashed_name)?,
         ];
+        if !lossy {
+            result.push(Self::generate_image(
+                input_path,
+                &img,
+                ImageFormat::Png,
+                "png",
+                hashed_name,
+            )?);
+        }
         if img.color() == ColorType::L8 || img.color() == ColorType::Rgb8 {
             result.push(Self::generate_image(
                 input_path,

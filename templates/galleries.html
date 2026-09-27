@@ -1,0 +1,20 @@
+{% extends "base.html" %}
+
+{% block title %}Photos{% endblock %}
+{% block description %}Collections of photos I've taken{% endblock %}
+
+{% block content %}
+<main class="content">
+    <h1>Photos</h1>
+
+    <ul>
+        {% for gallery in galleries %}
+            <li>
+                <a href="{{ gallery.url() }}">
+                    {{ gallery.date() }}: {{ gallery.title }}
+                </a>
+            </li>
+        {% endfor %}
+    </ul>
+</main>
+{% endblock %}

@@ -17,9 +17,10 @@
                 "./assets/images/pfp.png"
             ],
             "just_copy": [
-                "./assets/images/buttons/*"
+                "./assets/images/buttons/*",
+                "./assets/images/galleries/*"
             ],
-          "loader": "image"
+            "loader": "image"
         },
         {
             "input": "./assets/scripts/*",

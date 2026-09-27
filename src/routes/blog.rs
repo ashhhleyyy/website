@@ -12,6 +12,7 @@ use axum::{
     http::{HeaderMap, HeaderValue},
     response::IntoResponse,
 };
+use serde::Deserialize;
 use time::{format_description::well_known::Rfc2822, Date, Month, OffsetDateTime, Time};
 
 use crate::{
@@ -22,6 +23,27 @@ use crate::{
 #[derive(RustEmbed)]
 #[folder = "blog/"]
 pub struct BlogAssets;
+
+#[derive(Deserialize)]
+pub struct BlogPostMetadata {
+    pub title: String,
+    pub description: String,
+    #[serde(default)]
+    pub spoiler: Option<String>,
+    #[serde(default)]
+    pub unlisted: bool,
+}
+
+impl Default for BlogPostMetadata {
+    fn default() -> Self {
+        Self {
+            title: "WARNING! An error occured while parsing the frontmatter".to_owned(),
+            description: "WARNING! An error occured while parsing the frontmatter".to_owned(),
+            spoiler: Some("WARNING! An error occured while parsing the frontmatter".to_owned()),
+            unlisted: false,
+        }
+    }
+}
 
 pub struct BlogPost {
     pub year: String,
@@ -67,8 +89,9 @@ fn load_post(filename: &str) -> Option<BlogPost> {
         );
         let slug = captures.get(4).unwrap().as_str().to_string();
         if let Some(asset) = BlogAssets::get(filename) {
-            let (metadata, html) =
-                markdown::render_markdown(std::str::from_utf8(&asset.data).unwrap());
+            let (metadata, html) = markdown::render_markdown::<BlogPostMetadata>(
+                std::str::from_utf8(&asset.data).unwrap(),
+            );
             Some(BlogPost {
                 year,
                 month,

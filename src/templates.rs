@@ -15,7 +15,10 @@ use crate::{
         NowPlayingInfo, PronounsPageCard,
     },
     assets::ASSET_INDEX,
-    routes::blog::BlogPost,
+    routes::{
+        blog::BlogPost,
+        galleries::{Gallery, Photo},
+    },
 };
 
 macro_rules! simple_template {
@@ -78,6 +81,23 @@ pub struct ProjectTemplate {
 pub struct ExtraTemplate {
     pub title: String,
     pub content: String,
+}
+
+#[derive(Template)]
+#[template(path = "galleries.html", blocks = ["title", "description"])]
+pub struct GalleriesTemplate {
+    pub galleries: Vec<Gallery>,
+}
+
+#[derive(Template)]
+#[template(path = "gallery.html", blocks = ["title", "description"])]
+pub struct GalleryTemplate {
+    pub slug: String,
+    pub title: String,
+    pub date: String,
+    pub spoiler: Option<String>,
+    pub content: String,
+    pub photos: Vec<Photo>,
 }
 
 #[derive(Template)]
@@ -384,15 +404,44 @@ pub(crate) async fn rewrite_html(path: &str, html: &str) -> String {
                 el.remove_attribute("data-no-rewrite");
                 return Ok(());
             }
+            let clickable = el.get_attribute("data-clickable").is_some();
             let src = el.get_attribute("src").expect("src required");
             if let Some(paths) = ASSET_INDEX.get_all(&src) {
                 let html = maud::html! {
-                    picture {
-                        @for path in paths {
-                            @if path.ends_with(".png") {
-                                img src=[Some(path)] alt=[el.get_attribute("alt")] width=[el.get_attribute("width")] height=[el.get_attribute("height")] class=[el.get_attribute("class")];
-                            } @else {
-                                source srcset=[Some(path)] type=[mime_guess::from_path(path).first_raw()];
+                    @if paths.len() == 1 {
+                        @if clickable {
+                            a href=(paths[0]) {
+                                img
+                                    src=(paths[0])
+                                    alt=[el.get_attribute("alt")]
+                                    width=[el.get_attribute("width")]
+                                    height=[el.get_attribute("height")]
+                                    class=[el.get_attribute("class")]
+                                    loading=[el.get_attribute("loading")];
+                            }
+                        } @else {
+                            img
+                                src=(paths[0])
+                                alt=[el.get_attribute("alt")]
+                                width=[el.get_attribute("width")]
+                                height=[el.get_attribute("height")]
+                                class=[el.get_attribute("class")]
+                                loading=[el.get_attribute("loading")];
+                        }
+                    } @else {
+                        picture {
+                            @for path in &paths {
+                                @if path.ends_with(".png") {
+                                    img
+                                        src=(path)
+                                        alt=[el.get_attribute("alt")]
+                                        width=[el.get_attribute("width")]
+                                        height=[el.get_attribute("height")]
+                                        class=[el.get_attribute("class")]
+                                        loading=[el.get_attribute("loading")];
+                                } @else {
+                                    source srcset=(path) type=[mime_guess::from_path(path).first_raw()];
+                                }
                             }
                         }
                     }
@@ -418,8 +467,6 @@ pub(crate) async fn rewrite_html(path: &str, html: &str) -> String {
         el.append(stylesheet, ContentType::Html);
         Ok(())
     }));
-
-    
 
     rewrite_str(&html, settings).unwrap()
 }

@@ -4,6 +4,7 @@ use axum::{extract::Path, response::IntoResponse};
 use once_cell::sync::Lazy;
 use regex::Regex;
 use rust_embed::RustEmbed;
+use serde::Deserialize;
 
 use crate::{
     markdown,
@@ -13,6 +14,21 @@ use crate::{
 #[derive(RustEmbed)]
 #[folder = "projects/"]
 pub struct ProjectsAssets;
+
+#[derive(Deserialize)]
+pub struct ProjectMetadata {
+    pub title: String,
+    pub description: String,
+}
+
+impl Default for ProjectMetadata {
+    fn default() -> Self {
+        Self {
+            title: "WARNING! An error occured while parsing the frontmatter".to_owned(),
+            description: "WARNING! An error occured while parsing the frontmatter".to_owned(),
+        }
+    }
+}
 
 pub struct Project {
     year: String,
@@ -41,8 +57,9 @@ fn load_project(filename: &str) -> Option<Project> {
             captures.get(2).unwrap().as_str().to_string(),
         );
         if let Some(asset) = ProjectsAssets::get(filename) {
-            let (metadata, html) =
-                markdown::render_markdown(std::str::from_utf8(&asset.data).unwrap());
+            let (metadata, html) = markdown::render_markdown::<ProjectMetadata>(
+                std::str::from_utf8(&asset.data).unwrap(),
+            );
             Some(Project {
                 year,
                 slug,

@@ -4,7 +4,7 @@ The code for my website is licenced under the GNU AGPL v3. See LICENSE.agpl.txt 
 
 ## Website content
 
-Copyright (c) 2022-2022 Ashhhleyyy (ash [at] ashhhleyyy [dot] dev).
+Copyright (c) 2022-2026 Ashhhleyyy (ash [at] ashhhleyyy [dot] dev).
 All rights reserved unless otherwise specified.
 
 ## Fonts (assets/fonts/*)

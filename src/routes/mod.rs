@@ -2,6 +2,7 @@ mod assets;
 pub(crate) mod blog;
 // TODO: resurrect or yeet
 // mod extras;
+pub(crate) mod galleries;
 mod projects;
 
 use axum::{
@@ -93,6 +94,8 @@ pub fn build_router() -> Router {
         .route("/blog.rss", get(blog::rss))
         .route("/blog.atom", get(blog::atom))
         .route("/blog/{post}", get(blog::post))
+        .route("/photos/", get(galleries::index))
+        .route("/photos/{gallery}", get(galleries::gallery))
         .route("/projects/", get(projects::index))
         .route("/projects/{year}/{project}", get(projects::project))
         //.route("/extras/:title", get(extras::page))

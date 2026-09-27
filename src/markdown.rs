@@ -11,31 +11,16 @@ use extract_frontmatter::{config::Splitter, Extractor};
 use once_cell::sync::Lazy;
 use regex::{Captures, Regex};
 use reqwest::Url;
-use serde::Deserialize;
+use serde::de::DeserializeOwned;
 
 static ICON_REGEX: Lazy<Regex> = Lazy::new(|| Regex::new(r"!--icon\((.*)\)--!").unwrap());
 
-#[derive(Deserialize)]
-pub struct Metadata {
-    pub title: String,
-    pub description: String,
-    #[serde(default)]
-    pub spoiler: Option<String>,
-    #[serde(default)]
-    pub unlisted: bool,
-}
-
-pub fn render_markdown(markdown: &str) -> (Metadata, String) {
+pub fn render_markdown<M: DeserializeOwned + Default>(markdown: &str) -> (M, String) {
     let (frontmatter, body) = Extractor::new(Splitter::EnclosingLines("+++")).extract(markdown);
 
     let metadata = toml::from_str(&frontmatter).unwrap_or_else(|e| {
         error!("failed to parse frontmatter: {e}");
-        Metadata {
-            title: "WARNING! An error occured while parsing the frontmatter".to_owned(),
-            description: "WARNING! An error occured while parsing the frontmatter".to_owned(),
-            spoiler: Some("WARNING! An error occured while parsing the frontmatter".to_owned()),
-            unlisted: false,
-        }
+        Default::default()
     });
 
     let mut options = comrak::Options::default();
