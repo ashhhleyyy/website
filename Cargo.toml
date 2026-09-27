@@ -25,7 +25,7 @@ reqwest = { version = "0.13", features = ["cookies", "json", "rustls"], default-
 thiserror = "2"
 image = { version = "0.25", default-features = false, features = ["png"]}
 regex = "1"
-comrak = "0.54"
+comrak = "0.55"
 lol_html = "3.0"
 serde_json = "1.0"
 toml = "1.0"
