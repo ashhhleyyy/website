@@ -1,12 +1,10 @@
 use std::collections::HashMap;
 
-use once_cell::sync::Lazy;
-
 pub struct AssetMap(HashMap<String, Vec<String>>);
 
 const ASSET_INDEX_STR: &str = include_str!(env!("ASSET_INDEX"));
 
-pub static ASSET_INDEX: Lazy<AssetMap> = Lazy::new(load_asset_map);
+pub static ASSET_INDEX: std::sync::LazyLock<AssetMap> = std::sync::LazyLock::new(load_asset_map);
 
 impl AssetMap {
     pub fn get<'a>(&'a self, name: &'a str) -> &'a str {
@@ -22,9 +20,11 @@ impl AssetMap {
     }
 
     pub fn get_all<'a>(&'a self, name: &'a str) -> Option<Vec<&'a str>> {
-        self.0
-            .get(name)
-            .map(|s| s.iter().map(|s| s.as_str()).collect::<Vec<_>>())
+        self.0.get(name).map(|s| {
+            s.iter()
+                .map(std::string::String::as_str)
+                .collect::<Vec<_>>()
+        })
     }
 }
 

@@ -1,5 +1,4 @@
 use axum::{extract::Path, response::IntoResponse};
-use once_cell::sync::Lazy;
 use regex::Regex;
 use serde::Deserialize;
 
@@ -79,8 +78,9 @@ impl Gallery {
 }
 
 fn load_gallery(filename: &str) -> Option<Gallery> {
-    static NAME_REGEX: Lazy<Regex> =
-        Lazy::new(|| Regex::new(r"([0-9]{4})-([0-9]{2})-([0-9]{2})-([a-z0-9\-]+)\.md$").unwrap());
+    static NAME_REGEX: std::sync::LazyLock<Regex> = std::sync::LazyLock::new(|| {
+        Regex::new(r"([0-9]{4})-([0-9]{2})-([0-9]{2})-([a-z0-9\-]+)\.md$").unwrap()
+    });
     if let Some(captures) = NAME_REGEX.captures(filename) {
         let (year, month, day) = (
             captures.get(1).unwrap().as_str().to_string(),
@@ -116,7 +116,7 @@ fn list_galleries() -> Vec<Gallery> {
         .filter_map(|path| load_gallery(&path))
         .filter(|g| !g.unlisted)
         .collect::<Vec<_>>();
-    posts.sort_by_key(|g| g.date());
+    posts.sort_by_key(Gallery::date);
     posts.reverse();
     posts
 }

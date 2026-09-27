@@ -1,7 +1,6 @@
 use atom_syndication::{
     Content, EntryBuilder, FixedDateTime, Generator, LinkBuilder, Person, Text,
 };
-use once_cell::sync::Lazy;
 use regex::Regex;
 use reqwest::header::CONTENT_TYPE;
 use rss::ItemBuilder;
@@ -79,8 +78,9 @@ impl BlogPost {
 }
 
 fn load_post(filename: &str) -> Option<BlogPost> {
-    static NAME_REGEX: Lazy<Regex> =
-        Lazy::new(|| Regex::new(r"([0-9]{4})-([0-9]{2})-([0-9]{2})-([a-z0-9\-]+)\.md$").unwrap());
+    static NAME_REGEX: std::sync::LazyLock<Regex> = std::sync::LazyLock::new(|| {
+        Regex::new(r"([0-9]{4})-([0-9]{2})-([0-9]{2})-([a-z0-9\-]+)\.md$").unwrap()
+    });
     if let Some(captures) = NAME_REGEX.captures(filename) {
         let (year, month, day) = (
             captures.get(1).unwrap().as_str().to_string(),
@@ -128,7 +128,7 @@ fn list_posts() -> Vec<BlogPost> {
         .filter_map(|path| load_post(&path))
         .filter(|post| !post.unlisted)
         .collect::<Vec<_>>();
-    posts.sort_by_key(|p| p.date());
+    posts.sort_by_key(BlogPost::date);
     posts.reverse();
     posts
 }

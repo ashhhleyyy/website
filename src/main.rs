@@ -15,7 +15,6 @@ use apis::{
     CachingFetcher, NowPlayingInfo, PronounsPageProfile, NOWPLAYING_URL, PRONOUNS_PAGE_URL,
 };
 use axum::extract::Extension;
-use once_cell::sync::Lazy;
 use time::{format_description::well_known, OffsetDateTime};
 #[cfg(debug_assertions)]
 use tower_http::services::ServeDir;
@@ -27,7 +26,8 @@ use tracing_subscriber::{prelude::*, util::SubscriberInitExt};
 //     };
 // }
 
-pub static SERVER_START_TIME: Lazy<OffsetDateTime> = Lazy::new(OffsetDateTime::now_utc);
+pub static SERVER_START_TIME: std::sync::LazyLock<OffsetDateTime> =
+    std::sync::LazyLock::new(OffsetDateTime::now_utc);
 
 #[tokio::main]
 async fn main() -> error::Result<()> {

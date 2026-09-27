@@ -4,7 +4,6 @@ use std::{
     time::{Duration, Instant},
 };
 
-use once_cell::sync::Lazy;
 use reqwest::{Client, ClientBuilder};
 use serde::{de::DeserializeOwned, Deserialize};
 use tokio::sync::{Mutex, RwLock};
@@ -21,7 +20,7 @@ pub(crate) mod fedi;
 // TODO: resurrect or yeet
 // pub(crate) mod mediawiki;
 
-pub(crate) static CLIENT: Lazy<Client> = Lazy::new(|| {
+pub(crate) static CLIENT: std::sync::LazyLock<Client> = std::sync::LazyLock::new(|| {
     ClientBuilder::new()
         .user_agent(USER_AGENT)
         .build()
@@ -113,7 +112,7 @@ pub enum WordOpinion {
 }
 
 impl WordOpinion {
-    pub fn is_negative(&self) -> bool {
+    pub fn is_negative(self) -> bool {
         match self {
             WordOpinion::Yes
             | WordOpinion::Jokingly
@@ -123,7 +122,7 @@ impl WordOpinion {
         }
     }
 
-    pub fn emoji(&self) -> &str {
+    pub fn emoji(self) -> &'static str {
         match self {
             WordOpinion::Yes => "💜",
             WordOpinion::Jokingly => "😛",

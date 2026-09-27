@@ -86,22 +86,18 @@ pub async fn background(Query(query): Query<BackgroundQuery>) -> (HeaderMap, Str
 }
 
 pub async fn image_script() -> (HeaderMap, String) {
-    const SIZE: usize = 48;
+    const SIZE: u32 = 48;
     const SCRIPT_FOOTER: &str = r#"console.log("Ooh wow someone's interested in how my website works! If that sounds like you, then you can check out the code on my GitHub: https://github.com/ashhhleyyy/website")"#;
 
     let image_data = include_bytes!("../../assets/images/pfp.png");
     let image = image::load_from_memory(image_data).unwrap();
-    let resized = image.resize(
-        SIZE as u32,
-        SIZE as u32,
-        image::imageops::FilterType::Nearest,
-    );
-    let mut pixels = [[0; SIZE]; SIZE];
+    let resized = image.resize(SIZE, SIZE, image::imageops::FilterType::Nearest);
+    let mut pixels = [[0; SIZE as usize]; SIZE as usize];
     for (x, y, pixel) in resized.pixels() {
-        let col = ((pixel.0[0] as u32) << 24)
-            | ((pixel.0[1] as u32) << 16)
-            | ((pixel.0[2] as u32) << 8)
-            | (pixel.0[3] as u32);
+        let col = (u32::from(pixel.0[0]) << 24)
+            | (u32::from(pixel.0[1]) << 16)
+            | (u32::from(pixel.0[2]) << 8)
+            | u32::from(pixel.0[3]);
         pixels[y as usize][x as usize] = col;
     }
 

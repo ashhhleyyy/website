@@ -1,7 +1,6 @@
 use std::collections::HashMap;
 
 use axum::{extract::Path, response::IntoResponse};
-use once_cell::sync::Lazy;
 use regex::Regex;
 use rust_embed::RustEmbed;
 use serde::Deserialize;
@@ -49,8 +48,8 @@ impl Project {
 }
 
 fn load_project(filename: &str) -> Option<Project> {
-    static NAME_REGEX: Lazy<Regex> =
-        Lazy::new(|| Regex::new(r"([0-9]{4})-([a-z\-]+)\.md$").unwrap());
+    static NAME_REGEX: std::sync::LazyLock<Regex> =
+        std::sync::LazyLock::new(|| Regex::new(r"([0-9]{4})-([a-z\-]+)\.md$").unwrap());
     if let Some(captures) = NAME_REGEX.captures(filename) {
         let (year, slug) = (
             captures.get(1).unwrap().as_str().to_string(),

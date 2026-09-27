@@ -113,9 +113,9 @@ pub struct HtmlTemplate<T> {
 }
 
 impl<T: Template> HtmlTemplate<T> {
-    pub fn new<S: ToString>(path: S, template: T) -> Self {
+    pub fn new<S: Into<String>>(path: S, template: T) -> Self {
         Self {
-            path: path.to_string(),
+            path: path.into(),
             template,
         }
     }
@@ -184,12 +184,14 @@ async fn load_post(server: &str, id: &str) -> PostData {
 }
 
 // TODO: Refactor into a tower layer(?) to remove the requirement for passing the path directly
+#[allow(
+    clippy::too_many_lines,
+    clippy::case_sensitive_file_extension_comparisons
+)]
 pub(crate) async fn rewrite_html(path: &str, html: &str) -> String {
-    let now = OffsetDateTime::now_utc();
-
-    // First pass to locate fedi posts and footnotes
-    let mut posts = vec![];
-    let mut footnotes: Vec<Footnote> = vec![];
+    fn is_url(s: &str) -> bool {
+        reqwest::Url::parse(s).is_ok()
+    }
 
     struct Footnote {
         id: String,
@@ -198,9 +200,11 @@ pub(crate) async fn rewrite_html(path: &str, html: &str) -> String {
         target_id: usize,
     }
 
-    fn is_url(s: &str) -> bool {
-        reqwest::Url::parse(s).is_ok()
-    }
+    let now = OffsetDateTime::now_utc();
+
+    // First pass to locate fedi posts and footnotes
+    let mut posts = vec![];
+    let mut footnotes: Vec<Footnote> = vec![];
 
     let mut next_footnote_id = 0;
 
@@ -254,7 +258,7 @@ pub(crate) async fn rewrite_html(path: &str, html: &str) -> String {
                         media_attachments: vec![],
                     };
                     el.replace(&post.as_html().0, ContentType::Html);
-                };
+                }
                 Ok(())
             }))
             .append_element_content_handler(element!("fn", |el| {
@@ -309,9 +313,9 @@ pub(crate) async fn rewrite_html(path: &str, html: &str) -> String {
                         }
                     }
                     _ => {
-                        el.replace("[footnote missing content]", ContentType::Text)
+                        el.replace("[footnote missing content]", ContentType::Text);
                     },
-                };
+                }
                 Ok(())
             })),
     )
